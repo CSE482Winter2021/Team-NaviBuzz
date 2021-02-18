@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MotionDnaSDKListe
     }
 
     public void startDemo() {
-        String devKey = "<--DEVELOPER-KEY-HERE-->";
+        String devKey = "hsW5F8tUr8nPLP1hgY2oj2Zy26iqZ7YCPK4mTEnTsNpj0l0yRwGfj33m3GUL0vCF";
 
         motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
         motionDnaSDK.startForegroundService();
