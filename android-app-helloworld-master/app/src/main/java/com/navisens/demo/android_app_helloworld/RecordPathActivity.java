@@ -1,11 +1,9 @@
 package com.navisens.demo.android_app_helloworld;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 
 import com.navisens.motiondnaapi.MotionDna;
@@ -18,24 +16,32 @@ import java.util.Map;
 import java.util.Objects;
 
 /*
- * For complete documentation on the MotionDnaSDK API
- * Please go to the following link:
- * https://github.com/navisens/NaviDocs/blob/master/API.Android.md
+ * This file is called MainActivity but should be renamed at some point to reflect
+ * that this screen is for recording a path
  */
 
-public class MainActivity extends AppCompatActivity implements MotionDnaSDKListener {
+public class RecordPathActivity extends AppCompatActivity implements MotionDnaSDKListener {
 
     MotionDnaSDK motionDnaSDK;
     TextView receiveMotionDnaTextView;
     TextView reportStatusTextView;
+    Button startPathBtn;
+    Button stopPathBtn;
+    Button recordLandmarkBtn;
+    TextView landmarkNameTextView;
+
     private static final int REQUEST_MDNA_PERMISSIONS=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_record_path);
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
         reportStatusTextView = findViewById(R.id.reportStatusTextView);
+        startPathBtn = findViewById(R.id.start_replay_btn);
+        stopPathBtn = findViewById(R.id.stop_replay_btn);
+        recordLandmarkBtn = findViewById(R.id.confirm_landmark);
+        landmarkNameTextView = findViewById(R.id.landmark_name);
         // Requests app
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , REQUEST_MDNA_PERMISSIONS);
@@ -45,11 +51,11 @@ public class MainActivity extends AppCompatActivity implements MotionDnaSDKListe
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (MotionDnaSDK.checkMotionDnaPermissions(this)) // permissions already requested
         {
-            startDemo();
+            startRecordingPath();
         }
     }
 
-    public void startDemo() {
+    public void startRecordingPath() {
         String devKey = "hsW5F8tUr8nPLP1hgY2oj2Zy26iqZ7YCPK4mTEnTsNpj0l0yRwGfj33m3GUL0vCF";
 
         motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
