@@ -11,4 +11,8 @@ public class Utils {
     public static boolean postToDatabase(String sql) {
         return true;
     }
+
+    public static boolean getFromDatabase(String sql) {
+        return true;
+    }
 }

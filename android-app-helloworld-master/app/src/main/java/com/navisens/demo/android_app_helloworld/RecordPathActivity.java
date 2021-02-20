@@ -16,10 +16,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /*
- * This file is called MainActivity but should be renamed at some point to reflect
- * that this screen is for recording a path
+ * For complete documentation on the MotionDnaSDK API
+ * Please go to the following link:
+ * https://github.com/navisens/NaviDocs/blob/master/API.Android.md
  */
-
 public class RecordPathActivity extends AppCompatActivity implements MotionDnaSDKListener {
 
     MotionDnaSDK motionDnaSDK;
