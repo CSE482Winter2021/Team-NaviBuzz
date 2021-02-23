@@ -1,19 +1,26 @@
 package com.navisens.demo.android_app_helloworld;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.navisens.demo.android_app_helloworld.database_obj.GPSPoint;
+import com.navisens.demo.android_app_helloworld.database_obj.Landmark;
+import com.navisens.demo.android_app_helloworld.utils.ErrorState;
 import com.navisens.motiondnaapi.MotionDna;
 import com.navisens.motiondnaapi.MotionDnaSDK;
 import com.navisens.motiondnaapi.MotionDnaSDKListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /*
  * For complete documentation on the MotionDnaSDK API
@@ -29,6 +36,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     Button stopPathBtn;
     Button recordLandmarkBtn;
     TextView landmarkNameTextView;
+    boolean currentlyTraveling = false;
+    List<GPSPoint> currPath = new ArrayList<GPSPoint>();
 
     private static final int REQUEST_MDNA_PERMISSIONS=1;
 
@@ -41,6 +50,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         startPathBtn = findViewById(R.id.start_replay_btn);
         stopPathBtn = findViewById(R.id.stop_replay_btn);
         recordLandmarkBtn = findViewById(R.id.confirm_landmark);
+        recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                recordLandmark();
+            }
+        });
         landmarkNameTextView = findViewById(R.id.landmark_name);
         // Requests app
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
@@ -51,7 +65,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (MotionDnaSDK.checkMotionDnaPermissions(this)) // permissions already requested
         {
-            startRecordingPath();
+            startPathBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    startRecordingPath();
+                }
+            });
         }
     }
 
@@ -66,10 +84,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         motionDnaSDK.start(devKey);
     }
 
-    //    This event receives the estimation results using a MotionDna object.
-    //    Check out the Getters section to learn how to read data out of this object.
-
-
     // Algorithm for recording path
     // Start a thread dedicated checking whether the location has changed within a certain
     // radius. Store a temporary list for the locations so thus far in the path
@@ -82,6 +96,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     // If user records landmark stoppedPath = true, then record the landmark associated with this
     // GPS point
+
+    //    This event receives the estimation results using a MotionDna object.
+    //    Check out the Getters section to learn how to read data out of this object.
     @Override
     public void receiveMotionDna(MotionDna motionDna)
     {
@@ -157,8 +174,26 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         }
     }
 
-    protected void onDestroy() {
+    protected ErrorState recordLandmark() {
+        if (!currentlyTraveling) {
+            return new ErrorState("You are not on a path, cannot create landmark", false);
+        }
 
+        if (currPath.isEmpty()) {
+            return new ErrorState("An unknown error occurred, please try again", false);
+        }
+
+        GPSPoint lastLoc = currPath.get(currPath.size() - 1);
+
+        // Grab name and generate UUID
+        String name = "";
+        UUID id = UUID.randomUUID();
+        Landmark landmark = new Landmark(name, id);
+        currPath.get(currPath.size() - 1).setLandmark(landmark);
+        return new ErrorState("Success", true);
+    }
+
+    protected void onDestroy() {
         // Shuts downs the MotionDna Core
         motionDnaSDK.stop();
         super.onDestroy();

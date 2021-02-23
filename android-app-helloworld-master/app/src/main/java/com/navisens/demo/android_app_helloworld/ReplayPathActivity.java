@@ -9,9 +9,16 @@ import androidx.core.app.ActivityCompat;
 
 public class ReplayPathActivity extends AppCompatActivity {
 
+    // Map<String, Path> paths = new HashMap<String, Path>();
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Get from database:
+        //      - Pathlist for user
+        //      -
     }
 
     // Algorithm for replaying path
@@ -25,7 +32,7 @@ public class ReplayPathActivity extends AppCompatActivity {
     // how far away it is.
     //
     // As user gets close if there's a turn tell them change in degrees in which direction
-    // they must face
+    // they must face (relay instruction audio)
     //
     // As user gets close to landmarks, verify that the user is close to landmark a certain
     // amount of degrees away
