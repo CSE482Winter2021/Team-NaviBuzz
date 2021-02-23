@@ -69,6 +69,19 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     //    This event receives the estimation results using a MotionDna object.
     //    Check out the Getters section to learn how to read data out of this object.
 
+
+    // Algorithm for recording path
+    // Start a thread dedicated checking whether the location has changed within a certain
+    // radius. Store a temporary list for the locations so thus far in the path
+    //
+    // If location has changed and location doesn't already exist for that path, post it to the
+    // database
+    //
+    // Once flag stoppedPath = true from a uuser input, then the thread for checking whether the location has
+    // changed can stop
+
+    // If user records landmark stoppedPath = true, then record the landmark associated with this
+    // GPS point
     @Override
     public void receiveMotionDna(MotionDna motionDna)
     {
