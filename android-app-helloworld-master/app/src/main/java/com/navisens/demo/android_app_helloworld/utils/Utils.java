@@ -19,7 +19,7 @@ public class Utils {
     }
 
     public static double getHeadingBetweenGPSPoints(GPSPoint x, GPSPoint y) {
-        if (x != null && y != null) {
+        if (x == null || y == null) {
             return 0;
         }
 
