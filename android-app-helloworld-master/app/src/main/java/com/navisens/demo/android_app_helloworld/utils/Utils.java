@@ -18,10 +18,17 @@ public class Utils {
         return true;
     }
 
-    public static float getHeadingBetweenGPSPoints(GPSPoint x, GPSPoint y) {
-        // atan2(X,Y)
+    public static double getHeadingBetweenGPSPoints(GPSPoint x, GPSPoint y) {
+        if (x != null && y != null) {
+            return 0;
+        }
 
-        // Unimplemented
-        return 0;
+        // Reference for this formula here https://www.igismap.com/formula-to-find-bearing-or-heading-angle-between-two-points-latitude-longitude/
+        double delta = y.getLongitude() - x.getLongitude();
+        double x1 = Math.cos(y.getLatitude())*Math.sin(Math.abs(delta));
+        double y1 = Math.cos(x.getLatitude()) * Math.sin(y.getLatitude()) - Math.sin(x.getLatitude()) * Math.cos(y.getLatitude()) * Math.cos(delta);
+        double heading = Math.toDegrees(Math.atan2(x1, y1));
+
+        return heading;
     }
 }
