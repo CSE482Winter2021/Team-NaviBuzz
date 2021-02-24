@@ -61,15 +61,26 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 , REQUEST_MDNA_PERMISSIONS);
     }
 
+    /*
+     * Just some documentation:
+     *  Currently this is working on my android phone reasonably accurately
+     * 
+     *  motiondna starts with an initial GPS location and then it overlays a cartesian plane on top of it
+     *
+     *  It keeps track of your position using the sensors on your phone in this cartesian plane
+     */
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (MotionDnaSDK.checkMotionDnaPermissions(this)) // permissions already requested
         {
-            startPathBtn.setOnClickListener(new View.OnClickListener() {
+            startRecordingPath();
+            /*startPathBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     startRecordingPath();
                 }
-            });
+            });*/
         }
     }
 
