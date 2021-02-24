@@ -62,9 +62,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     /*
-     * Just some documentation:
+     * Just a note:
      *  Currently this is working on my android phone reasonably accurately
-     * 
+     *
      *  motiondna starts with an initial GPS location and then it overlays a cartesian plane on top of it
      *
      *  It keeps track of your position using the sensors on your phone in this cartesian plane
