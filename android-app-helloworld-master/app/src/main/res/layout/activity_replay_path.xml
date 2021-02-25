@@ -38,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@id/receiveMotionDnaTextView" />
 
     <Button
-        android:id="@+id/start_replay_btn"
+        android:id="@+id/start_record_btn"
         android:layout_width="196dp"
         android:layout_height="48dp"
         android:text="Start Replay Path"
@@ -46,7 +46,7 @@
         tools:layout_editor_absoluteY="443dp" />
 
     <Button
-        android:id="@+id/stop_replay_btn"
+        android:id="@+id/stop_record_btn"
         android:layout_width="195dp"
         android:layout_height="49dp"
         android:text="Stop Replay Path"

@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.navisens.demo.android_app_helloworld.database_obj.GPSPoint;
+import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.database_obj.Landmark;
 import com.navisens.demo.android_app_helloworld.utils.ErrorState;
 import com.navisens.motiondnaapi.MotionDna;
@@ -36,8 +36,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     Button stopPathBtn;
     Button recordLandmarkBtn;
     TextView landmarkNameTextView;
+    CoordinatePoint lastLocation;
     boolean currentlyTraveling = false;
-    List<GPSPoint> currPath = new ArrayList<GPSPoint>();
+    List<CoordinatePoint> currPath = new ArrayList<CoordinatePoint>();
 
     private static final int REQUEST_MDNA_PERMISSIONS=1;
 
@@ -47,8 +48,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         setContentView(R.layout.activity_record_path);
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
         reportStatusTextView = findViewById(R.id.reportStatusTextView);
-        startPathBtn = findViewById(R.id.start_replay_btn);
-        stopPathBtn = findViewById(R.id.stop_replay_btn);
+        startPathBtn = findViewById(R.id.start_record_btn);
+        stopPathBtn = findViewById(R.id.stop_record_btn);
         recordLandmarkBtn = findViewById(R.id.confirm_landmark);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -75,12 +76,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (MotionDnaSDK.checkMotionDnaPermissions(this)) // permissions already requested
         {
-            startRecordingPath();
-            /*startPathBtn.setOnClickListener(new View.OnClickListener() {
+            startPathBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     startRecordingPath();
                 }
-            });*/
+            });
         }
     }
 
@@ -95,55 +95,27 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         motionDnaSDK.start(devKey);
     }
 
-    // Algorithm for recording path
-    // Start a thread dedicated checking whether the location has changed within a certain
-    // radius. Store a temporary list for the locations so thus far in the path
-    //
-    // If location has changed and location doesn't already exist for that path, post it to the
-    // database
-    //
-    // Once flag stoppedPath = true from a uuser input, then the thread for checking whether the location has
-    // changed can stop
-
-    // If user records landmark stoppedPath = true, then record the landmark associated with this
-    // GPS point
-
     //    This event receives the estimation results using a MotionDna object.
     //    Check out the Getters section to learn how to read data out of this object.
     @Override
     public void receiveMotionDna(MotionDna motionDna)
     {
-        String str = "Navisens MotionDnaSDK Estimation:\n";
-        str += MotionDnaSDK.SDKVersion() + "\n";
-        str += "Lat: " + motionDna.getLocation().global.latitude + " Lon: " + motionDna.getLocation().global.longitude + "\n";
-        MotionDna.CartesianLocation location = motionDna.getLocation().cartesian;
-        str += String.format(Locale.US," (%.2f, %.2f, %.2f)\n",location.x, location.y, location.z);
-        str += "Hdg: " + motionDna.getLocation().global.heading +  " \n";
-        str += "motionType: " + Objects.requireNonNull(motionDna.getClassifiers().get("motion")).prediction.label + "\n";
+        CoordinatePoint newLocation = new CoordinatePoint(motionDna.getLocation().global.latitude, motionDna.getLocation().global.longitude);
 
-        str += "Predictions (BETA): \n\n";
-        HashMap<String, MotionDna.Classifier> classifiers =  motionDna.getClassifiers();
-        for (Map.Entry<String, MotionDna.Classifier> entry : classifiers.entrySet()) {
-            str += String.format("Classifier: %s\n",entry.getKey());
-            str += String.format(Locale.US,"\tcurrent prediction: %s confidence: %.2f\n",entry.getValue().prediction.label, entry.getValue().prediction.confidence);
-            str += "\tprediction stats:\n";
+        // Algorithm for recording path
+        // Start a thread dedicated checking whether the location has changed within a certain
+        // radius. Store a temporary list for the locations so thus far in the path
+        //
+        // If location has changed and location doesn't already exist for that path, post it to the
+        // database
+        //
+        // Once flag stoppedPath = true from a uuser input, then the thread for checking whether the location has
+        // changed can stop
 
-            for (Map.Entry<String, MotionDna.PredictionStats> statsEntry : entry.getValue().statistics.entrySet()) {
-                str += String.format(Locale.US,"\t%s",statsEntry.getKey());
-                str += String.format(Locale.US,"\t duration: %.2f\n",statsEntry.getValue().duration);
-                str += String.format(Locale.US,"\t distance: %.2f\n",statsEntry.getValue().distance);
-            }
-            str += "\n";
-        }
+        // If user records landmark stoppedPath = true, then record the landmark associated with this
+        // GPS point
 
-
-        final String fstr = str;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                receiveMotionDnaTextView.setText(fstr);
-            }
-        });
+        printDebugInformation(motionDna);
     }
 
 
@@ -185,6 +157,41 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         }
     }
 
+    // Helper to print some diagnostics about navisens
+    private void printDebugInformation(MotionDna motionDna) {
+        String str = "Navisens MotionDnaSDK Estimation:\n";
+        str += MotionDnaSDK.SDKVersion() + "\n";
+        str += "Lat: " + motionDna.getLocation().global.latitude + " Lon: " + motionDna.getLocation().global.longitude + "\n";
+        MotionDna.CartesianLocation location = motionDna.getLocation().cartesian;
+        str += String.format(Locale.US," (%.2f, %.2f, %.2f)\n",location.x, location.y, location.z);
+        str += "Hdg: " + motionDna.getLocation().global.heading +  " \n";
+        str += "motionType: " + Objects.requireNonNull(motionDna.getClassifiers().get("motion")).prediction.label + "\n";
+
+        str += "Predictions (BETA): \n\n";
+        HashMap<String, MotionDna.Classifier> classifiers =  motionDna.getClassifiers();
+        for (Map.Entry<String, MotionDna.Classifier> entry : classifiers.entrySet()) {
+            str += String.format("Classifier: %s\n",entry.getKey());
+            str += String.format(Locale.US,"\tcurrent prediction: %s confidence: %.2f\n",entry.getValue().prediction.label, entry.getValue().prediction.confidence);
+            str += "\tprediction stats:\n";
+
+            for (Map.Entry<String, MotionDna.PredictionStats> statsEntry : entry.getValue().statistics.entrySet()) {
+                str += String.format(Locale.US,"\t%s",statsEntry.getKey());
+                str += String.format(Locale.US,"\t duration: %.2f\n",statsEntry.getValue().duration);
+                str += String.format(Locale.US,"\t distance: %.2f\n",statsEntry.getValue().distance);
+            }
+            str += "\n";
+        }
+
+
+        final String fstr = str;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                receiveMotionDnaTextView.setText(fstr);
+            }
+        });
+    }
+
     protected ErrorState recordLandmark() {
         if (!currentlyTraveling) {
             return new ErrorState("You are not on a path, cannot create landmark", false);
@@ -194,7 +201,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             return new ErrorState("An unknown error occurred, please try again", false);
         }
 
-        GPSPoint lastLoc = currPath.get(currPath.size() - 1);
+        CoordinatePoint lastLoc = currPath.get(currPath.size() - 1);
 
         // Grab name and generate UUID
         String name = "";

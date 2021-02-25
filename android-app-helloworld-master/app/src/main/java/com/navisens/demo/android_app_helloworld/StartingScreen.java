@@ -1,6 +1,9 @@
 package com.navisens.demo.android_app_helloworld;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.navisens.demo.android_app_helloworld.utils.Utils;
 
@@ -15,16 +18,37 @@ import androidx.appcompat.app.AppCompatActivity;
  */
 public class StartingScreen extends AppCompatActivity {
 
+    Button recordPathOpt;
+    Button replayPathOpt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Utils.setupDatabase();
 
-        setContentView(R.layout.audio_transcription_demo);
+        setContentView(R.layout.activity_starting_screen);
+        recordPathOpt = findViewById(R.id.record_path_opt);
+        replayPathOpt = findViewById(R.id.record_path_opt);
+
+        recordPathOpt.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startNewActivity(RecordPathActivity.class);
+            }
+        });
+
+        replayPathOpt.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startNewActivity(ReplayPathActivity.class);
+            }
+        });
 
         Speech.init(this, getPackageName());
     }
 
+    private void startNewActivity(Class activity) {
+        Intent intent = new Intent(this, activity);
+        startActivity(intent);
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

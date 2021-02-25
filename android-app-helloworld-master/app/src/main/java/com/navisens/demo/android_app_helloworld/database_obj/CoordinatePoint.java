@@ -1,20 +1,22 @@
 package com.navisens.demo.android_app_helloworld.database_obj;
 
-public class GPSPoint {
-    private long longitude;
-    private long latitude;
+import com.navisens.motiondnaapi.MotionDna;
+
+public class CoordinatePoint {
+    private double longitude;
+    private double latitude;
     private Landmark landmark; // optional field for a landmark. Only one per GPS point for now
 
-    public GPSPoint(long latitude, long longitude) {
+    public CoordinatePoint(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public long getLatitude() {
+    public double getLatitude() {
         return this.latitude;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return this.longitude;
     }
 

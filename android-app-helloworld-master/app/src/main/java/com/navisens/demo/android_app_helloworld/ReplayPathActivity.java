@@ -10,12 +10,11 @@ import androidx.core.app.ActivityCompat;
 public class ReplayPathActivity extends AppCompatActivity {
 
     // Map<String, Path> paths = new HashMap<String, Path>();
-
-
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_replay_path);
         // Get from database:
         //      - Pathlist for user
         //      -

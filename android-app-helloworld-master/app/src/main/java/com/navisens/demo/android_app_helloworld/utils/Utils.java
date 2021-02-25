@@ -1,6 +1,7 @@
 package com.navisens.demo.android_app_helloworld.utils;
 
-import com.navisens.demo.android_app_helloworld.database_obj.GPSPoint;
+import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
+import com.navisens.motiondnaapi.MotionDna;
 
 public class Utils {
 
@@ -18,7 +19,7 @@ public class Utils {
         return true;
     }
 
-    public static double getHeadingBetweenGPSPoints(GPSPoint x, GPSPoint y) {
+    public static double getHeadingBetweenGPSPoints(CoordinatePoint x, CoordinatePoint y) {
         if (x == null || y == null) {
             return 0;
         }
