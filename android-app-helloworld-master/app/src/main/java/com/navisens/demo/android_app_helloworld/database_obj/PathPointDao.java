@@ -9,7 +9,7 @@ import java.util.List;
 
 @Dao
 public interface PathPointDao {
-    @Query ("SELECT * FROM points WHERE path_id = :p")
+    @Query ("SELECT * FROM points WHERE path_id = :p ORDER BY path_point_id ASC")
     public List<PathPoint> getByPathId(int p);
 
     @Insert
