@@ -19,6 +19,18 @@
             android:screenOrientation="portrait"
             >
             <intent-filter>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ReplayPathActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+            </intent-filter>
+        </activity>
+        <activity android:name=".StartingScreen"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -20,16 +20,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Record Path"
-        tools:layout_editor_absoluteX="49dp"
-        tools:layout_editor_absoluteY="288dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="49dp" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Replay path"
-        tools:layout_editor_absoluteX="246dp"
-        tools:layout_editor_absoluteY="288dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="246dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

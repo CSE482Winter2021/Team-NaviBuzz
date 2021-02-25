@@ -10,7 +10,7 @@ import androidx.core.app.ActivityCompat;
 public class ReplayPathActivity extends AppCompatActivity {
 
     // Map<String, Path> paths = new HashMap<String, Path>();
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

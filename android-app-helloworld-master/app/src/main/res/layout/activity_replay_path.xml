@@ -13,8 +13,10 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Path ID"
-        tools:layout_editor_absoluteX="251dp"
-        tools:layout_editor_absoluteY="444dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.649"
+        tools:layout_editor_absoluteX="251dp" />
 
     <TextView
         android:id="@+id/receiveMotionDnaTextView"
@@ -42,24 +44,30 @@
         android:layout_width="196dp"
         android:layout_height="48dp"
         android:text="Start Replay Path"
-        tools:layout_editor_absoluteX="31dp"
-        tools:layout_editor_absoluteY="443dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.648"
+        tools:layout_editor_absoluteX="30dp" />
 
     <Button
         android:id="@+id/stop_record_btn"
         android:layout_width="195dp"
         android:layout_height="49dp"
         android:text="Stop Replay Path"
-        tools:layout_editor_absoluteX="31dp"
-        tools:layout_editor_absoluteY="512dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.768"
+        tools:layout_editor_absoluteX="31dp" />
 
     <Button
         android:id="@+id/confirm_landmark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Confirm Landmark"
-        tools:layout_editor_absoluteX="226dp"
-        tools:layout_editor_absoluteY="653dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.945"
+        tools:layout_editor_absoluteX="226dp" />
 
     <EditText
         android:id="@+id/landmark_name"
@@ -68,8 +76,10 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Landmark"
-        tools:layout_editor_absoluteX="31dp"
-        tools:layout_editor_absoluteY="654dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.932"
+        tools:layout_editor_absoluteX="31dp" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
