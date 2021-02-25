@@ -18,14 +18,10 @@
         <activity android:name=".RecordPathActivity"
             android:screenOrientation="portrait"
             >
-            <intent-filter>
-            </intent-filter>
         </activity>
         <activity android:name=".ReplayPathActivity"
             android:screenOrientation="portrait"
             >
-            <intent-filter>
-            </intent-filter>
         </activity>
         <activity android:name=".StartingScreen"
             android:screenOrientation="portrait"
