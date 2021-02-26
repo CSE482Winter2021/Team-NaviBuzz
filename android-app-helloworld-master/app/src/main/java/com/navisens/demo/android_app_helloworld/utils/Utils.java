@@ -23,6 +23,12 @@ public class Utils {
         return true;
     }
 
+    /**
+     * Given two points calculate the heading between them
+     * @param x
+     * @param y
+     * @return
+     */
     public static double getHeadingBetweenGPSPoints(CoordinatePoint x, CoordinatePoint y) {
         if (x == null || y == null) {
             return 0;

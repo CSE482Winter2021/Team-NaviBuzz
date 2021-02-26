@@ -38,7 +38,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     Button stopPathBtn;
     Button recordLandmarkBtn;
     TextView landmarkNameTextView;
-    boolean currentlyTraveling = false;
     List<CoordinatePoint> currPath = new ArrayList<CoordinatePoint>();
     CoordinatePoint lastLocation;
     CoordinatePoint currLocation;
@@ -60,6 +59,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordLandmark();
+            }
+        });
+        stopPathBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                stopRecordingPath();
             }
         });
         landmarkNameTextView = findViewById(R.id.landmark_name);
@@ -90,6 +94,12 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         //    the SDK to function. IF the key has expired or there are other errors, you may receive
         //    those errors through the reportError() callback route.
         motionDnaSDK.start(devKey);
+    }
+
+    public void stopRecordingPath() {
+        motionDnaSDK.stop();
+        // Todo: put in database
+        currPath.clear();
     }
 
     //    This event receives the estimation results using a MotionDna object.
@@ -126,7 +136,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             str += "GPS is on \n";
             currLocation.setLatitude(motionDna.getLocation().global.latitude);
             currLocation.setLongitude(motionDna.getLocation().global.longitude);
-        } else if (lastLocation.getLatitude() != 0 || lastLocation.getLongitude() != 0) {
+        } else if (currLocation.getLatitude() != 0 || currLocation.getLongitude() != 0) {
             str += "GPS is off, using lat/long estimation";
 
             double distanceTraveled = motionDna.getClassifiers().get("indoorOutdoor").statistics.get("indoor").distance;
@@ -195,7 +205,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     // Helper to print some diagnostics about navisens
     private void printDebugInformation(MotionDna motionDna, String str) {
         str += MotionDnaSDK.SDKVersion() + "\n";
-        str += "Lat: " + lastLocation.getLatitude() + " Lon: " + lastLocation.getLongitude() + "\n";
+        str += "Lat: " + currLocation.getLatitude() + " Lon: " + currLocation.getLongitude() + "\n";
         MotionDna.CartesianLocation location = motionDna.getLocation().cartesian;
         str += String.format(Locale.US," (%.2f, %.2f, %.2f)\n",location.x, location.y, location.z);
         str += "Hdg: " + motionDna.getLocation().global.heading +  " \n";
@@ -227,10 +237,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     protected ErrorState recordLandmark() {
-        if (!currentlyTraveling) {
-            return new ErrorState("You are not on a path, cannot create landmark", false);
-        }
-
         if (currPath.isEmpty()) {
             return new ErrorState("An unknown error occurred, please try again", false);
         }
