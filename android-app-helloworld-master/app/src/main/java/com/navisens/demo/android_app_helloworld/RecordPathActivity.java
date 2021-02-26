@@ -1,4 +1,6 @@
 package com.navisens.demo.android_app_helloworld;
+import android.content.Context;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -36,9 +38,12 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     Button stopPathBtn;
     Button recordLandmarkBtn;
     TextView landmarkNameTextView;
-    CoordinatePoint lastLocation;
     boolean currentlyTraveling = false;
     List<CoordinatePoint> currPath = new ArrayList<CoordinatePoint>();
+
+    // Vars used for latitude/longitude estimation when GPS is off
+    CoordinatePoint lastLocation;
+    double lastCumulativeDistanceTraveled;
 
     private static final int REQUEST_MDNA_PERMISSIONS=1;
 
@@ -51,6 +56,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         startPathBtn = findViewById(R.id.start_record_btn);
         stopPathBtn = findViewById(R.id.stop_record_btn);
         recordLandmarkBtn = findViewById(R.id.confirm_landmark);
+        lastLocation = new CoordinatePoint(0, 0);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordLandmark();
@@ -159,9 +165,42 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     // Helper to print some diagnostics about navisens
     private void printDebugInformation(MotionDna motionDna) {
+
+        /*
+         * Check if GPS is on and if it is, use it
+         *
+         * if GPS is off, use estimation that updates every 40ms with dist + heading to
+         * estimate the longitude/latitude. Long travels without GPS will add cumulatively more
+         * error due to the 40ms latency with checking. This is then a beta stage feature until
+         * this problem gets resolved or significantly reduced, it's also very inaccurate 300-100m right now
+         */
         String str = "Navisens MotionDnaSDK Estimation:\n";
+
+        LocationManager manager = (LocationManager)this.getSystemService (Context.LOCATION_SERVICE);
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            str += "GPS is on \n";
+            lastLocation.setLatitude(motionDna.getLocation().global.latitude);
+            lastLocation.setLongitude(motionDna.getLocation().global.longitude);
+        } else if (lastLocation.getLatitude() != 0 || lastLocation.getLongitude() != 0) {
+            str += "GPS is off, using lat/long estimation";
+
+            double distanceTraveled = motionDna.getClassifiers().get("indoorOutdoor").statistics.get("indoor").distance;
+            // This means this is the first time this block was reached. Set the distance traveled
+            // and let 40ms go by
+            if (lastCumulativeDistanceTraveled == 0) {
+                lastCumulativeDistanceTraveled = distanceTraveled;
+            } else if (Math.abs(lastCumulativeDistanceTraveled - distanceTraveled) > 0.5) {
+                lastCumulativeDistanceTraveled = distanceTraveled;
+                lastLocation = estimateLongitudeLatitude(lastLocation, lastCumulativeDistanceTraveled, motionDna.getLocation().global.heading);
+            }
+        } else {
+            // This means GPS was never able to be used to get an initial location, this means
+            // service unavailable because we can't estimate location
+            str += "Service unavailable, GPS was never on";
+        }
+
         str += MotionDnaSDK.SDKVersion() + "\n";
-        str += "Lat: " + motionDna.getLocation().global.latitude + " Lon: " + motionDna.getLocation().global.longitude + "\n";
+        str += "Lat: " + lastLocation.getLatitude() + " Lon: " + lastLocation.getLongitude() + "\n";
         MotionDna.CartesianLocation location = motionDna.getLocation().cartesian;
         str += String.format(Locale.US," (%.2f, %.2f, %.2f)\n",location.x, location.y, location.z);
         str += "Hdg: " + motionDna.getLocation().global.heading +  " \n";
@@ -190,6 +229,38 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 receiveMotionDnaTextView.setText(fstr);
             }
         });
+    }
+
+    /**
+     * Estimate a new location given a lastLocation, distance traveled and heading
+     *
+     * Precondition is that the distance traveled was the same heading throughout
+     *
+     * @param lastLocation
+     * @param lastCumulativeDistanceTraveled
+     * @param heading
+     * @return
+     */
+    private CoordinatePoint estimateLongitudeLatitude(CoordinatePoint lastLocation, double lastCumulativeDistanceTraveled, double heading) {
+        /*
+         * Credit for this idea https://stackoverflow.com/questions/7222382/get-lat-long-given-current-point-distance-and-bearing
+         */
+        if (lastLocation == null || lastCumulativeDistanceTraveled == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        double earthRadius = 6371.0088;
+        double hInRadians = Math.toRadians(heading);
+        double dInkm = lastCumulativeDistanceTraveled / 1000;
+
+        double longitudeInRadians = Math.toRadians(lastLocation.getLongitude());
+        double latitudeInRadians = Math.toRadians(lastLocation.getLatitude());
+
+        double newLat = Math.asin(Math.sin(latitudeInRadians) * Math.cos(dInkm / earthRadius) + Math.cos(latitudeInRadians) * Math.sin(dInkm / earthRadius) * Math.cos(hInRadians));
+        double newLong = longitudeInRadians + Math.atan2(Math.sin(hInRadians) * Math.sin(dInkm / earthRadius) * Math.cos(latitudeInRadians), Math.cos(dInkm / earthRadius) - Math.sin(latitudeInRadians) * Math.sin(newLat));
+
+        return new CoordinatePoint(Math.toDegrees(newLat), Math.toDegrees(newLong));
+
     }
 
     protected ErrorState recordLandmark() {
