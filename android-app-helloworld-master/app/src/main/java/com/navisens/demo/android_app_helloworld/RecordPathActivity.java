@@ -190,8 +190,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             if (lastCumulativeDistanceTraveled == 0) {
                 lastCumulativeDistanceTraveled = distanceTraveled;
             } else if (Math.abs(lastCumulativeDistanceTraveled - distanceTraveled) > 0.5) {
+                lastLocation = estimateLongitudeLatitude(lastLocation, distanceTraveled - lastCumulativeDistanceTraveled, motionDna.getLocation().global.heading);
                 lastCumulativeDistanceTraveled = distanceTraveled;
-                lastLocation = estimateLongitudeLatitude(lastLocation, lastCumulativeDistanceTraveled, motionDna.getLocation().global.heading);
             }
         } else {
             // This means GPS was never able to be used to get an initial location, this means
