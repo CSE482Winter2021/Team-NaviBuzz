@@ -24,7 +24,7 @@ public class StartingScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.setupDatabase();
+        Utils.setupDatabase(getApplicationContext());
 
         setContentView(R.layout.activity_starting_screen);
         recordPathOpt = findViewById(R.id.record_path_btn);

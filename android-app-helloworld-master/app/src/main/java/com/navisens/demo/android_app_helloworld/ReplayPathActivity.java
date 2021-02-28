@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.view.View;
 import android.widget.Button;
 
+import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
@@ -33,6 +34,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     LinearLayout instructionList;
     List<PathPoint> pathPoints;
     PathPoint lastPoint;
+    PathDatabase db;
 
     MotionDnaSDK motionDnaSDK;
     TextView reportStatusTextView;
@@ -49,6 +51,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_replay_path);
+        db = Utils.setupDatabase(getApplicationContext());
         Bundle bundle = getIntent().getExtras();
         pid = bundle.getInt("currentPath");
         instructionList = findViewById(R.id.instruction_list);
@@ -75,7 +78,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         if (TEST) {
             pathPoints = new ArrayList<PathPoint>();
         } else {
-
+            pathPoints = Utils.getPointsByPathIdFromDatabase(db, pid);
         }
     }
 

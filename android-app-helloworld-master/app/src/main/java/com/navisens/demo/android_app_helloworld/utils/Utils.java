@@ -3,6 +3,7 @@ package com.navisens.demo.android_app_helloworld.utils;
 import android.content.Context;
 
 import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
+import com.navisens.demo.android_app_helloworld.database_obj.Path;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.motiondnaapi.MotionDna;
@@ -25,6 +26,10 @@ public class Utils {
 
     public static List<PathPoint> getPointsByPathIdFromDatabase(PathDatabase db, int pathId) {
         return db.getPathPointDao().getByPathId(pathId);
+    }
+
+    public static List<Path> getUserPaths(PathDatabase db) {
+        return db.getPathDao().getAll();
     }
 
     /**

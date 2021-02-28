@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 
 import com.navisens.demo.android_app_helloworld.database_obj.Path;
+import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
 
 import net.gotev.speech.Speech;
@@ -23,11 +24,13 @@ public class SelectPathActivity extends AppCompatActivity {
     private static final boolean TEST = true;
     List<Path> paths;
     LinearLayout pathList;
+    PathDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_path);
+        db = Utils.setupDatabase(getApplicationContext());
 
         pathList = findViewById(R.id.path_list);
         initPathsList();
@@ -57,9 +60,7 @@ public class SelectPathActivity extends AppCompatActivity {
                 paths.add(p);
             }
         } else {
-            // Get from database:
-            //      - Pathlist for user
-            //      -
+            paths = Utils.getUserPaths(db);
         }
     }
 
