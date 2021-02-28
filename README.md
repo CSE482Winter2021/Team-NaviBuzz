@@ -1,6 +1,5 @@
 # NaviBuzz
-Repository for Team NaviBuzz
-## Participants
+### Participants
 * **Developer**: Omar Ibrahim - _UW CSE_
 * **Developer**: Dylan Burton - _UW CSE_
 * **Developer**: Allyson Ely - _UW CSE_
