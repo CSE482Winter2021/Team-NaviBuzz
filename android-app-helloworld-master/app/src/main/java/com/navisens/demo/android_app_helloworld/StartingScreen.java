@@ -19,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class StartingScreen extends AppCompatActivity {
 
     Button recordPathOpt;
-    Button replayPathOpt;
+    Button selectPathOpt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +27,8 @@ public class StartingScreen extends AppCompatActivity {
         Utils.setupDatabase();
 
         setContentView(R.layout.activity_starting_screen);
-        recordPathOpt = findViewById(R.id.record_path_opt);
-        replayPathOpt = findViewById(R.id.record_path_opt);
+        recordPathOpt = findViewById(R.id.record_path_btn);
+        selectPathOpt = findViewById(R.id.replay_path_btn);
 
         recordPathOpt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -36,7 +36,7 @@ public class StartingScreen extends AppCompatActivity {
             }
         });
 
-        replayPathOpt.setOnClickListener(new View.OnClickListener() {
+        selectPathOpt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startNewActivity(ReplayPathActivity.class);
             }
