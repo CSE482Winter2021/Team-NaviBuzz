@@ -52,7 +52,7 @@
         app:layout_constraintVertical_bias="0.74" />
 
     <Button
-        android:id="@+id/confirm_landmark"
+        android:id="@+id/record_landmark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Record Landmark"
