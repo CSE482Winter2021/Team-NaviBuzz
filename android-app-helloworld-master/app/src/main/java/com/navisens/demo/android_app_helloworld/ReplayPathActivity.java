@@ -5,15 +5,18 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
+import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
+import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
 import com.navisens.demo.android_app_helloworld.utils.FollowLocationSource;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
@@ -29,12 +32,18 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
+    private static final boolean TEST = true;
+    int pid;
+    LinearLayout instructionList;
+    List<PathPoint> pathPoints;
+    PathPoint lastPoint;
+    PathDatabase db;
 
-    // Map<String, Path> paths = new HashMap<String, Path>();
     MotionDnaSDK motionDnaSDK;
     TextView reportStatusTextView;
     TextView receiveMotionDnaTextView;
@@ -52,12 +61,36 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_replay_path);
+        db = Utils.setupDatabase(getApplicationContext());
+        Bundle bundle = getIntent().getExtras();
+        pid = bundle.getInt("currentPath");
+        instructionList = findViewById(R.id.instruction_list);
         //startReplayBtn = findViewById(R.id.start_replay_btn);
         //receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
         //stopReplayBtn = findViewById(R.id.stop_replay_btn);
         //confirmLandmarkBtn = findViewById(R.id.confirm_landmark);
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
+
+        // pull list of pathPoints from database, PathPointDao.getPathById(pid)
+        initPathPoints();
+        Context context = instructionList.getContext();
+        for (final PathPoint p : pathPoints) {
+            CardView c = new CardView(context);
+            TextView t = new TextView(context);
+            t.append(p.instruction);
+            c.addView(t);
+        }
+
+        lastPoint = pathPoints.get(0);
+    }
+
+    private void initPathPoints() {
+        if (TEST) {
+            pathPoints = new ArrayList<PathPoint>();
+        } else {
+            pathPoints = Utils.getPointsByPathIdFromDatabase(db, pid);
+        }
     }
 
 
