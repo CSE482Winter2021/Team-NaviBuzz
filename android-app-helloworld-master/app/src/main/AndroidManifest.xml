@@ -2,12 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.navisens.demo.android_app_helloworld">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/navisens_logo_big"
@@ -15,26 +9,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RecordPathActivity"
-            android:screenOrientation="portrait"
-            >
+        <activity android:name=".SelectPathActivity"></activity>
+        <activity
+            android:name=".RecordPathActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ReplayPathActivity"
-            android:screenOrientation="portrait"
-            >
-        </activity>
-        <activity android:name=".StartingScreen"
-            android:screenOrientation="portrait"
-            >
-        </activity>
-        <service android:name="com.navisens.motiondnaapi.MotionDnaForegroundService"
-            android:foregroundServiceType="location"
-            />
+        <activity
+            android:name=".ReplayPathActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".StartingScreen"
+            android:screenOrientation="portrait"></activity>
+
+        <service
+            android:name="com.navisens.motiondnaapi.MotionDnaForegroundService"
+            android:foregroundServiceType="location" />
     </application>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

@@ -6,87 +6,121 @@
     android:layout_height="match_parent"
     tools:context=".RecordPathActivity">
 
-    <EditText
-        android:id="@+id/replay_path_id"
-        android:layout_width="144dp"
-        android:layout_height="47dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Path ID"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.649"
-        tools:layout_editor_absoluteX="251dp" />
-
     <TextView
-        android:id="@+id/receiveMotionDnaTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="376dp"
-        android:scrollbars="vertical"
-        android:text="DebugText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="94dp"
+        android:background="#000000"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="Follow Path"
+        android:textAlignment="inherit"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/reportStatusTextView"
-        android:layout_width="wrap_content"
+<!--    <EditText-->
+<!--        android:id="@+id/replay_path_id"-->
+<!--        android:layout_width="144dp"-->
+<!--        android:layout_height="47dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="textPersonName"-->
+<!--        android:text="Path ID"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.649"-->
+<!--        tools:layout_editor_absoluteX="251dp" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/reportStatusTextView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:scrollbars = "vertical"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/receiveMotionDnaTextView" />-->
+
+    <ScrollView
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintBottom_toTopOf="@id/btn_container"
+        tools:layout_editor_absoluteX="186dp"
+        tools:layout_editor_absoluteY="305dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars = "vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/receiveMotionDnaTextView" />
 
-    <Button
-        android:id="@+id/start_record_btn"
-        android:layout_width="196dp"
-        android:layout_height="48dp"
-        android:text="Start Replay Path"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.648"
-        tools:layout_editor_absoluteX="30dp" />
+        android:orientation="horizontal"
+        android:id="@+id/btn_container"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <Button
-        android:id="@+id/stop_record_btn"
-        android:layout_width="195dp"
-        android:layout_height="49dp"
-        android:text="Stop Replay Path"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.768"
-        tools:layout_editor_absoluteX="31dp" />
+        <Button
+            android:id="@+id/start_path_btn"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:background="#ABC3FF"
+            android:gravity="center"
+            android:text="Start Replay Path"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="30dp" />
 
-    <Button
-        android:id="@+id/confirm_landmark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Confirm Landmark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.945"
-        tools:layout_editor_absoluteX="226dp" />
+        <Button
+            android:id="@+id/pause_path_btn"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:background="none"
+            android:text="Stop Replay Path"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="31dp" />
+    </LinearLayout>
 
-    <EditText
-        android:id="@+id/landmark_name"
-        android:layout_width="144dp"
-        android:layout_height="47dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Landmark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.932"
-        tools:layout_editor_absoluteX="31dp" />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="415dp"
-        android:layout_height="329dp"
-        tools:layout_editor_absoluteX="-2dp"
-        tools:layout_editor_absoluteY="-9dp" />
+
+    <!--    <Button-->
+<!--        android:id="@+id/confirm_landmark"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Confirm Landmark"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.945"-->
+<!--        tools:layout_editor_absoluteX="226dp" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/landmark_name"-->
+<!--        android:layout_width="144dp"-->
+<!--        android:layout_height="47dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="textPersonName"-->
+<!--        android:text="Landmark"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.932"-->
+<!--        tools:layout_editor_absoluteX="31dp" />-->
+
+<!--    <com.google.android.gms.maps.MapView-->
+<!--        android:id="@+id/mapView"-->
+<!--        android:layout_width="415dp"-->
+<!--        android:layout_height="329dp"-->
+<!--        tools:layout_editor_absoluteX="-2dp"-->
+<!--        tools:layout_editor_absoluteY="-9dp" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
