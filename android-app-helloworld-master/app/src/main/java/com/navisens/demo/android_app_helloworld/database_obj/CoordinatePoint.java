@@ -1,5 +1,6 @@
 package com.navisens.demo.android_app_helloworld.database_obj;
 
+import com.navisens.demo.android_app_helloworld.utils.Utils;
 import com.navisens.motiondnaapi.MotionDna;
 
 public class CoordinatePoint {
