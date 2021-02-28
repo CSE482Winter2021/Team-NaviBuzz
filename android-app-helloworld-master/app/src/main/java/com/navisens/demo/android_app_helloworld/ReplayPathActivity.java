@@ -1,23 +1,56 @@
 package com.navisens.demo.android_app_helloworld;
 
 import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.content.Context;
 
+import com.navisens.demo.android_app_helloworld.database_obj.Path;
+import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.motiondnaapi.MotionDnaSDK;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
-public class ReplayPathActivity extends AppCompatActivity {
+import java.util.List;
+import java.util.ArrayList;
 
+public class ReplayPathActivity extends AppCompatActivity {
+    private static final boolean TEST = true;
     // Map<String, Path> paths = new HashMap<String, Path>();
+    Path path;
+    LinearLayout instructionList;
+    List<PathPoint> pathPoints;
+    PathPoint lastPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_replay_path);
-        // Get from database:
-        //      - Pathlist for user
-        //      -
+        Bundle bundle = getIntent().getExtras();
+        int pid = bundle.getInt("currentPath");
+        instructionList = findViewById(R.id.instruction_list);
+
+        // pull list of pathPoints from database, PathPointDao.getPathById(pid)
+        initPathPoints();
+        Context context = instructionList.getContext();
+        for (final PathPoint p : pathPoints) {
+            CardView c = new CardView(context);
+            TextView t = new TextView(context);
+            t.append(p.instruction);
+            c.addView(t);
+        }
+
+        navigate();
+    }
+
+    private void initPathPoints() {
+        if (TEST) {
+            pathPoints = new ArrayList<PathPoint>();
+        } else {
+
+        }
     }
 
     // Algorithm for replaying path
@@ -35,4 +68,7 @@ public class ReplayPathActivity extends AppCompatActivity {
     //
     // As user gets close to landmarks, verify that the user is close to landmark a certain
     // amount of degrees away
+    protected void navigate() {
+        lastPoint = pathPoints.get(0);
+    }
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class SelectPathActivity extends AppCompatActivity {
+    private static final boolean TEST = true;
     List<Path> paths;
     LinearLayout pathList;
 
@@ -29,10 +30,9 @@ public class SelectPathActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_path);
 
         pathList = findViewById(R.id.path_list);
-        paths = new ArrayList<Path>();
         initPathsList();
-        Context context = null;
-        for (Path p : paths) {
+        Context context = pathList.getContext();
+        for (final Path p : paths) {
             CardView c = new CardView(context);
             TextView t = new TextView(context);
             t.append(p.name);
@@ -40,17 +40,32 @@ public class SelectPathActivity extends AppCompatActivity {
             c.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     // set selected path as the current path somehow
-                    
-                    startNewActivity(ReplayPathActivity.class);
+
+                    startNewActivity(ReplayPathActivity.class, p.pid);
                 }
             });
         }
     }
 
-    private void initPathsList() {}
+    private void initPathsList() {
+        if (TEST) {
+            paths = new ArrayList<Path>();
+            for (int i = 1; i <= 5; i++) {
+                Path p = new Path();
+                p.name = "Test Path " + i;
+                p.pid = i;
+                paths.add(p);
+            }
+        } else {
+            // Get from database:
+            //      - Pathlist for user
+            //      -
+        }
+    }
 
-    private void startNewActivity(Class activity) {
+    private void startNewActivity(Class activity, int pid) {
         Intent intent = new Intent(this, activity);
+        intent.putExtra("currentPath", pid);
         startActivity(intent);
     }
 }
