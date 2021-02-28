@@ -1,6 +1,8 @@
 package com.navisens.demo.android_app_helloworld;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.LinearLayout;
@@ -9,9 +11,14 @@ import android.view.View;
 import android.widget.Button;
 
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
+import com.navisens.demo.android_app_helloworld.utils.FollowLocationSource;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
 import com.navisens.motiondnaapi.MotionDna;
 import com.navisens.motiondnaapi.MotionDnaSDK;
@@ -27,8 +34,9 @@ import java.util.Objects;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener {
+public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
     private static final boolean TEST = true;
     int pid;
     LinearLayout instructionList;
@@ -42,6 +50,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     Button startReplayBtn;
     Button stopReplayBtn;
     Button confirmLandmarkBtn;
+    FollowLocationSource locationSource;
+    GoogleMap map;
     List<CoordinatePoint> currPath = new ArrayList<CoordinatePoint>();
     CoordinatePoint lastLocation;
     CoordinatePoint currLocation;
@@ -55,9 +65,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         Bundle bundle = getIntent().getExtras();
         pid = bundle.getInt("currentPath");
         instructionList = findViewById(R.id.instruction_list);
-        startReplayBtn = findViewById(R.id.start_path_btn);
-        receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
-        stopReplayBtn = findViewById(R.id.pause_path_btn);
+        //startReplayBtn = findViewById(R.id.start_replay_btn);
+        //receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
+        //stopReplayBtn = findViewById(R.id.stop_replay_btn);
+        //confirmLandmarkBtn = findViewById(R.id.confirm_landmark);
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
 
@@ -201,6 +212,30 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 receiveMotionDnaTextView.setText(fstr);
             }
         });
+    }
+
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            if (map != null) {
+                map.setMyLocationEnabled(true);
+            }
+        }
+    }
+
+    /**
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we
+     * just add a marker near Africa.
+     */
+    @Override
+    public void onMapReady(GoogleMap map) {
+        this.map = map;
+        locationSource = new FollowLocationSource(getApplicationContext(), map);
+        locationSource.getBestAvailableProvider();
+        enableMyLocation();
+        map.setLocationSource(locationSource);
+        map.moveCamera(CameraUpdateFactory.zoomTo(20f));
     }
 
     // Algorithm for replaying path

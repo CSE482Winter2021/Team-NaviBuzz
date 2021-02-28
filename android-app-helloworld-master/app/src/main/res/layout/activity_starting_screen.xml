@@ -38,7 +38,6 @@
             android:layout_height="300dp"
             android:background="#ABC3FF"
             android:fontFamily="sans-serif-black"
-            android:padding="0"
             android:text="Record Path"
             android:textAppearance="@style/TextAppearance.AppCompat.Display3"
             android:textColor="#000000"

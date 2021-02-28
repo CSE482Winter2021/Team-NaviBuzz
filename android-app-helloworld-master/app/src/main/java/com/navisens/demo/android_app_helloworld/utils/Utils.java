@@ -93,14 +93,20 @@ public class Utils {
         /*
          * Reference https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
          */
-        double vlat = Math.toRadians(pointTwo.getLatitude() - pointOne.getLongitude());
-        double vlon = Math.toRadians(pointTwo.getLongitude() - pointOne.getLongitude());
+        double d2r = Math.PI / 180.0;
+        double long2 = pointTwo.getLongitude();
+        double long1 = pointOne.getLongitude();
+        double lat2 = pointTwo.getLatitude();
+        double lat1 = pointOne.getLatitude();
 
-        double latitude1 = Math.toRadians(pointOne.getLatitude());
-        double latitude2 = Math.toRadians(pointTwo.getLatitude());
 
-        double tmp = Math.sin(vlat / 2) * Math.sin(vlat / 2) + Math.sin(vlon / 2) * Math.sin(vlon / 2) * Math.cos(latitude1) * Math.cos(latitude2);
-        return (Constants.EARTH_RADIUS_KM * (2 * Math.atan2(Math.sqrt(tmp), Math.sqrt(1-tmp)))) * 1000;
+        double dlong = (long2 - long1) * d2r;
+        double dlat = (lat2 - lat1) * d2r;
+        double a = Math.pow(Math.sin(dlat/2.0), 2) + Math.cos(lat1*d2r) * Math.cos(lat2*d2r) * Math.pow(Math.sin(dlong/2.0), 2);
+        double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = 6367.0 * c * 1000.0;
+
+        return d;
     }
 
     public static String getNewCoordinates(CoordinatePoint lastLocation, double distanceDifferential, MotionDna motionDna, boolean isGPSOn) {
