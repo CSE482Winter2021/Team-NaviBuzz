@@ -83,7 +83,7 @@
             android:id="@+id/pause_path_btn"
             android:layout_height="100dp"
             android:layout_weight="1"
-            android:background="none"
+            android:background="#FFFFFF"
             android:text="Stop Replay Path"
             android:textSize="24sp"
             android:textStyle="bold"

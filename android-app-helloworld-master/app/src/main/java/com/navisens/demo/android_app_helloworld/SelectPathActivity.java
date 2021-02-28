@@ -1,7 +1,7 @@
 package com.navisens.demo.android_app_helloworld;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+//import androidx.cardview.widget.CardView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +33,7 @@ public class SelectPathActivity extends AppCompatActivity {
         initPathsList();
         Context context = null;
         for (Path p : paths) {
-            CardView c = new CardView(context);
+            /*CardView c = new CardView(context);
             TextView t = new TextView(context);
             t.append(p.name);
             c.addView(t);
@@ -43,7 +43,7 @@ public class SelectPathActivity extends AppCompatActivity {
                     
                     startNewActivity(ReplayPathActivity.class);
                 }
-            });
+            });*/
         }
     }
 
