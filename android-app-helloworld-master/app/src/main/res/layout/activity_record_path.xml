@@ -10,7 +10,7 @@
         android:id="@+id/receiveMotionDnaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="376dp"
+        android:layout_marginTop="44dp"
         android:scrollbars="vertical"
         android:text="DebugText"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -76,13 +76,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.956" />
-
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="415dp"
-        android:layout_height="329dp"
-        tools:layout_editor_absoluteX="-2dp"
-        tools:layout_editor_absoluteY="-9dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
