@@ -1,21 +1,30 @@
 package com.navisens.demo.android_app_helloworld.utils;
 
+import android.content.Context;
+
 import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
+import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
+import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.motiondnaapi.MotionDna;
+
+import java.util.List;
 
 public class Utils {
     // Setup database connection
     // Ret true on success
-    public static boolean setupDatabase() {
-        return true;
+
+    public static PathDatabase setupDatabase(Context context) {
+        return PathDatabase.getInstance(context);
     }
 
-    public static boolean postToDatabase(String sql) {
-        return true;
+    public static void addPathToDatabase(PathDatabase db, List<PathPoint> points) {
+        // once you have a db instance you can access the DAO object which has the methods
+        // to update the tables
+        db.getPathPointDao().addPathPoints(points);
     }
 
-    public static boolean getFromDatabase(String sql) {
-        return true;
+    public static List<PathPoint> getPointsByPathIdFromDatabase(PathDatabase db, int pathId) {
+        return db.getPathPointDao().getByPathId(pathId);
     }
 
     /**
