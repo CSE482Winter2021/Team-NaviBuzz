@@ -4,11 +4,6 @@ import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.motiondnaapi.MotionDna;
 
 public class Utils {
-    // on longitude/latitude estimation without GPS, was noticing a consistent error on my phone.
-    // adding a small bias fixes it, but should be tested on more phones
-    private static final double BIAS = 0.000001;
-    private static final double EARTH_RADIUS_KM = 6371.0088;
-
     // Setup database connection
     // Ret true on success
     public static boolean setupDatabase() {
@@ -67,10 +62,10 @@ public class Utils {
         double longitudeInRadians = Math.toRadians(lastLocation.getLongitude());
         double latitudeInRadians = Math.toRadians(lastLocation.getLatitude());
 
-        double newLat = Math.asin(Math.sin(latitudeInRadians) * Math.cos(dInkm / EARTH_RADIUS_KM) + Math.cos(latitudeInRadians) * Math.sin(dInkm / EARTH_RADIUS_KM) * Math.cos(hInRadians));
-        double newLong = longitudeInRadians + Math.atan2(Math.sin(hInRadians) * Math.sin(dInkm / EARTH_RADIUS_KM) * Math.cos(latitudeInRadians), Math.cos(dInkm / EARTH_RADIUS_KM) - Math.sin(latitudeInRadians) * Math.sin(newLat));
+        double newLat = Math.asin(Math.sin(latitudeInRadians) * Math.cos(dInkm / Constants.EARTH_RADIUS_KM) + Math.cos(latitudeInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(hInRadians));
+        double newLong = longitudeInRadians + Math.atan2(Math.sin(hInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(latitudeInRadians), Math.cos(dInkm / Constants.EARTH_RADIUS_KM) - Math.sin(latitudeInRadians) * Math.sin(newLat));
 
-        return new CoordinatePoint(Math.toDegrees(newLat) + BIAS, Math.toDegrees(newLong) + BIAS);
+        return new CoordinatePoint(Math.toDegrees(newLat) + Constants.BIAS, Math.toDegrees(newLong) + Constants.BIAS);
     }
 
     /**
@@ -91,6 +86,37 @@ public class Utils {
         double latitude2 = Math.toRadians(pointTwo.getLatitude());
 
         double tmp = Math.sin(vlat / 2) * Math.sin(vlat / 2) + Math.sin(vlon / 2) * Math.sin(vlon / 2) * Math.cos(latitude1) * Math.cos(latitude2);
-        return (EARTH_RADIUS_KM * (2 * Math.atan2(Math.sqrt(tmp), Math.sqrt(1-tmp)))) * 1000;
+        return (Constants.EARTH_RADIUS_KM * (2 * Math.atan2(Math.sqrt(tmp), Math.sqrt(1-tmp)))) * 1000;
+    }
+
+    public static String getNewCoordinates(CoordinatePoint lastLocation, double distanceDifferential, MotionDna motionDna, boolean isGPSOn) {
+        String str = "";
+        /*
+         * Check if GPS is on and if it is, use it
+         *
+         * if GPS is off, use estimation that updates every 40ms with dist + heading to
+         * estimate the longitude/latitude. Long travels without GPS will add cumulatively more
+         * error due to the 40ms latency with checking. This is then a beta stage feature until
+         * this problem gets resolved or significantly reduced,
+         * it's also not perfectly accurate ~10-20m off right now
+         */
+        if (isGPSOn) {
+            str += "GPS is on \n";
+            lastLocation.setLatitude(motionDna.getLocation().global.latitude);
+            lastLocation.setLongitude(motionDna.getLocation().global.longitude);
+        } else if (lastLocation.getLatitude() != 0 || lastLocation.getLongitude() != 0) {
+            str += "GPS is off, using lat/long estimation";
+            if (distanceDifferential > 0.4) {
+                CoordinatePoint tmp = Utils.estimateLongitudeLatitude(lastLocation, distanceDifferential, motionDna.getLocation().global.heading);
+                lastLocation.setLatitude(tmp.getLatitude());
+                lastLocation.setLongitude(tmp.getLongitude());
+            }
+        } else {
+            // This means GPS was never able to be used to get an initial location, this means
+            // service unavailable because we can't estimate location
+            str += "Service unavailable, GPS was never on";
+        }
+
+        return str;
     }
 }

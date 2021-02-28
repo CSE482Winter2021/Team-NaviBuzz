@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.database_obj.Landmark;
+import com.navisens.demo.android_app_helloworld.utils.Constants;
 import com.navisens.demo.android_app_helloworld.utils.ErrorState;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
 import com.navisens.motiondnaapi.MotionDna;
@@ -43,8 +44,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     CoordinatePoint currLocation;
     double lastCumulativeDistanceTraveled;
 
-    private static final int REQUEST_MDNA_PERMISSIONS=1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +52,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         reportStatusTextView = findViewById(R.id.reportStatusTextView);
         startPathBtn = findViewById(R.id.start_record_btn);
         stopPathBtn = findViewById(R.id.stop_record_btn);
-        recordLandmarkBtn = findViewById(R.id.confirm_landmark);
+        recordLandmarkBtn = findViewById(R.id.record_landmark);
         lastLocation = new CoordinatePoint(0, 0);
         currLocation = new CoordinatePoint(0, 0);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +68,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         landmarkNameTextView = findViewById(R.id.landmark_name);
         // Requests app
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
-                , REQUEST_MDNA_PERMISSIONS);
+                , Constants.REQUEST_MDNA_PERMISSIONS);
     }
 
 
@@ -86,14 +85,12 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     public void startRecordingPath() {
-        String devKey = "hsW5F8tUr8nPLP1hgY2oj2Zy26iqZ7YCPK4mTEnTsNpj0l0yRwGfj33m3GUL0vCF";
-
         motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
         motionDnaSDK.startForegroundService();
         //    This functions starts up the SDK. You must pass in a valid developer's key in order for
         //    the SDK to function. IF the key has expired or there are other errors, you may receive
         //    those errors through the reportError() callback route.
-        motionDnaSDK.start(devKey);
+        motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
     }
 
     public void stopRecordingPath() {
@@ -102,57 +99,18 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         currPath.clear();
     }
 
-    //    This event receives the estimation results using a MotionDna object.
-    //    Check out the Getters section to learn how to read data out of this object.
     @Override
     public void receiveMotionDna(MotionDna motionDna)
     {
-        // Algorithm for recording path
-        // Start a thread dedicated checking whether the location has changed within a certain
-        // radius. Store a temporary list for the locations so thus far in the path
-        //
-        // If location has changed and location doesn't already exist for that path, post it to the
-        // database
-        //
-        // Once flag stoppedPath = true from a uuser input, then the thread for checking whether the location has
-        // changed can stop
-
-        // If user records landmark stoppedPath = true, then record the landmark associated with this
-        // GPS point
-
         String str = "Navisens MotionDnaSDK Estimation:\n";
 
-        /*
-         * Check if GPS is on and if it is, use it
-         *
-         * if GPS is off, use estimation that updates every 40ms with dist + heading to
-         * estimate the longitude/latitude. Long travels without GPS will add cumulatively more
-         * error due to the 40ms latency with checking. This is then a beta stage feature until
-         * this problem gets resolved or significantly reduced,
-         * it's also not perfectly accurate ~10-20m off right now
-         */
         LocationManager manager = (LocationManager)this.getSystemService (Context.LOCATION_SERVICE);
-        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            str += "GPS is on \n";
-            currLocation.setLatitude(motionDna.getLocation().global.latitude);
-            currLocation.setLongitude(motionDna.getLocation().global.longitude);
-        } else if (currLocation.getLatitude() != 0 || currLocation.getLongitude() != 0) {
-            str += "GPS is off, using lat/long estimation";
+        boolean isGPSOn = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        double distanceTraveled = motionDna.getClassifiers().get("indoorOutdoor").statistics.get("indoor").distance;
+        str += Utils.getNewCoordinates(currLocation, distanceTraveled - lastCumulativeDistanceTraveled, motionDna, isGPSOn);
 
-            double distanceTraveled = motionDna.getClassifiers().get("indoorOutdoor").statistics.get("indoor").distance;
-            // This means this is the first time this block was reached. Set the distance traveled
-            // and let 40ms go by
-            if (lastCumulativeDistanceTraveled == 0) {
-                lastCumulativeDistanceTraveled = distanceTraveled;
-            } else if (Math.abs(lastCumulativeDistanceTraveled - distanceTraveled) > 0.4) {
-                currLocation = Utils.estimateLongitudeLatitude(lastLocation, distanceTraveled - lastCumulativeDistanceTraveled, motionDna.getLocation().global.heading);
-                lastCumulativeDistanceTraveled = distanceTraveled;
-            }
-        } else {
-            // This means GPS was never able to be used to get an initial location, this means
-            // service unavailable because we can't estimate location
-            str += "Service unavailable, GPS was never on";
-        }
+        lastCumulativeDistanceTraveled = distanceTraveled;
+
 
         // Update location history if necessary
         if (Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation) > 5) {
@@ -164,6 +122,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
 
+    // Todo: Propagate these error conditions to the user through speech/text
     @Override
     public void reportStatus(final MotionDnaSDK.Status status, final String s) {
         runOnUiThread(new Runnable() {
@@ -202,7 +161,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         }
     }
 
-    // Helper to print some diagnostics about navisens
+    // Helper to print some diagnostics about Navisens
     private void printDebugInformation(MotionDna motionDna, String str) {
         str += MotionDnaSDK.SDKVersion() + "\n";
         str += "Lat: " + currLocation.getLatitude() + " Lon: " + currLocation.getLongitude() + "\n";
@@ -241,8 +200,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             return new ErrorState("An unknown error occurred, please try again", false);
         }
 
-        // Grab name and generate UUID
+        // Todo: Need to implement collection of landmark name from user
         String name = "";
+
         UUID id = UUID.randomUUID();
         Landmark landmark = new Landmark(name, id);
         currPath.get(currPath.size() - 1).setLandmark(landmark);

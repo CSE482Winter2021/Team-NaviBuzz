@@ -14,15 +14,17 @@
         android:inputType="textPersonName"
         android:text="Path ID"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.921"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.649"
-        tools:layout_editor_absoluteX="251dp" />
+        app:layout_constraintVertical_bias="0.647" />
 
     <TextView
         android:id="@+id/receiveMotionDnaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="376dp"
+        android:layout_marginTop="356dp"
         android:scrollbars="vertical"
         android:text="DebugText"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -40,24 +42,28 @@
         app:layout_constraintTop_toBottomOf="@id/receiveMotionDnaTextView" />
 
     <Button
-        android:id="@+id/start_record_btn"
+        android:id="@+id/start_replay_btn"
         android:layout_width="196dp"
         android:layout_height="48dp"
         android:text="Start Replay Path"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.139"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.648"
-        tools:layout_editor_absoluteX="30dp" />
+        app:layout_constraintVertical_bias="0.648" />
 
     <Button
-        android:id="@+id/stop_record_btn"
+        android:id="@+id/stop_replay_btn"
         android:layout_width="195dp"
         android:layout_height="49dp"
         android:text="Stop Replay Path"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.143"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.768"
-        tools:layout_editor_absoluteX="31dp" />
+        app:layout_constraintVertical_bias="0.768" />
 
     <Button
         android:id="@+id/confirm_landmark"
@@ -65,9 +71,11 @@
         android:layout_height="wrap_content"
         android:text="Confirm Landmark"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.886"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.945"
-        tools:layout_editor_absoluteX="226dp" />
+        app:layout_constraintVertical_bias="0.934" />
 
     <EditText
         android:id="@+id/landmark_name"
@@ -77,16 +85,19 @@
         android:inputType="textPersonName"
         android:text="Landmark"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.104"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.932"
-        tools:layout_editor_absoluteX="31dp" />
+        app:layout_constraintVertical_bias="0.932" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="415dp"
         android:layout_height="329dp"
-        tools:layout_editor_absoluteX="-2dp"
-        tools:layout_editor_absoluteY="-9dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
