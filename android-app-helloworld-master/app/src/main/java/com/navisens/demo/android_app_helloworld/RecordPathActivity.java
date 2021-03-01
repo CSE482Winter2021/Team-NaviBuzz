@@ -4,13 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,17 +17,13 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
-import com.navisens.demo.android_app_helloworld.database_obj.Landmark;
+import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
+import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
 import com.navisens.demo.android_app_helloworld.utils.ErrorState;
 import com.navisens.demo.android_app_helloworld.utils.FollowLocationSource;
@@ -57,13 +51,16 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     TextView reportStatusTextView;
     Button startPathBtn;
     Button stopPathBtn;
+    Button recordInstructionBtn;
+    EditText landmarkName;
+    EditText instructionString;
     GoogleMap map;
+    PathDatabase db;
     Button recordLandmarkBtn;
-    TextView landmarkNameTextView;
     FollowLocationSource locationSource;
-    List<CoordinatePoint> currPath = new ArrayList<CoordinatePoint>();
-    CoordinatePoint lastLocation;
-    CoordinatePoint currLocation;
+    List<PathPoint> currPath = new ArrayList<PathPoint>();
+    PathPoint lastLocation;
+    PathPoint currLocation;
     Context context;
     double lastCumulativeDistanceTraveled;
 
@@ -71,17 +68,26 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_path);
+        db = Utils.setupDatabase(getApplicationContext());
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
         reportStatusTextView = findViewById(R.id.reportStatusTextView);
         startPathBtn = findViewById(R.id.start_record_btn);
+        landmarkName = findViewById(R.id.landmark_name);
+        instructionString = findViewById(R.id.instruction_text);
+        recordInstructionBtn = findViewById(R.id.record_instruction);
         stopPathBtn = findViewById(R.id.stop_record_btn);
         recordLandmarkBtn = findViewById(R.id.record_landmark);
         context = getApplicationContext();
-        lastLocation = new CoordinatePoint(0, 0);
-        currLocation = new CoordinatePoint(0, 0);
+        lastLocation = new PathPoint(0, 0);
+        currLocation = new PathPoint(0, 0);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordLandmark();
+            }
+        });
+        recordInstructionBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                recordInstruction();
             }
         });
         stopPathBtn.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +95,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 stopRecordingPath();
             }
         });
-        landmarkNameTextView = findViewById(R.id.landmark_name);
         // Requests app
         ActivityCompat.requestPermissions(this, MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
@@ -123,6 +128,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     public void stopRecordingPath() {
         motionDnaSDK.stop();
         // Todo: put in database
+        db.getPathPointDao().addPathPoints(currPath);
         currPath.clear();
     }
 
@@ -140,7 +146,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
         // Update location history if necessary
-        if (diffBetween > 2 || lastLocation.getLongitude() == 0) {
+        if (diffBetween > 4 || lastLocation.getLongitude() == 0) {
             System.out.println("test this thing " + diffBetween + " " + currLocation.getLongitude() + " " + currLocation.getLatitude() + " " + lastLocation.getLatitude() + " " + lastLocation.getLongitude());
             if (lastLocation.getLongitude() != 0) {
                 runOnUiThread(new Runnable() {
@@ -155,8 +161,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 });
             }
             currPath.add(currLocation);
-            lastLocation.setLongitude(currLocation.getLongitude());
-            lastLocation.setLatitude(currLocation.getLatitude());
+            lastLocation = new PathPoint(currLocation);
         }
 
         printDebugInformation(motionDna, str);
@@ -241,12 +246,18 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             return new ErrorState("An unknown error occurred, please try again", false);
         }
 
-        // Todo: Need to implement collection of landmark name from user
-        String name = "";
-
-        UUID id = UUID.randomUUID();
-        Landmark landmark = new Landmark(name, id);
+        String landmark = landmarkName.getText().toString();
         currPath.get(currPath.size() - 1).setLandmark(landmark);
+        return new ErrorState("Success", true);
+    }
+
+    protected ErrorState recordInstruction() {
+        if (currPath.isEmpty()) {
+            return new ErrorState("An unknown error occurred, please try again", false);
+        }
+
+        String instruction = instructionString.getText().toString();
+        currPath.get(currPath.size() - 1).setInstruction(instruction);
         return new ErrorState("Success", true);
     }
 

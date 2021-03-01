@@ -1,6 +1,7 @@
 package com.navisens.demo.android_app_helloworld;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 //import androidx.cardview.widget.CardView;
 
 import android.content.Context;
@@ -46,7 +47,7 @@ public class SelectPathActivity extends AppCompatActivity {
 
                     startNewActivity(ReplayPathActivity.class, p.pid);
                 }
-            });*/
+            });
         }
     }
 

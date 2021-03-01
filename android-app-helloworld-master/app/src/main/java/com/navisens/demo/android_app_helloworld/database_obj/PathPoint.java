@@ -26,4 +26,58 @@ public class PathPoint {
 
     @ColumnInfo(name = "landmark")
     public String landmark;
+
+    public PathPoint(PathPoint other) {
+        this.latitude = other.latitude;
+        this.longitude = other.longitude;
+        this.instruction = other.instruction;
+        this.landmark = other.instruction;
+        this.pid = other.pid;
+        this.ppid = other.ppid;
+    }
+
+    public PathPoint(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public int getPid() {
+        return pid;
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getInstruction() {
+        return instruction;
+    }
+
+    public void setInstruction(String instruction) {
+        this.instruction = instruction;
+    }
+
+    public String getLandmark() {
+        return landmark;
+    }
+
+    public void setLandmark(String landmark) {
+        this.landmark = landmark;
+    }
 }

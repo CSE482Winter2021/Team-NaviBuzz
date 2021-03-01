@@ -14,9 +14,7 @@ import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
-import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
 import com.navisens.demo.android_app_helloworld.utils.FollowLocationSource;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
@@ -52,9 +50,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     Button confirmLandmarkBtn;
     FollowLocationSource locationSource;
     GoogleMap map;
-    List<CoordinatePoint> currPath = new ArrayList<CoordinatePoint>();
-    CoordinatePoint lastLocation;
-    CoordinatePoint currLocation;
+    List<PathPoint> currPath = new ArrayList<PathPoint>();
+    PathPoint lastLocation;
+    PathPoint currLocation;
     double lastCumulativeDistanceTraveled;
 
     @Override
@@ -65,9 +63,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         Bundle bundle = getIntent().getExtras();
         pid = bundle.getInt("currentPath");
         instructionList = findViewById(R.id.instruction_list);
-        //startReplayBtn = findViewById(R.id.start_replay_btn);
-        //receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
-        //stopReplayBtn = findViewById(R.id.stop_replay_btn);
+        startReplayBtn = findViewById(R.id.start_path_btn);
+        receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
+        stopReplayBtn = findViewById(R.id.pause_path_btn);
         //confirmLandmarkBtn = findViewById(R.id.confirm_landmark);
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
@@ -100,13 +98,13 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         {
             startReplayBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    startRecordingPath();
+                    startReplayPath();
                 }
             });
         }
     }
 
-    public void startRecordingPath() {
+    public void startReplayPath() {
         motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
         motionDnaSDK.startForegroundService();
         //    This functions starts up the SDK. You must pass in a valid developer's key in order for
@@ -127,9 +125,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
         lastCumulativeDistanceTraveled = distanceTraveled;
 
+        double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
-        // Update location history if necessary
-        if (Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation) > 5) {
+        if (diffBetween > 4 || lastLocation.getLongitude() == 0) {
             currPath.add(currLocation);
             lastLocation = currLocation;
         }
