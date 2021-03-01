@@ -14,9 +14,7 @@ import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
-import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
 import com.navisens.demo.android_app_helloworld.utils.FollowLocationSource;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
@@ -48,13 +46,12 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     TextView reportStatusTextView;
     TextView receiveMotionDnaTextView;
     Button startReplayBtn;
-    Button stopReplayBtn;
+    Button pauseReplayBtn;
     Button confirmLandmarkBtn;
+    int currPathCounter;
     FollowLocationSource locationSource;
     GoogleMap map;
-    List<CoordinatePoint> currPath = new ArrayList<CoordinatePoint>();
-    CoordinatePoint lastLocation;
-    CoordinatePoint currLocation;
+    PathPoint currLocation;
     double lastCumulativeDistanceTraveled;
 
     @Override
@@ -64,10 +61,11 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         db = Utils.setupDatabase(getApplicationContext());
         Bundle bundle = getIntent().getExtras();
         pid = bundle.getInt("currentPath");
+        currPathCounter = 0;
         instructionList = findViewById(R.id.instruction_list);
-        //startReplayBtn = findViewById(R.id.start_replay_btn);
-        //receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
-        //stopReplayBtn = findViewById(R.id.stop_replay_btn);
+        startReplayBtn = findViewById(R.id.start_path_btn);
+        receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
+        pauseReplayBtn = findViewById(R.id.pause_path_btn);
         //confirmLandmarkBtn = findViewById(R.id.confirm_landmark);
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
@@ -100,13 +98,18 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         {
             startReplayBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    startRecordingPath();
+                    startReplayPath();
+                }
+            });
+            pauseReplayBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    pauseReplayPath();
                 }
             });
         }
     }
 
-    public void startRecordingPath() {
+    public void startReplayPath() {
         motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
         motionDnaSDK.startForegroundService();
         //    This functions starts up the SDK. You must pass in a valid developer's key in order for
@@ -115,26 +118,39 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
     }
 
+    public void pauseReplayPath() {
+    }
+
     @Override
-    public void receiveMotionDna(MotionDna motionDna)
-    {
+    public void receiveMotionDna(MotionDna motionDna) {
         String str = "Navisens MotionDnaSDK Estimation:\n";
 
-        LocationManager manager = (LocationManager)this.getSystemService (Context.LOCATION_SERVICE);
+        LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         boolean isGPSOn = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         double distanceTraveled = motionDna.getClassifiers().get("indoorOutdoor").statistics.get("indoor").distance;
         str += Utils.getNewCoordinates(currLocation, distanceTraveled - lastCumulativeDistanceTraveled, motionDna, isGPSOn);
+        double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
+        if (distanceBetweenPoints < 5) {
+            currPathCounter++;
+            PathPoint currPathPoint = pathPoints.get(currPathCounter);
+            double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(currPathPoint, currLocation);
+            double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currPathPoint, currLocation);
 
-        lastCumulativeDistanceTraveled = distanceTraveled;
+            // Todo: Communicate data about the next GPS point heading and distance to the user via audio
 
+            // For simplicity I'm going to assume they can only set 1 instruction or 1 landmark per point
 
-        // Update location history if necessary
-        if (Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation) > 5) {
-            currPath.add(currLocation);
-            lastLocation = currLocation;
+            if (!currPathPoint.getInstruction().equals("")) {
+                // Todo: Play the instruction notification
+            }
+
+            if (!currPathPoint.getLandmark().equals("")) {
+                // Todo: Play the landmark notification
+            }
+            printDebugInformation(motionDna, str);
+        } else {
+            // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case
         }
-
-        printDebugInformation(motionDna, str);
     }
 
     @Override
@@ -237,20 +253,4 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         map.setLocationSource(locationSource);
         map.moveCamera(CameraUpdateFactory.zoomTo(20f));
     }
-
-    // Algorithm for replaying path
-    // First get input from user via selection whether they would like to replay path and which ID
-    //
-    // Check if user is within a certain radius of the start location
-    //
-    // If not, point out to the user that they are not close to the start location of this path
-    //
-    // If they are, compute the distance to the next GPS point in order and tell the user
-    // how far away it is.
-    //
-    // As user gets close if there's a turn tell them change in degrees in which direction
-    // they must face (relay instruction audio)
-    //
-    // As user gets close to landmarks, verify that the user is close to landmark a certain
-    // amount of degrees away
 }

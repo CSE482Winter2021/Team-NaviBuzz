@@ -2,7 +2,6 @@ package com.navisens.demo.android_app_helloworld.utils;
 
 import android.content.Context;
 
-import com.navisens.demo.android_app_helloworld.database_obj.CoordinatePoint;
 import com.navisens.demo.android_app_helloworld.database_obj.Path;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
@@ -38,7 +37,7 @@ public class Utils {
      * @param y
      * @return
      */
-    public static double getHeadingBetweenGPSPoints(CoordinatePoint x, CoordinatePoint y) {
+    public static double getHeadingBetweenGPSPoints(PathPoint x, PathPoint y) {
         if (x == null || y == null) {
             return 0;
         }
@@ -62,7 +61,7 @@ public class Utils {
      * @param heading
      * @return
      */
-    public static CoordinatePoint estimateLongitudeLatitude(CoordinatePoint lastLocation, double lastCumulativeDistanceTraveled, double heading) {
+    public static PathPoint estimateLongitudeLatitude(PathPoint lastLocation, double lastCumulativeDistanceTraveled, double heading) {
         /*
          * Reference https://stackoverflow.com/questions/7222382/get-lat-long-given-current-point-distance-and-bearing
          */
@@ -79,7 +78,7 @@ public class Utils {
         double newLat = Math.asin(Math.sin(latitudeInRadians) * Math.cos(dInkm / Constants.EARTH_RADIUS_KM) + Math.cos(latitudeInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(hInRadians));
         double newLong = longitudeInRadians + Math.atan2(Math.sin(hInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(latitudeInRadians), Math.cos(dInkm / Constants.EARTH_RADIUS_KM) - Math.sin(latitudeInRadians) * Math.sin(newLat));
 
-        return new CoordinatePoint(Math.toDegrees(newLat) + Constants.BIAS, Math.toDegrees(newLong) + Constants.BIAS);
+        return new PathPoint(Math.toDegrees(newLat) + Constants.BIAS, Math.toDegrees(newLong) + Constants.BIAS);
     }
 
     /**
@@ -89,7 +88,7 @@ public class Utils {
      * @param pointTwo
      * @return meters
      */
-    public static double estimateDistanceBetweenTwoPoints(CoordinatePoint pointOne, CoordinatePoint pointTwo) {
+    public static double estimateDistanceBetweenTwoPoints(PathPoint pointOne, PathPoint pointTwo) {
         /*
          * Reference https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
          */
@@ -109,7 +108,7 @@ public class Utils {
         return d;
     }
 
-    public static String getNewCoordinates(CoordinatePoint lastLocation, double distanceDifferential, MotionDna motionDna, boolean isGPSOn) {
+    public static String getNewCoordinates(PathPoint lastLocation, double distanceDifferential, MotionDna motionDna, boolean isGPSOn) {
         String str = "";
         /*
          * Check if GPS is on and if it is, use it
@@ -127,9 +126,7 @@ public class Utils {
         } else if (lastLocation.getLatitude() != 0 || lastLocation.getLongitude() != 0) {
             str += "GPS is off, using lat/long estimation";
             if (distanceDifferential > 0.4) {
-                CoordinatePoint tmp = Utils.estimateLongitudeLatitude(lastLocation, distanceDifferential, motionDna.getLocation().global.heading);
-                lastLocation.setLatitude(tmp.getLatitude());
-                lastLocation.setLongitude(tmp.getLongitude());
+                lastLocation = new PathPoint(Utils.estimateLongitudeLatitude(lastLocation, distanceDifferential, motionDna.getLocation().global.heading));
             }
         } else {
             // This means GPS was never able to be used to get an initial location, this means
