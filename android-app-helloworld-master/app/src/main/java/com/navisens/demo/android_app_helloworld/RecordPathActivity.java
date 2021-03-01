@@ -127,7 +127,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     public void stopRecordingPath() {
         motionDnaSDK.stop();
-        // Todo: put in database
         db.getPathPointDao().addPathPoints(currPath);
         currPath.clear();
     }
@@ -147,7 +146,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
         // Update location history if necessary
         if (diffBetween > 4 || lastLocation.getLongitude() == 0) {
-            System.out.println("test this thing " + diffBetween + " " + currLocation.getLongitude() + " " + currLocation.getLatitude() + " " + lastLocation.getLatitude() + " " + lastLocation.getLongitude());
             if (lastLocation.getLongitude() != 0) {
                 runOnUiThread(new Runnable() {
 
