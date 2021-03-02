@@ -1,5 +1,6 @@
 package com.navisens.demo.android_app_helloworld.database_obj;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;

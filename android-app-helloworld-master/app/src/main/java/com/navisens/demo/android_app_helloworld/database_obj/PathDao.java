@@ -1,5 +1,6 @@
 package com.navisens.demo.android_app_helloworld.database_obj;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -20,7 +21,7 @@ public interface PathDao {
     public Path getById(long pid);
 
     @Insert
-    public long insertPath(Path p);
+    public Long insertPath(Path p);
 
     @Delete
     public void deletePath(Path p);

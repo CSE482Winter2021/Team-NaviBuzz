@@ -88,10 +88,14 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
         // Generate a new entry to the path table
-        pathId = db.getPathDao().insertPath(new Path()); // crashing
-        // TODO: Make sure to delete the is path if there is a failure but we need to path id
-        lastLocation = new PathPoint(0, 0, pathId);
-        currLocation = new PathPoint(0, 0, pathId);
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                pathId = db.getPathDao().insertPath(new Path());
+            }
+        });
+        lastLocation = new PathPoint(0, 0);
+        currLocation = new PathPoint(0, 0);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordLandmark();
@@ -352,6 +356,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     protected void onDestroy() {
+        //TODO: delete path by id if it exists and there is an error
         // Shuts downs the MotionDna Core
         if (motionDnaSDK != null) {
             motionDnaSDK.stop();
