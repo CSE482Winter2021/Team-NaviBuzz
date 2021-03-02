@@ -61,6 +61,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     GoogleMap map;
     PathDatabase db;
     Button recordLandmarkBtn;
+    long pathId;
     List<PathPoint> currPath = new ArrayList<PathPoint>();
     LocationManager manager;
     PathPoint lastLocation;
@@ -86,8 +87,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
         // Generate a new entry to the path table
-        lastLocation = new PathPoint(0, 0);
-        currLocation = new PathPoint(0, 0);
+        pathId = db.getPathDao().insertPath(new Path());
+        // TODO: Make sure to delete the is path if there is a failure but we need to path id
+        lastLocation = new PathPoint(0, 0, pathId);
+        currLocation = new PathPoint(0, 0, pathId);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordLandmark();
@@ -231,7 +234,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             });
             // Todo: Fix 234
-            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, ));
+            // TODO: Dylan curious about this... remind me to ask
+            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
             lastLocation = new PathPoint(currLocation);
 
             runOnUiThread(new Runnable() {

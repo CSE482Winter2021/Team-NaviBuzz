@@ -82,7 +82,7 @@ public class SelectPathActivity extends AppCompatActivity {
         }
     }
 
-    private void startNewActivity(Class activity, int pid) {
+    private void startNewActivity(Class activity, long pid) {
         Intent intent = new Intent(this, activity);
         intent.putExtra("currentPath", pid);
         startActivity(intent);

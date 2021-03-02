@@ -11,10 +11,10 @@ childColumns = "path_point_id")})
 public class PathPoint {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "path_point_id")
-    @NonNull public Integer ppid;
+    @NonNull public long ppid;
 
     @ColumnInfo(name = "path_id")
-    @NonNull public Integer pid;
+    @NonNull public long pid;
 
     @ColumnInfo(name = "latitude")
     @NonNull public double latitude;
@@ -41,7 +41,7 @@ public class PathPoint {
 
     }
 
-    public PathPoint(double latitude, double longitude, int pathId) {
+    public PathPoint(double latitude, double longitude, long pathId) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.pid = pathId;
