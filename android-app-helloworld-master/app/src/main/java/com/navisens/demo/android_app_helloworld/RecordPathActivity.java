@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /*
  * For complete documentation on the MotionDnaSDK API
@@ -84,6 +85,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordLandmarkBtn = findViewById(R.id.record_landmark);
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
+        // Generate a new entry to the path table
         lastLocation = new PathPoint(0, 0);
         currLocation = new PathPoint(0, 0);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
@@ -168,7 +170,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         AsyncTask.execute(new Runnable() {
                               @Override
                               public void run() {
-                                  db.clearAllTables();
+                                  //db.clearAllTables();
                                   db.getPathPointDao().addPathPoints(currPath);
                                   List<Path> paths = db.getPathDao().getAll();
                                   System.out.println("paths are " + paths.size());
@@ -228,7 +230,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                             .fillColor(Color.BLUE));
                 }
             });
-            currPath.add(new PathPoint(currLocation));
+            // Todo: Fix 234
+            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, ));
             lastLocation = new PathPoint(currLocation);
 
             runOnUiThread(new Runnable() {
