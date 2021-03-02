@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View;
@@ -16,7 +17,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
-import com.navisens.demo.android_app_helloworld.utils.FollowLocationSource;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
 import com.navisens.motiondnaapi.MotionDna;
 import com.navisens.motiondnaapi.MotionDnaSDK;
@@ -48,8 +48,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     Button startReplayBtn;
     Button pauseReplayBtn;
     Button confirmLandmarkBtn;
+    TextToSpeech ttobj;
     int currPathCounter;
-    FollowLocationSource locationSource;
     GoogleMap map;
     PathPoint currLocation;
     double lastCumulativeDistanceTraveled;
@@ -79,6 +79,12 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             t.append(p.instruction);
             c.addView(t);
         }
+
+        ttobj=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+            }
+        });
 
         lastPoint = pathPoints.get(0);
     }
@@ -128,7 +134,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         boolean isGPSOn = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         double distanceTraveled = motionDna.getClassifiers().get("indoorOutdoor").statistics.get("indoor").distance;
-        str += Utils.getNewCoordinates(currLocation, distanceTraveled - lastCumulativeDistanceTraveled, motionDna, isGPSOn);
+        //str += Utils.getNewCoordinates(currLocation, distanceTraveled - lastCumulativeDistanceTraveled, motionDna, isGPSOn);
         double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
         if (distanceBetweenPoints < 5) {
             currPathCounter++;
@@ -136,16 +142,29 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(currPathPoint, currLocation);
             double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currPathPoint, currLocation);
 
-            // Todo: Communicate data about the next GPS point heading and distance to the user via audio
-
-            // For simplicity I'm going to assume they can only set 1 instruction or 1 landmark per point
-
-            if (!currPathPoint.getInstruction().equals("")) {
-                // Todo: Play the instruction notification
+            // Todo: Add unit customization
+            String instructionStr = "Turn ";
+            if (headingBetweenPoints < 0) {
+                instructionStr += Math.round(headingBetweenPoints) + " degrees to the left and walk " + Math.round(distanceToNextPoint) + " meters" ;
+            } else {
+                instructionStr += Math.round(headingBetweenPoints) + " degrees to the right and walk " + Math.round(distanceToNextPoint) + " meters";
             }
 
-            if (!currPathPoint.getLandmark().equals("")) {
-                // Todo: Play the landmark notification
+            ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
+
+            // For simplicity I'm going to assume they can only set 1 instruction or 1 landmark per point for now
+            if (!currPathPoint.instruction.equals("") && !currPathPoint.landmark.equals("")) {
+                throw new AssertionError("Can't have an instruction and a landmark (for now)");
+            }
+
+            String customizedInstruction = currPathPoint.instruction;
+            if (!customizedInstruction.equals("")) {
+                ttobj.speak(customizedInstruction, TextToSpeech.QUEUE_ADD, null);
+            }
+
+            String landmarkStr = currPathPoint.landmark;
+            if (!customizedInstruction.equals("")) {
+                ttobj.speak(landmarkStr, TextToSpeech.QUEUE_ADD, null);
             }
             printDebugInformation(motionDna, str);
         } else {
@@ -199,7 +218,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
     private void printDebugInformation(MotionDna motionDna, String str) {
         str += MotionDnaSDK.SDKVersion() + "\n";
-        str += "Lat: " + currLocation.getLatitude() + " Lon: " + currLocation.getLongitude() + "\n";
+        str += "Lat: " + currLocation.latitude + " Lon: " + currLocation.longitude + "\n";
         MotionDna.CartesianLocation location = motionDna.getLocation().cartesian;
         str += String.format(Locale.US," (%.2f, %.2f, %.2f)\n",location.x, location.y, location.z);
         str += "Hdg: " + motionDna.getLocation().global.heading +  " \n";
@@ -230,15 +249,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         });
     }
 
-    private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            if (map != null) {
-                map.setMyLocationEnabled(true);
-            }
-        }
-    }
-
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
      * we
@@ -247,10 +257,5 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
-        locationSource = new FollowLocationSource(getApplicationContext(), map);
-        locationSource.getBestAvailableProvider();
-        enableMyLocation();
-        map.setLocationSource(locationSource);
-        map.moveCamera(CameraUpdateFactory.zoomTo(20f));
     }
 }

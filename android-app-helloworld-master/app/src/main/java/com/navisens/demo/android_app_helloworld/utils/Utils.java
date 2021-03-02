@@ -43,9 +43,9 @@ public class Utils {
         }
 
         // Reference for this formula here https://www.igismap.com/formula-to-find-bearing-or-heading-angle-between-two-points-latitude-longitude/
-        double delta = y.getLongitude() - x.getLongitude();
-        double x1 = Math.cos(y.getLatitude())*Math.sin(Math.abs(delta));
-        double y1 = Math.cos(x.getLatitude()) * Math.sin(y.getLatitude()) - Math.sin(x.getLatitude()) * Math.cos(y.getLatitude()) * Math.cos(delta);
+        double delta = y.longitude - x.longitude;
+        double x1 = Math.cos(y.latitude)*Math.sin(Math.abs(delta));
+        double y1 = Math.cos(x.latitude) * Math.sin(y.latitude) - Math.sin(x.latitude) * Math.cos(y.latitude) * Math.cos(delta);
         double heading = Math.toDegrees(Math.atan2(x1, y1));
 
         return heading;
@@ -72,8 +72,8 @@ public class Utils {
         double hInRadians = Math.toRadians(heading);
         double dInkm = lastCumulativeDistanceTraveled / 1000;
 
-        double longitudeInRadians = Math.toRadians(lastLocation.getLongitude());
-        double latitudeInRadians = Math.toRadians(lastLocation.getLatitude());
+        double longitudeInRadians = Math.toRadians(lastLocation.longitude);
+        double latitudeInRadians = Math.toRadians(lastLocation.latitude);
 
         double newLat = Math.asin(Math.sin(latitudeInRadians) * Math.cos(dInkm / Constants.EARTH_RADIUS_KM) + Math.cos(latitudeInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(hInRadians));
         double newLong = longitudeInRadians + Math.atan2(Math.sin(hInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(latitudeInRadians), Math.cos(dInkm / Constants.EARTH_RADIUS_KM) - Math.sin(latitudeInRadians) * Math.sin(newLat));
@@ -93,10 +93,10 @@ public class Utils {
          * Reference https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
          */
         double d2r = Math.PI / 180.0;
-        double long2 = pointTwo.getLongitude();
-        double long1 = pointOne.getLongitude();
-        double lat2 = pointTwo.getLatitude();
-        double lat1 = pointOne.getLatitude();
+        double long2 = pointTwo.longitude;
+        double long1 = pointOne.longitude;
+        double lat2 = pointTwo.latitude;
+        double lat1 = pointOne.latitude;
 
 
         double dlong = (long2 - long1) * d2r;
@@ -106,34 +106,5 @@ public class Utils {
         double d = 6367.0 * c * 1000.0;
 
         return d;
-    }
-
-    public static String getNewCoordinates(PathPoint lastLocation, double distanceDifferential, MotionDna motionDna, boolean isGPSOn) {
-        String str = "";
-        /*
-         * Check if GPS is on and if it is, use it
-         *
-         * if GPS is off, use estimation that updates every 40ms with dist + heading to
-         * estimate the longitude/latitude. Long travels without GPS will add cumulatively more
-         * error due to the 40ms latency with checking. This is then a beta stage feature until
-         * this problem gets resolved or significantly reduced,
-         * it's also not perfectly accurate ~10-20m off right now
-         */
-        if (isGPSOn) {
-            str += "GPS is on \n";
-            lastLocation.setLatitude(motionDna.getLocation().global.latitude);
-            lastLocation.setLongitude(motionDna.getLocation().global.longitude);
-        } else if (lastLocation.getLatitude() != 0 || lastLocation.getLongitude() != 0) {
-            str += "GPS is off, using lat/long estimation";
-            if (distanceDifferential > 0.4) {
-                lastLocation = new PathPoint(Utils.estimateLongitudeLatitude(lastLocation, distanceDifferential, motionDna.getLocation().global.heading));
-            }
-        } else {
-            // This means GPS was never able to be used to get an initial location, this means
-            // service unavailable because we can't estimate location
-            str += "Service unavailable, GPS was never on";
-        }
-
-        return str;
     }
 }

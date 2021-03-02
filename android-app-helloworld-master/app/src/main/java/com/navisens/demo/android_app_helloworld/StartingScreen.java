@@ -38,7 +38,7 @@ public class StartingScreen extends AppCompatActivity {
 
         selectPathOpt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startNewActivity(ReplayPathActivity.class);
+                startNewActivity(SelectPathActivity.class);
             }
         });
 
