@@ -15,4 +15,8 @@ public class Path {
 
     @ColumnInfo(name = "name")
     @NonNull public String name;
+
+    public Path() {
+
+    }
 }
