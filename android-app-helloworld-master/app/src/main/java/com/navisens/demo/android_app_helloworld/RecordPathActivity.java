@@ -124,6 +124,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 stopRecordingPath();
             }
         });
+        stopPathBtn.setEnabled(false);
         // Requests app
         ActivityCompat.requestPermissions(this, MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
@@ -150,6 +151,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     public void startRecordingPath() {
         motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
         motionDnaSDK.startForegroundService();
+        stopPathBtn.setEnabled(true);
+        startPathBtn.setEnabled(false);
         //    This functions starts up the SDK. You must pass in a valid developer's key in order for
         //    the SDK to function. IF the key has expired or there are other errors, you may receive
         //    those errors through the reportError() callback route.
@@ -159,6 +162,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
             motionDnaSDK.setGlobalPosition(gps.getLatitude(), gps.getLongitude());
             motionDnaSDK.setGlobalHeading(gps.getBearing());
+            stopPathBtn.setEnabled(true);
+            startPathBtn.setEnabled(false);
         } else {
             // service error, GPS is not on
         }
@@ -180,6 +185,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 map.clear();
             }
         });
+        stopPathBtn.setEnabled(false);
+        startPathBtn.setEnabled(true);
     }
 
     @Override
