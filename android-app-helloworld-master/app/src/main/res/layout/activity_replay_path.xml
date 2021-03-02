@@ -26,9 +26,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        app:layout_constraintTop_toBottomOf="@+id/followPathTitle"
-        app:layout_constraintBottom_toTopOf="@id/receiveMotionDnaTextView" >
-
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/followPathTitle" >
         <LinearLayout
             android:id="@+id/instruction_list"
             android:layout_width="match_parent"
@@ -69,6 +68,7 @@
             android:layout_height="120dp"
             android:layout_marginBottom="0dp"
             android:layout_weight="1"
+            android:layout_width="0dp"
             android:background="#ABC3FF"
             android:backgroundTint="@color/colorPrimaryDark"
             android:gravity="center"
@@ -86,6 +86,7 @@
             android:layout_height="120dp"
             android:layout_marginBottom="0dp"
             android:layout_weight="1"
+            android:layout_width="0dp"
             android:background="#ABC3FF"
             android:backgroundTint="@android:color/transparent"
             android:gravity="center"

@@ -2,6 +2,7 @@ package com.navisens.demo.android_app_helloworld;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -87,7 +88,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
         // Generate a new entry to the path table
-        pathId = db.getPathDao().insertPath(new Path());
+        pathId = db.getPathDao().insertPath(new Path()); // crashing
         // TODO: Make sure to delete the is path if there is a failure but we need to path id
         lastLocation = new PathPoint(0, 0, pathId);
         currLocation = new PathPoint(0, 0, pathId);
@@ -191,6 +192,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         });
         stopPathBtn.setEnabled(false);
         startPathBtn.setEnabled(true);
+        startNewActivity(SavePathActivity.class, pathId);
     }
 
     @Override
@@ -374,5 +376,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             });
         }
+    }
+
+    private void startNewActivity(Class activity, long pid) {
+        Intent intent = new Intent(this, activity);
+        intent.putExtra("currentPath", pid);
+        startActivity(intent);
     }
 }

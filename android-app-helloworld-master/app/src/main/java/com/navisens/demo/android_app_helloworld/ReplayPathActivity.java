@@ -41,7 +41,7 @@ import androidx.core.content.ContextCompat;
 
 public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
     private static final boolean TEST = true;
-    int pid;
+    long pid;
     LinearLayout instructionList;
     List<PathPoint> pathPoints;
     PathPoint lastPoint;
@@ -66,7 +66,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         setContentView(R.layout.activity_replay_path);
         db = Utils.setupDatabase(getApplicationContext());
         Bundle bundle = getIntent().getExtras();
-        pid = bundle.getInt("currentPath");
+        pid = bundle.getLong("currentPath");
         currPathCounter = 0;
         instructionList = findViewById(R.id.instruction_list);
         this.getSupportActionBar().hide();
@@ -96,14 +96,14 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
 
-        lastPoint = pathPoints.get(0);
+        if (!pathPoints.isEmpty()) lastPoint = pathPoints.get(0);
     }
 
     private void initPathPoints() {
         if (TEST) {
             pathPoints = new ArrayList<PathPoint>();
         } else {
-            pathPoints = Utils.getPointsByPathIdFromDatabase(db, pid);
+            pathPoints = Utils.getPointsByPathIdFromDatabase(db, (int) pid);
         }
     }
 
