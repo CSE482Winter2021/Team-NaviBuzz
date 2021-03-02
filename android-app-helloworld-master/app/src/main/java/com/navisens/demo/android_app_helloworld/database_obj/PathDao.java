@@ -16,8 +16,11 @@ public interface PathDao {
     @Query("SELECT * FROM paths WHERE name = :name")
     public Path findByName(String name);
 
+    @Query("SELECT * FROM paths WHERE path_id = :pid")
+    public Path getById(long pid);
+
     @Insert
-    public void insertPath(Path p);
+    public long insertPath(Path p);
 
     @Delete
     public void deletePath(Path p);

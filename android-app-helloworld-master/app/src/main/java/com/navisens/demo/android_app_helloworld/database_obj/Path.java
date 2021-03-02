@@ -1,5 +1,6 @@
 package com.navisens.demo.android_app_helloworld.database_obj;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
@@ -10,8 +11,12 @@ import androidx.room.PrimaryKey;
 public class Path {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "path_id")
-    public int pid;
+    @NonNull public long pid;
 
     @ColumnInfo(name = "name")
-    public String name;
+    @NonNull public String name;
+
+    public Path() {
+
+    }
 }

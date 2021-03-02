@@ -6,6 +6,8 @@ import androidx.cardview.widget.CardView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.os.Bundle;
@@ -34,13 +36,21 @@ public class SelectPathActivity extends AppCompatActivity {
         db = Utils.setupDatabase(getApplicationContext());
 
         pathList = findViewById(R.id.path_list);
+        this.getSupportActionBar().hide();
         initPathsList();
-        Context context = pathList.getContext();
+    }
+
+    private void addCardView() {
+        Context context = getApplicationContext();
         for (final Path p : paths) {
             CardView c = new CardView(context);
+            c.setMinimumHeight(200);
+            c.setContentPadding(0, 5, 0, 0);
             TextView t = new TextView(context);
+            t.setTextSize(20);
             t.append(p.name);
             c.addView(t);
+            pathList.addView(c, 0);
             c.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     // set selected path as the current path somehow
@@ -61,11 +71,18 @@ public class SelectPathActivity extends AppCompatActivity {
                 paths.add(p);
             }
         } else {
-            paths = Utils.getUserPaths(db);
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    paths = db.getPathDao().getAll();
+                    System.out.println("paths are " + paths.size());
+                    addCardView();
+                }
+            });
         }
     }
 
-    private void startNewActivity(Class activity, int pid) {
+    private void startNewActivity(Class activity, long pid) {
         Intent intent = new Intent(this, activity);
         intent.putExtra("currentPath", pid);
         startActivity(intent);
