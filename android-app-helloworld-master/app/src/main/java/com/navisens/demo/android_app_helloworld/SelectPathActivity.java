@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class SelectPathActivity extends AppCompatActivity {
-    private static final boolean TEST = false;
+    private static final boolean TEST = true;
     List<Path> paths;
     LinearLayout pathList;
     PathDatabase db;
