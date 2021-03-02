@@ -1,5 +1,6 @@
 package com.navisens.demo.android_app_helloworld.database_obj;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -10,7 +11,7 @@ import java.util.List;
 @Dao
 public interface PathPointDao {
     @Query ("SELECT * FROM points WHERE path_id = :p ORDER BY path_point_id ASC")
-    public List<PathPoint> getByPathId(long p);
+    public LiveData<List<PathPoint>> getByPathId(long p);
 
     @Insert
     public void addPathPoints(List<PathPoint> p);
