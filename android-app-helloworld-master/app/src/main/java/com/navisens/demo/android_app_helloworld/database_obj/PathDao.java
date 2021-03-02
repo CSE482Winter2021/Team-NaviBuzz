@@ -12,16 +12,16 @@ import java.util.List;
 public interface PathDao {
 
     @Query("SELECT * FROM paths")
-    public LiveData<List<Path>> getAll();
+    public List<Path> getAll();
 
     @Query("SELECT * FROM paths WHERE name = :name")
-    public LiveData<Path> findByName(String name);
+    public Path findByName(String name);
 
     @Query("SELECT * FROM paths WHERE path_id = :pid")
-    public LiveData<Path> getById(long pid);
+    public Path getById(long pid);
 
     @Insert
-    public LiveData<Long> insertPath(Path p);
+    public Long insertPath(Path p);
 
     @Delete
     public void deletePath(Path p);

@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface PathPointDao {
     @Query ("SELECT * FROM points WHERE path_id = :p ORDER BY path_point_id ASC")
-    public LiveData<List<PathPoint>> getByPathId(long p);
+    public List<PathPoint> getByPathId(long p);
 
     @Insert
     public void addPathPoints(List<PathPoint> p);
