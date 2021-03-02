@@ -25,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.navisens.demo.android_app_helloworld.database_obj.Path;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.demo.android_app_helloworld.utils.Constants;
@@ -90,6 +91,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 recordLandmark();
             }
         });
+        this.getSupportActionBar().hide();
         recordInstructionBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordInstruction();
@@ -148,12 +150,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     public void startRecordingPath() {
-        motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
-        motionDnaSDK.startForegroundService();
-        //    This functions starts up the SDK. You must pass in a valid developer's key in order for
-        //    the SDK to function. IF the key has expired or there are other errors, you may receive
-        //    those errors through the reportError() callback route.
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
+            motionDnaSDK.startForegroundService();
             HashMap<String, Object> config = new HashMap<String, Object>();
             config.put("gps", false);
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
@@ -171,9 +170,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                               public void run() {
                                   db.clearAllTables();
                                   db.getPathPointDao().addPathPoints(currPath);
+                                  List<Path> paths = db.getPathDao().getAll();
+                                  System.out.println("paths are " + paths.size());
+                                  currPath.clear();
                               }
                           });
-        currPath.clear();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -338,7 +339,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     protected void onDestroy() {
         // Shuts downs the MotionDna Core
-        motionDnaSDK.stop();
+        if (motionDnaSDK != null) {
+            motionDnaSDK.stop();
+        }
         super.onDestroy();
     }
 
@@ -350,12 +353,14 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
-        gps = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(gps.getLatitude(), gps.getLongitude()), 20f, 0, 0)));
-            }
-        });
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            gps = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(gps.getLatitude(), gps.getLongitude()), 20f, 0, 0)));
+                }
+            });
+        }
     }
 }
