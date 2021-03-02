@@ -10,120 +10,116 @@
         android:id="@+id/map"
         class="com.google.android.gms.maps.MapFragment"
         android:layout_width="500dp"
-        android:layout_height="201dp"
+        android:layout_height="230dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <Button
+        android:id="@+id/see_debug_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="See debug text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/map"
+        app:layout_constraintVertical_bias="0.1" />
+
     <TextView
         android:id="@+id/receiveMotionDnaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="304dp"
         android:scrollbars="vertical"
         android:text="DebugText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/see_debug_text" />
 
     <TextView
         android:id="@+id/reportStatusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scrollbars = "vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/receiveMotionDnaTextView" />
 
     <Button
-        android:id="@+id/start_record_btn"
-        android:layout_width="196dp"
-        android:layout_height="48dp"
-        android:text="Start Recording Path"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.543" />
-
-    <Button
-        android:id="@+id/stop_record_btn"
-        android:layout_width="195dp"
-        android:layout_height="49dp"
-        android:text="Stop Recording Path"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.203"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.662" />
-
-    <Button
         android:id="@+id/record_landmark"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Record Landmark"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.839"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.809" />
+        app:layout_constraintTop_toBottomOf="@id/reportStatusTextView"
+        app:layout_constraintVertical_bias="0.05" />
 
     <Button
         android:id="@+id/record_instruction"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Set Instruction"
+        android:text="Record Instruction"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.848"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.941" />
+        app:layout_constraintTop_toBottomOf="@id/record_landmark"
+        app:layout_constraintVertical_bias="0.05" />
 
     <EditText
         android:id="@+id/landmark_name"
-        android:layout_width="144dp"
-        android:layout_height="47dp"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Landmark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.123"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/record_landmark"
+        app:layout_constraintEnd_toStartOf="@id/record_landmark"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.808" />
+        app:layout_constraintVertical_bias="0.05" />
+
 
     <EditText
         android:id="@+id/instruction_text"
-        android:layout_width="144dp"
-        android:layout_height="47dp"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Instruction"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.123"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/record_instruction"
+        app:layout_constraintEnd_toStartOf="@id/record_instruction"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.94" />
+        app:layout_constraintVertical_bias="0.05" />
 
     <Button
-        android:id="@+id/see_debug_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="See debug text"
-        app:layout_constraintBottom_toTopOf="@+id/receiveMotionDnaTextView"
+        android:id="@+id/start_record_btn"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="Start Recording Path"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.886" />
+        app:layout_constraintTop_toBottomOf="@id/record_instruction"
+        app:layout_constraintVertical_bias="0.15" />
 
-
+    <Button
+        android:id="@+id/stop_record_btn"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="Stop Recording Path"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_record_btn"
+        app:layout_constraintVertical_bias="0.05" />
 </androidx.constraintlayout.widget.ConstraintLayout>
