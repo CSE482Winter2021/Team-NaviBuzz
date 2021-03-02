@@ -11,10 +11,12 @@ import androidx.room.PrimaryKey;
 public class Path {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "path_id")
-    @NonNull public Integer pid;
+    @NonNull public int pid;
 
     @ColumnInfo(name = "name")
     @NonNull public String name;
 
+    public Path() {
 
+    }
 }

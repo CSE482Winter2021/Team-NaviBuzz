@@ -46,4 +46,9 @@ public class PathPoint {
         this.longitude = longitude;
         this.pid = pathId;
     }
+
+    public PathPoint(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }

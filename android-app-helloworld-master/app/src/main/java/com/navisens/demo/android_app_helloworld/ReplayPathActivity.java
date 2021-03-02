@@ -3,6 +3,7 @@ package com.navisens.demo.android_app_helloworld;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,11 +51,12 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     Button startReplayBtn;
     Button pauseReplayBtn;
     Button confirmLandmarkBtn;
+    LocationManager manager;
     TextToSpeech ttobj;
+    Location gps;
     int currPathCounter;
     GoogleMap map;
     PathPoint currLocation;
-    double lastCumulativeDistanceTraveled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         pid = bundle.getInt("currentPath");
         currPathCounter = 0;
         instructionList = findViewById(R.id.instruction_list);
+        this.getSupportActionBar().hide();
         startReplayBtn = findViewById(R.id.start_path_btn);
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
         pauseReplayBtn = findViewById(R.id.pause_path_btn);
@@ -79,6 +84,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             t.append(p.instruction);
             c.addView(t);
         }
+
+        manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         ttobj=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -116,12 +123,17 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     public void startReplayPath() {
-        motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(),this);
-        motionDnaSDK.startForegroundService();
-        //    This functions starts up the SDK. You must pass in a valid developer's key in order for
-        //    the SDK to function. IF the key has expired or there are other errors, you may receive
-        //    those errors through the reportError() callback route.
-        motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
+            motionDnaSDK.startForegroundService();
+            HashMap<String, Object> config = new HashMap<String, Object>();
+            config.put("gps", false);
+            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
+            motionDnaSDK.setGlobalPosition(gps.getLatitude(), gps.getLongitude());
+            motionDnaSDK.setGlobalHeading(gps.getBearing());
+        } else {
+            // service error, GPS is not on
+        }
     }
 
     public void pauseReplayPath() {
@@ -131,10 +143,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     public void receiveMotionDna(MotionDna motionDna) {
         String str = "Navisens MotionDnaSDK Estimation:\n";
 
-        LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        boolean isGPSOn = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        double distanceTraveled = motionDna.getClassifiers().get("indoorOutdoor").statistics.get("indoor").distance;
-        //str += Utils.getNewCoordinates(currLocation, distanceTraveled - lastCumulativeDistanceTraveled, motionDna, isGPSOn);
+        currLocation.latitude = motionDna.getLocation().global.latitude;
+        currLocation.longitude = motionDna.getLocation().global.longitude;
+
         double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
         if (distanceBetweenPoints < 5) {
             currPathCounter++;
@@ -255,7 +266,16 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
      * just add a marker near Africa.
      */
     @Override
-    public void onMapReady(GoogleMap map) {
-        this.map = map;
+    public void onMapReady(GoogleMap googleMap) {
+        this.map = googleMap;
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            gps = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(gps.getLatitude(), gps.getLongitude()), 20f, 0, 0)));
+                }
+            });
+        }
     }
 }
