@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -60,6 +61,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     LocationManager manager;
     PathPoint lastLocation;
     PathPoint currLocation;
+    Location gps;
     Context context;
     double lastCumulativeDistanceTraveled;
 
@@ -127,16 +129,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             HashMap<String, Object> config = new HashMap<String, Object>();
             config.put("gps", false);
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
-            final Location gps = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             motionDnaSDK.setGlobalPosition(gps.getLatitude(), gps.getLongitude());
             motionDnaSDK.setGlobalHeading(gps.getBearing());
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(gps.getLatitude(), gps.getLongitude()), 20f, 0, 0)));
-                }
-            });
         } else {
             // service error, GPS is not on
         }
@@ -144,8 +138,20 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     public void stopRecordingPath() {
         motionDnaSDK.stop();
-        db.getPathPointDao().addPathPoints(currPath);
+        AsyncTask.execute(new Runnable() {
+                              @Override
+                              public void run() {
+                                  db.clearAllTables();
+                                  db.getPathPointDao().addPathPoints(currPath);
+                              }
+                          });
         currPath.clear();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                map.clear();
+            }
+        });
     }
 
     @Override
@@ -306,11 +312,14 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
      * just add a marker near Africa.
      */
     @Override
-    public void onMapReady(GoogleMap map) {
-        this.map = map;
-        //locationSource = new FollowLocationSource(getApplicationContext(), map);
-        //locationSource.getBestAvailableProvider();
-        //enableMyLocation();
-        //map.setLocationSource(locationSource);
+    public void onMapReady(GoogleMap googleMap) {
+        this.map = googleMap;
+        gps = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(gps.getLatitude(), gps.getLongitude()), 20f, 0, 0)));
+            }
+        });
     }
 }
