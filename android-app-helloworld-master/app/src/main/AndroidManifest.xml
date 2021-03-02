@@ -9,9 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SelectPathActivity"></activity>
+        <activity android:name=".SelectPathActivity">
+
+        </activity>
         <activity
             android:name=".RecordPathActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".ReplayPathActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".StartingScreen"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,12 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ReplayPathActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name=".StartingScreen"
-            android:screenOrientation="portrait"></activity>
 
         <service
             android:name="com.navisens.motiondnaapi.MotionDnaForegroundService"
