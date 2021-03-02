@@ -21,6 +21,7 @@ android {
 dependencies {
     implementation (group: "com.navisens", name: "motiondnaapi", version: "2.0.3", changing: true)
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'net.gotev:speech:1.6.1'
