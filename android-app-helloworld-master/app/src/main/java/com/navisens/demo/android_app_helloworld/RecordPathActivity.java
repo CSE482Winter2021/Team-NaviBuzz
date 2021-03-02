@@ -53,6 +53,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     Button startPathBtn;
     Button stopPathBtn;
     Button recordInstructionBtn;
+    Button seeDebugText;
     EditText landmarkName;
     EditText instructionString;
     GoogleMap map;
@@ -64,7 +65,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     PathPoint currLocation;
     Location gps;
     Context context;
-    double lastCumulativeDistanceTraveled;
+    boolean isDebugToggled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         setContentView(R.layout.activity_record_path);
         db = Utils.setupDatabase(getApplicationContext());
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
+        receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
         reportStatusTextView = findViewById(R.id.reportStatusTextView);
         startPathBtn = findViewById(R.id.start_record_btn);
         landmarkName = findViewById(R.id.landmark_name);
@@ -79,6 +81,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordInstructionBtn = findViewById(R.id.record_instruction);
         stopPathBtn = findViewById(R.id.stop_record_btn);
         recordLandmarkBtn = findViewById(R.id.record_landmark);
+        seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
         lastLocation = new PathPoint(0, 0);
         currLocation = new PathPoint(0, 0);
@@ -90,6 +93,30 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordInstructionBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordInstruction();
+            }
+        });
+        seeDebugText.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                isDebugToggled = !isDebugToggled;
+                if (isDebugToggled) {
+                    receiveMotionDnaTextView.setVisibility(View.VISIBLE);
+                    recordInstructionBtn.setVisibility(View.INVISIBLE);
+                    instructionString.setVisibility(View.INVISIBLE);
+                    landmarkName.setVisibility(View.INVISIBLE);
+                    startPathBtn.setVisibility(View.INVISIBLE);
+                    stopPathBtn.setVisibility(View.INVISIBLE);
+                    recordInstructionBtn.setVisibility(View.INVISIBLE);
+                    recordLandmarkBtn.setVisibility(View.INVISIBLE);
+                } else {
+                    receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
+                    recordInstructionBtn.setVisibility(View.VISIBLE);
+                    instructionString.setVisibility(View.VISIBLE);
+                    landmarkName.setVisibility(View.VISIBLE);
+                    startPathBtn.setVisibility(View.VISIBLE);
+                    stopPathBtn.setVisibility(View.VISIBLE);
+                    recordInstructionBtn.setVisibility(View.VISIBLE);
+                    recordLandmarkBtn.setVisibility(View.VISIBLE);
+                }
             }
         });
         stopPathBtn.setOnClickListener(new View.OnClickListener() {
@@ -175,14 +202,22 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                         map.addCircle(new CircleOptions()
                                 .center(new LatLng(p.latitude, p.longitude))
                                 .radius(0.5)
-                                .strokeColor(Color.RED)
-                                .fillColor(Color.RED));
+                                .strokeColor(Color.BLACK)
+                                .fillColor(Color.BLACK));
                         if (p.landmark != null && !p.landmark.equals("")) {
                             map.addCircle(new CircleOptions()
                                     .center(new LatLng(p.latitude, p.longitude))
                                     .radius(0.2)
-                                    .strokeColor(Color.RED)
-                                    .fillColor(Color.RED));
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(Color.BLUE));
+                        }
+
+                        if (p.instruction != null && !p.instruction.equals("")) {
+                            map.addCircle(new CircleOptions()
+                                    .center(new LatLng(p.latitude, p.longitude))
+                                    .radius(0.2)
+                                    .strokeColor(Color.GREEN)
+                                    .fillColor(Color.GREEN));
                         }
                     }
                     map.addCircle(new CircleOptions()
