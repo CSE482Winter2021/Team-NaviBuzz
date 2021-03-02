@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class SelectPathActivity extends AppCompatActivity {
-    private static final boolean TEST = true;
     List<Path> paths;
     LinearLayout pathList;
     PathDatabase db;
@@ -73,25 +72,14 @@ public class SelectPathActivity extends AppCompatActivity {
     }
 
     private void initPathsList() {
-        if (TEST) {
-            paths = new ArrayList<Path>();
-            for (int i = 1; i <= 5; i++) {
-                Path p = new Path();
-                p.name = "Test Path " + i;
-                p.pid = i;
-                paths.add(p);
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                paths = db.getPathDao().getAll();
+                System.out.println("paths are " + paths.size());
+                addCardView();
             }
-            addCardView();
-        } else {
-            AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                    paths = db.getPathDao().getAll();
-                    System.out.println("paths are " + paths.size());
-                    addCardView();
-                }
-            });
-        }
+        });
     }
 
     private void startNewActivity(Class activity, long pid) {

@@ -40,7 +40,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
-    private static final boolean TEST = true;
     long pid;
     LinearLayout instructionList;
     List<PathPoint> pathPoints;
@@ -100,11 +99,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     private void initPathPoints() {
-        if (TEST) {
-            pathPoints = new ArrayList<PathPoint>();
-        } else {
-            pathPoints = Utils.getPointsByPathIdFromDatabase(db, (int) pid);
-        }
+        pathPoints = db.getPathPointDao().getByPathId(pid);
     }
 
 
@@ -239,7 +234,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
     protected void onDestroy() {
         // Shuts downs the MotionDna Core
-        motionDnaSDK.stop();
+        if (motionDnaSDK != null) motionDnaSDK.stop();
         super.onDestroy();
     }
 
