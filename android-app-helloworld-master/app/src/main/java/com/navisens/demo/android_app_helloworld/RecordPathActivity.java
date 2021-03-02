@@ -83,6 +83,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordLandmarkBtn = findViewById(R.id.record_landmark);
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
+        //TODO: add path id to this path point
         lastLocation = new PathPoint(0, 0);
         currLocation = new PathPoint(0, 0);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
