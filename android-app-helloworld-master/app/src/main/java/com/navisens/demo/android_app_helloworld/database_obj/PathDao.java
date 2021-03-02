@@ -17,7 +17,7 @@ public interface PathDao {
     public Path findByName(String name);
 
     @Insert
-    public int insertPath(Path p);
+    public Integer insertPath(Path p);
 
     @Delete
     public void deletePath(Path p);
