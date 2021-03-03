@@ -36,7 +36,7 @@ public class StartingScreen extends AppCompatActivity {
             {}
     };
     private static final String[][] TEST_INSTRUCTIONS = {
-            {null, null, null, "Turn 90 degrees to the left", null, null, "take elevator to floor P", "exit the elevator", null, null},
+            {null, null, null, "Turn 90 degrees to the left", null, "take elevator to floor P", "exit the elevator", null, null},
             {}
     };
 
@@ -79,7 +79,7 @@ public class StartingScreen extends AppCompatActivity {
                 @Override
                 public void run() {
                     PathDao pathDao = db.getPathDao();
-//                    PathPointDao pathPointDao = db.getPathPointDao();
+                    PathPointDao pathPointDao = db.getPathPointDao();
 //                    pathDao.deleteAll();
                     db.cleanUp();
 
@@ -94,7 +94,7 @@ public class StartingScreen extends AppCompatActivity {
                         String[] landmarks = TEST_LANDMARKS[i];
                         String[] instructions = TEST_INSTRUCTIONS[i];
                         for (int j = 0; j < testPath.length; j++) {
-                            PathPoint point = new PathPoint(testPath[j][0], testPath[j][1]);
+                            PathPoint point = new PathPoint(testPath[j][0], testPath[j][1], pid);
 
                             if (landmarks[j] != null) {
                                 point.landmark = landmarks[j];
@@ -102,6 +102,7 @@ public class StartingScreen extends AppCompatActivity {
                             if (instructions[j] != null) {
                                 point.instruction = instructions[j];
                             }
+                            pathPointDao.addPoint(point);
                         }
                     }
                 }

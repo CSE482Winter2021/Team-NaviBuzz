@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View;
@@ -78,7 +80,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
 
-
         // pull list of pathPoints from database, PathPointDao.getPathById(pid)
         AsyncTask.execute(new Runnable() {
             @Override
@@ -89,39 +90,68 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
 
-
-
         manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
         ttobj=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
             }
         });
-
-
     }
 
     private void initCardList() {
         pointCards = new HashMap<PathPoint, CardView>();
         instructionList = findViewById(R.id.instruction_list);
         final Context context = instructionList.getContext();
+
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        cardParams.setMargins(30, 15, 30, 15);
+
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        // textParams.gravity = Gravity.CENTER_VERTICAL;
+
         for (final PathPoint p : pathPoints) {
             if (p.instruction != null || p.landmark != null) {
-                CardView c = new CardView(context);
+                final CardView c = new CardView(context);
+                c.setLayoutParams(cardParams);
+                c.setMinimumHeight(200);
+                c.setContentPadding(50, 50, 50, 50);
+                c.setId((int) p.pid);
+                LinearLayout l = new LinearLayout(context);
+                l.setOrientation(LinearLayout.VERTICAL);
                 if (p.landmark != null) {
                     System.out.println(p.landmark);
                     TextView t = new TextView(context);
                     t.setText(p.landmark);
-                    c.addView(t);
+                    t.setId((int) p.pid);
+                    t.setLayoutParams(textParams);
+                    t.setTextSize(20);
+                    t.setTypeface(null, Typeface.BOLD);
+                    t.setTextColor(Color.BLACK);
+                    l.addView(t);
                 }
                 if (p.instruction != null) {
                     System.out.println(p.instruction);
                     TextView t = new TextView(context);
                     t.setText(p.instruction);
-                    c.addView(t);
+                    t.setId((int) p.pid);
+                    t.setLayoutParams(textParams);
+                    t.setTextSize(20);
+//                    t.setTypeface(null, Typeface.BOLD);
+                    t.setTextColor(Color.BLACK);
+                    l.addView(t);
                 }
-                instructionList.addView(c);
+                c.addView(l);
+                pointCards.put(p, c);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        instructionList.addView(c);
+                    }
+                });
             }
 
         }
