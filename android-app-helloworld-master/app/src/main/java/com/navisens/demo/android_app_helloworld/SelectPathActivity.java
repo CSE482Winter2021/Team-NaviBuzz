@@ -6,6 +6,7 @@ import androidx.cardview.widget.CardView;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.view.Gravity;
 import android.view.View;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 
 public class SelectPathActivity extends AppCompatActivity {
     List<Path> paths;
-    LinearLayout pathList;
     PathDatabase db;
 
     @Override
@@ -35,32 +35,38 @@ public class SelectPathActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_path);
         db = Utils.setupDatabase(getApplicationContext());
 
-        pathList = findViewById(R.id.path_list);
         this.getSupportActionBar().hide();
         initPathsList();
     }
 
     private void addCardView() {
         Context context = getApplicationContext();
+        final LinearLayout pathList = findViewById(R.id.path_list);
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        cardParams.setMargins(30, 15, 30, 15);
+
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        textParams.gravity = Gravity.CENTER_VERTICAL;
         for (final Path p : paths) {
-            CardView c = new CardView(context);
-            c.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT));
+            final CardView c = new CardView(context);
+            c.setLayoutParams(cardParams);
             c.setMinimumHeight(200);
             c.setContentPadding(50, 50, 50, 50);
-            c.setForegroundGravity(Gravity.CENTER_VERTICAL);
             c.setId((int) p.pid);
 
             TextView t = new TextView(context);
             t.setId((int) p.pid);
-            t.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            t.setLayoutParams(textParams);
             t.setTextSize(20);
             t.setText(p.name);
+            t.setTypeface(null, Typeface.BOLD);
+            t.setTextColor(Color.BLACK);
+
             c.addView(t);
-            pathList.addView(c);
             c.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     // set selected path as the current path somehow
@@ -68,6 +74,13 @@ public class SelectPathActivity extends AppCompatActivity {
                     startNewActivity(ReplayPathActivity.class, p.pid);
                 }
             });
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    pathList.addView(c);
+                }
+            });
+
         }
     }
 

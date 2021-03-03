@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.widget.LinearLayout;
@@ -43,8 +44,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     long pid;
     LinearLayout instructionList;
     List<PathPoint> pathPoints;
-    PathPoint lastPoint;
     PathDatabase db;
+    Map<PathPoint, CardView> pointCards;
 
     MotionDnaSDK motionDnaSDK;
     TextView reportStatusTextView;
@@ -67,7 +68,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         Bundle bundle = getIntent().getExtras();
         pid = bundle.getLong("currentPath");
         currPathCounter = 0;
-        instructionList = findViewById(R.id.instruction_list);
+
         this.getSupportActionBar().hide();
         startReplayBtn = findViewById(R.id.start_path_btn);
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
@@ -77,15 +78,18 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
 
+
         // pull list of pathPoints from database, PathPointDao.getPathById(pid)
-        initPathPoints();
-        Context context = instructionList.getContext();
-        for (final PathPoint p : pathPoints) {
-            CardView c = new CardView(context);
-            TextView t = new TextView(context);
-            t.append(p.instruction);
-            c.addView(t);
-        }
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                pathPoints = db.getPathPointDao().getByPathId(pid);
+                System.out.println("path points are: " + pathPoints.size());
+                initCardList();
+            }
+        });
+
+
 
         manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -95,13 +99,33 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
 
-        if (!pathPoints.isEmpty()) lastPoint = pathPoints.get(0);
+
     }
 
-    private void initPathPoints() {
-        pathPoints = db.getPathPointDao().getByPathId(pid);
-    }
+    private void initCardList() {
+        pointCards = new HashMap<PathPoint, CardView>();
+        instructionList = findViewById(R.id.instruction_list);
+        final Context context = instructionList.getContext();
+        for (final PathPoint p : pathPoints) {
+            if (p.instruction != null || p.landmark != null) {
+                CardView c = new CardView(context);
+                if (p.landmark != null) {
+                    System.out.println(p.landmark);
+                    TextView t = new TextView(context);
+                    t.setText(p.landmark);
+                    c.addView(t);
+                }
+                if (p.instruction != null) {
+                    System.out.println(p.instruction);
+                    TextView t = new TextView(context);
+                    t.setText(p.instruction);
+                    c.addView(t);
+                }
+                instructionList.addView(c);
+            }
 
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

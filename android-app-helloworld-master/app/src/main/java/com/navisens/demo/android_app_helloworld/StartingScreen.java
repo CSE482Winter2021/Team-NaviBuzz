@@ -28,13 +28,16 @@ import androidx.appcompat.app.AppCompatActivity;
 public class StartingScreen extends AppCompatActivity {
     private static final boolean TEST = true;
     private static final int[][][] TEST_PATHS = {
-            {{0,0}, {0,5}, {0,10}, {0,11}, {5,11}, {7,11}, {7,11},{5,9},{5,6}}
+            {{0,0}, {0,5}, {0,10}, {0,11}, {5,11}, {7,11}, {7,11},{5,9},{5,6}},
+            {}
     };
     private static final String[][] TEST_LANDMARKS = {
-            {null, null, "Card Scanner", null, null, "Elevator", null, null, "Platform"}
+            {null, null, "Card Scanner", null, null, "Elevator", null, null, "Platform"},
+            {}
     };
     private static final String[][] TEST_INSTRUCTIONS = {
-            {null, null, null, "Turn 90 degrees to the left", null, null, "take elevator to floor P", "exit the elevator", null, null}
+            {null, null, null, "Turn 90 degrees to the left", null, null, "take elevator to floor P", "exit the elevator", null, null},
+            {}
     };
 
     Button recordPathOpt;
@@ -76,21 +79,22 @@ public class StartingScreen extends AppCompatActivity {
                 @Override
                 public void run() {
                     PathDao pathDao = db.getPathDao();
-                    PathPointDao pathPointDao = db.getPathPointDao();
-                    pathDao.deleteAll();
-                    pathPointDao.deleteAll();
+//                    PathPointDao pathPointDao = db.getPathPointDao();
+//                    pathDao.deleteAll();
+                    db.cleanUp();
 
                     for (int i = 0; i < TEST_PATHS.length; i++) {
                         final Path p = testPaths.get(i);
                         long pid = pathDao.insertPath(p);
-                        System.err.println("pid: " + pid);
-                        System.err.println(pathPointDao.getByPathId(pid));
+//                        pathDao.deletePath(p);
+//                        System.err.println("pid: " + pid);
+//                        System.err.println(pathPointDao.getByPathId(pid));
 
                         int[][] testPath = TEST_PATHS[i];
                         String[] landmarks = TEST_LANDMARKS[i];
                         String[] instructions = TEST_INSTRUCTIONS[i];
                         for (int j = 0; j < testPath.length; j++) {
-                            PathPoint point = new PathPoint(testPath[j][0], testPath[j][1], pid);
+                            PathPoint point = new PathPoint(testPath[j][0], testPath[j][1]);
 
                             if (landmarks[j] != null) {
                                 point.landmark = landmarks[j];
@@ -98,7 +102,6 @@ public class StartingScreen extends AppCompatActivity {
                             if (instructions[j] != null) {
                                 point.instruction = instructions[j];
                             }
-//                            pathPointDao.addPoint(point);
                         }
                     }
                 }

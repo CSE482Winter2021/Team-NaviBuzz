@@ -88,12 +88,12 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
         // Generate a new entry to the path table
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                pathId = db.getPathDao().insertPath(new Path());
-            }
-        });
+//        AsyncTask.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                pathId = db.getPathDao().insertPath(new Path());
+//            }
+//        });
         lastLocation = new PathPoint(0, 0);
         currLocation = new PathPoint(0, 0);
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
@@ -246,7 +246,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             });
             // Todo: Fix 234
             // TODO: Dylan curious about this... remind me to ask
-            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
+            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude/*, pathId*/));
             lastLocation = new PathPoint(currLocation);
 
             runOnUiThread(new Runnable() {
