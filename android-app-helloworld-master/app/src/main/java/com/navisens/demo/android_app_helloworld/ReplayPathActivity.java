@@ -244,7 +244,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
 
             startReplayBtn.setEnabled(false);
-            startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(0x00000000));
+            startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
             startReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             pauseReplayBtn.setEnabled(true);
             pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
@@ -258,8 +258,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         startReplayBtn.setEnabled(true);
         startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
         startReplayBtn.setTextColor(Color.WHITE);
+
         pauseReplayBtn.setEnabled(false);
-        pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(0x00000000));
+        pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
         pauseReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
     }
 
@@ -453,12 +454,12 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
 
         final String fstr = str;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                receiveMotionDnaTextView.setText(fstr);
-            }
-        });
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                receiveMotionDnaTextView.setText(fstr);
+//            }
+//        });
     }
 
     /**
