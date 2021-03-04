@@ -244,11 +244,12 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
 
             startReplayBtn.setEnabled(false);
-            startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
-            startReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+//            startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+//            startReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             pauseReplayBtn.setEnabled(true);
-            pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
-            pauseReplayBtn.setTextColor(Color.WHITE);
+            confirmLandmarkBtn.setEnabled(true);
+//            pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+//            pauseReplayBtn.setTextColor(Color.WHITE);
         } else {
             // service error, GPS is not on
         }
@@ -256,12 +257,13 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
     public void pauseReplayPath() {
         startReplayBtn.setEnabled(true);
-        startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
-        startReplayBtn.setTextColor(Color.WHITE);
-
+//        startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+//        startReplayBtn.setTextColor(Color.WHITE);
+//
         pauseReplayBtn.setEnabled(false);
-        pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
-        pauseReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        confirmLandmarkBtn.setEnabled(false);
+//        pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+//        pauseReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
     }
 
     @Override

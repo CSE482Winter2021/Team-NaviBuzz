@@ -103,15 +103,20 @@ public class SelectPathActivity extends AppCompatActivity {
 //             String jsonText = sp.getString("path " + (i + 1), null);
 //             List<PathPoint> path = new ArrayList<PathPoint>(Arrays.asList(gson.fromJson(jsonText, PathPoint[].class)));
 //             t.append(paths.get(i).name+ "    ~ " + Math.round(Utils.estimateDistanceBetweenTwoPoints(new PathPoint(currLocation.getLatitude(), currLocation.getLongitude()), path.get(0))) + " meters away");
-            
-            TextView dist = new TextView(context);
-            dist.setLayoutParams(textParams);
             List<PathPoint> path = db.getPathPointDao().getByPathId(p.pid);
-            dist.setText("~ " + 
-                         Math.round(Utils.estimateDistanceBetweenTwoPoints(new PathPoint(currLocation.getLatitude(), currLocation.getLongitude()), path.get(0))) + 
-                         " meters away");
-            dist.setTextColor(Color.BLACK);
-            l.addView(dist);
+
+            // for testing
+            if (!path.isEmpty()) {
+                TextView dist = new TextView(context);
+                dist.setLayoutParams(textParams);
+
+                dist.setText("~ " +
+                        Math.round(Utils.estimateDistanceBetweenTwoPoints(new PathPoint(currLocation.getLatitude(), currLocation.getLongitude()), path.get(0))) +
+                        " meters away");
+                dist.setTextColor(Color.BLACK);
+                l.addView(dist);
+            }
+
             c.addView(l);
 
             c.setOnClickListener(new View.OnClickListener() {

@@ -2,21 +2,25 @@ package com.navisens.demo.android_app_helloworld;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.icu.text.AlphabeticIndex;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -67,6 +71,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     PathDatabase db;
     Button recordLandmarkBtn;
     long pathId;
+    String pathName;
     List<PathPoint> currPath = new ArrayList<PathPoint>();
     LocationManager manager;
     PathPoint lastLocation;
@@ -94,19 +99,30 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
 
-        // Generate a new entry to the path table
-        Path p = new Path();
-        // TODO: replace with path name gotten from dialogue
-        p.name = "test path " + Math.round(Math.random() * 100);
-        AsyncTask.execute(new Runnable() {
-           @Override
-           public void run() {
-               pathId = db.getPathDao().insertPath(new Path());
-           }
+        LayoutInflater inflater = getLayoutInflater();
+        final View v = inflater.inflate(R.layout.path_name_dialog, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(RecordPathActivity.this);
+        builder.setTitle("Input Path Title")
+            .setView(v)
+            .setPositiveButton("Set Name", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {}
+            });
+
+        final AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pathName = ((EditText) v.findViewById(R.id.path_name)).getText().toString();
+                System.out.println(pathName);
+                if (pathName.length() > 0) {
+                    dialog.dismiss();
+                    initPath(pathName);
+                }
+            }
         });
-        // TODO: Make sure to delete the is path if there is a failure but we need to path id
-        lastLocation = new PathPoint(0, 0, pathId);
-        currLocation = new PathPoint(0, 0, pathId);
 
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -153,6 +169,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
         stopPathBtn.setEnabled(false);
+        landmarkName.setEnabled(false);
+        instructionString.setEnabled(false);
         recordLandmarkBtn.setEnabled(false);
         recordInstructionBtn.setEnabled(false);
         // Requests app
@@ -176,6 +194,24 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             public void onProviderDisabled(String provider) {}
         };
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+    private void initPath(String name) {
+        // Generate a new entry to the path table
+        final Path p = new Path();
+        p.name = name;
+        // TODO: replace with path name gotten from dialogue
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                pathId = db.getPathDao().insertPath(p);
+                lastLocation = new PathPoint(0, 0, pathId);
+                currLocation = new PathPoint(0, 0, pathId);
+            }
+        });
+        // TODO: Make sure to delete the is path if there is a failure but we need to path id
+        lastLocation = new PathPoint(0, 0, pathId);
+        currLocation = new PathPoint(0, 0, pathId);
     }
 
     private void startMap() {
@@ -206,6 +242,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
             stopPathBtn.setEnabled(true);
+            landmarkName.setEnabled(true);
+            instructionString.setEnabled(true);
+            recordInstructionBtn.setEnabled(true);
+            recordLandmarkBtn.setEnabled(true);
             startPathBtn.setEnabled(false);
         } else {
             // service error, GPS is not on
@@ -218,6 +258,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
               @Override
               public void run() {
                   db.getPathPointDao().addPathPoints(currPath);
+                  System.out.println(currPath);
 //                   List<Path> paths = db.getPathDao().getAll();
 //                   System.out.println("paths are " + paths.size());
                   currPath.clear();
@@ -242,7 +283,12 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
         stopPathBtn.setEnabled(false);
+        landmarkName.setEnabled(false);
+        instructionString.setEnabled(false);
+        recordInstructionBtn.setEnabled(false);
+        recordLandmarkBtn.setEnabled(false);
         startPathBtn.setEnabled(true);
+        finish();
 //         startNewActivity(SavePathActivity.class, pathId);
     }
 
@@ -372,12 +418,12 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
 
         final String fstr = str;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                receiveMotionDnaTextView.setText(fstr);
-            }
-        });
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                receiveMotionDnaTextView.setText(fstr);
+//            }
+//        });
     }
 
     protected ErrorState recordLandmark() {
@@ -386,6 +432,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         }
 
         String landmark = landmarkName.getText().toString();
+        System.out.println(landmark);
+        landmarkName.setText("");
+        landmarkName.clearFocus();
         currPath.get(currPath.size() - 1).landmark = landmark;
         return new ErrorState("Success", true);
     }
@@ -396,6 +445,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         }
 
         String instruction = instructionString.getText().toString();
+        System.out.println(instruction);
+        instructionString.setText("");
+        instructionString.clearFocus();
         currPath.get(currPath.size() - 1).instruction = instruction;
         return new ErrorState("Success", true);
     }
