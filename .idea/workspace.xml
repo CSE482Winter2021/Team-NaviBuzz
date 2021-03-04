@@ -10,7 +10,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7d9f8ad-d661-418e-95c7-91224ec73a35" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Team-NaviBuzz.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Team-NaviBuzz.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/RecordPathActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/RecordPathActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/ReplayPathActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/ReplayPathActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/SelectPathActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/SelectPathActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/database_obj/Path.java" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/database_obj/Path.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/database_obj/PathDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/database_obj/PathDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/database_obj/PathPointDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/database_obj/PathPointDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/utils/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/java/com/navisens/demo/android_app_helloworld/utils/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/res/layout/activity_record_path.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/res/layout/activity_record_path.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/res/layout/activity_replay_path.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android-app-helloworld-master/app/src/main/res/layout/activity_replay_path.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +37,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/android-app-helloworld-master" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -74,10 +82,11 @@
       <screen x="0" y="0" width="1504" height="963" />
     </state>
     <state x="233" y="56" key="#Project_Structure/0.0.1504.963/-1920.0.1920.1040@0.0.1504.963" timestamp="1614283308563" />
-    <state x="533" y="236" key="FileChooserDialogImpl" timestamp="1614283337146">
-      <screen x="0" y="0" width="1504" height="963" />
+    <state x="595" y="255" key="FileChooserDialogImpl" timestamp="1614746697754">
+      <screen x="0" y="23" width="1680" height="947" />
     </state>
     <state x="533" y="236" key="FileChooserDialogImpl/0.0.1504.963/-1920.0.1920.1040@0.0.1504.963" timestamp="1614283337146" />
+    <state x="595" y="255" key="FileChooserDialogImpl/0.23.1680.947@0.23.1680.947" timestamp="1614746697754" />
     <state width="730" height="214" key="GridCell.Tab.0.bottom" timestamp="1614283091143">
       <screen x="0" y="0" width="1504" height="963" />
     </state>

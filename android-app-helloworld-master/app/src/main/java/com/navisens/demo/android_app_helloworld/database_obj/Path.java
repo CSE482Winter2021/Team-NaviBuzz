@@ -16,7 +16,8 @@ public class Path {
     @ColumnInfo(name = "name")
     @NonNull public String name;
 
-    public Path() {
-
+    public Path(long pid, String name) {
+        this.pid = pid;
+        this.name = name;
     }
 }
