@@ -5,7 +5,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(version = 1, entities= {Path.class, PathPoint.class})
+@Database(version = 2, entities= {Path.class, PathPoint.class})
 public abstract class PathDatabase extends RoomDatabase {
     private static PathDatabase pathDB;
 
@@ -21,6 +21,8 @@ public abstract class PathDatabase extends RoomDatabase {
     }
 
     public void cleanUp(){
-        pathDB = null;
+//        pathDB = null;
+        getPathPointDao().deleteAll();
+        getPathDao().deleteAll();
     }
 }

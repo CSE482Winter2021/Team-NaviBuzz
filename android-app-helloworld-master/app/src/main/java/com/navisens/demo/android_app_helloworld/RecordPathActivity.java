@@ -3,6 +3,7 @@ package com.navisens.demo.android_app_helloworld;
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -92,21 +93,35 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordLandmarkBtn = findViewById(R.id.record_landmark);
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
-        //pathId = db.getPathDao().insertPath(new Path());
+
+        // Generate a new entry to the path table
+        Path p = new Path();
+        // TODO: replace with path name gotten from dialogue
+        p.name = "test path " + Math.round(Math.random() * 100);
+        AsyncTask.execute(new Runnable() {
+           @Override
+           public void run() {
+               pathId = db.getPathDao().insertPath(new Path());
+           }
+        });
         // TODO: Make sure to delete the is path if there is a failure but we need to path id
         lastLocation = new PathPoint(0, 0, pathId);
         currLocation = new PathPoint(0, 0, pathId);
+
         recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordLandmark();
             }
         });
+        
         this.getSupportActionBar().hide();
+        
         recordInstructionBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordInstruction();
             }
         });
+      
         seeDebugText.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 isDebugToggled = !isDebugToggled;
@@ -131,12 +146,15 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             }
         });
+      
         stopPathBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 stopRecordingPath();
             }
         });
         stopPathBtn.setEnabled(false);
+        recordLandmarkBtn.setEnabled(false);
+        recordInstructionBtn.setEnabled(false);
         // Requests app
         ActivityCompat.requestPermissions(this, MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
@@ -196,27 +214,26 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     public void stopRecordingPath() {
         motionDnaSDK.stop();
-        /*AsyncTask.execute(new Runnable() {
-                              @Override
-                              public void run() {
-                                  //db.clearAllTables();
-                                  db.getPathPointDao().addPathPoints(currPath);
-                                  List<Path> paths = db.getPathDao().getAll();
-                                  System.out.println("paths are " + paths.size());
-                                  currPath.clear();
-                              }
-                          });*/
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor prefsEditor = sp.edit();
-        int pid = sp.getInt("pid", 0) + 1;
-        prefsEditor.putInt("pid", 1);
+        AsyncTask.execute(new Runnable() {
+              @Override
+              public void run() {
+                  db.getPathPointDao().addPathPoints(currPath);
+//                   List<Path> paths = db.getPathDao().getAll();
+//                   System.out.println("paths are " + paths.size());
+                  currPath.clear();
+              }
+          });
+//         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//         SharedPreferences.Editor prefsEditor = sp.edit();
+//         int pid = sp.getInt("pid", 0) + 1;
+//         prefsEditor.putInt("pid", 1);
 
-        Gson gson = new Gson();
-        List<PathPoint> textList = new ArrayList<PathPoint>(currPath);
-        String jsonText = gson.toJson(textList);
-        System.out.println("putting in pid " + pid);
-        prefsEditor.putString("path " + 1, jsonText);
-        prefsEditor.apply();
+//         Gson gson = new Gson();
+//         List<PathPoint> textList = new ArrayList<PathPoint>(currPath);
+//         String jsonText = gson.toJson(textList);
+//         System.out.println("putting in pid " + pid);
+//         prefsEditor.putString("path " + 1, jsonText);
+//         prefsEditor.apply();
 
         runOnUiThread(new Runnable() {
             @Override
@@ -226,6 +243,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         });
         stopPathBtn.setEnabled(false);
         startPathBtn.setEnabled(true);
+//         startNewActivity(SavePathActivity.class, pathId);
     }
 
     @Override
@@ -273,7 +291,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                             .fillColor(Color.BLUE));
                 }
             });
-            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude));
+            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
             lastLocation = new PathPoint(currLocation);
 
             runOnUiThread(new Runnable() {
@@ -383,6 +401,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     protected void onDestroy() {
+        //TODO: delete path by id if it exists and there is an error
         // Shuts downs the MotionDna Core
         if (motionDnaSDK != null) {
             motionDnaSDK.stop();
@@ -401,5 +420,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             });
         }
+    }
+
+    private void startNewActivity(Class activity, long pid) {
+        Intent intent = new Intent(this, activity);
+        intent.putExtra("currentPath", pid);
+        startActivity(intent);
     }
 }

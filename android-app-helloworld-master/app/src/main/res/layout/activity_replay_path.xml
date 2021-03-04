@@ -35,6 +35,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/wrapper_layout"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintTop_toBottomOf="@+id/followPathTitle" >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:id="@+id/instruction_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+    </LinearLayout>
+
     <TextView
         android:id="@+id/receiveMotionDnaTextView"
         android:layout_width="wrap_content"
@@ -53,41 +70,66 @@
         android:scrollbars="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:layout_editor_absoluteY="605dp" />
+        app:layout_constraintBottom_toTopOf="@id/confirm_landmark" />
 
-    <Button
-        android:id="@+id/start_path_btn"
-        android:layout_width="159dp"
-        android:layout_height="60dp"
-        android:text="Start Replaying Path"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.849" />
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/confirm_landmark"
-        android:layout_width="159dp"
-        android:layout_height="60dp"
-        android:text="Confirm landmark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="#ABC3FF"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:gravity="center"
+        android:padding="15dp"
+        android:text="Confirm Landmark"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/btn_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.696" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/pause_path_btn"
-        android:layout_width="155dp"
-        android:layout_height="60dp"
-        android:text="Stop Replaying Path"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.851" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/btn_container"
+        app:layout_constraintBottom_toBottomOf="parent">
+      
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/start_path_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_height="120dp"
+            android:layout_marginBottom="0dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:background="#ABC3FF"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:gravity="center"
+            android:paddingBottom="0dp"
+            android:text="Start Replay Path"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:cornerRadius="0dp"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pause_path_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_height="120dp"
+            android:layout_marginBottom="0dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:background="#ABC3FF"
+            android:backgroundTint="@android:color/transparent"
+            android:gravity="center"
+            android:paddingBottom="0dp"
+            android:text="Stop Replay Path"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:cornerRadius="0dp"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

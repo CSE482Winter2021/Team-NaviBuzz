@@ -7,7 +7,7 @@ import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity (tableName = "points", foreignKeys = {@ForeignKey(entity = Path.class, parentColumns = "path_id",
-childColumns = "path_point_id")})
+childColumns = "path_id")})
 public class PathPoint {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "path_point_id")
