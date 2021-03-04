@@ -193,7 +193,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             public void onProviderEnabled(String provider) {}
             public void onProviderDisabled(String provider) {}
         };
-        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } else {
+            // Todo: Handle this error condition
+        }
     }
 
     private void initPath(String name) {
