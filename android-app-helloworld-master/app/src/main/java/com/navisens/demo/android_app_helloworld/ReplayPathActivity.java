@@ -81,7 +81,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         currLocation = new PathPoint(0, 0);
         lastLocation = new PathPoint(0, 0);
         Bundle bundle = getIntent().getExtras();
-        pid = getIntent().getLongExtra("currentPath");
+        pid = getIntent().getLongExtra("currentPath", 0);
         currPathCounter = 0;
 
         this.getSupportActionBar().hide();

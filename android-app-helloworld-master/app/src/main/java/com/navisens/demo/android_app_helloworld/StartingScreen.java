@@ -28,8 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class StartingScreen extends AppCompatActivity {
     private static final boolean TEST = true;
     private static final int[][][] TEST_PATHS = {
-            {{0,0}, {0,5}, {0,10}, {0,11}, {5,11}, {7,11}, {7,11},{5,9},{5,6}},
-            {}
+            {{0,0}, {0,5}, {0,10}, {0,11}, {5,11}, {7,11}, {7,11},{5,9},{5,6}}
     };
     private static final String[][] TEST_LANDMARKS = {
             {"Landmark 1", "Landmark 2", "Card Scanner", null, null, "Elevator", null, null, "Platform"},

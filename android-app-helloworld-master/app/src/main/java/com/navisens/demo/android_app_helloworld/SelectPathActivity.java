@@ -106,13 +106,19 @@ public class SelectPathActivity extends AppCompatActivity {
             
             TextView dist = new TextView(context);
             dist.setLayoutParams(textParams);
-            List<PathPoint> path = db.getPathDao.getPathById(p.pid);
+            List<PathPoint> path = db.getPathPointDao().getByPathId(p.pid);
             dist.setText("~ " + 
                          Math.round(Utils.estimateDistanceBetweenTwoPoints(new PathPoint(currLocation.getLatitude(), currLocation.getLongitude()), path.get(0))) + 
                          " meters away");
             dist.setTextColor(Color.BLACK);
             l.addView(dist);
             c.addView(l);
+
+            c.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    startNewActivity(ReplayPathActivity.class, p.pid);
+                }
+            });
 
             runOnUiThread(new Runnable() {
                 @Override
