@@ -48,6 +48,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     List<PathPoint> pathPoints;
     PathDatabase db;
     Map<PathPoint, CardView> pointCards;
+    boolean removeCardFlag;
 
     MotionDnaSDK motionDnaSDK;
     TextView reportStatusTextView;
@@ -76,7 +77,25 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
         pauseReplayBtn = findViewById(R.id.pause_path_btn);
         pauseReplayBtn.setEnabled(false);
-        //confirmLandmarkBtn = findViewById(R.id.confirm_landmark);
+        confirmLandmarkBtn = findViewById(R.id.confirm_landmark);
+        confirmLandmarkBtn.setEnabled(false);
+        // testing code
+//        confirmLandmarkBtn.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                instructionList.removeViewAt(0);
+//                CardView c = (CardView) instructionList.getChildAt(0);
+//                c.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+//
+//                LinearLayout l = (LinearLayout) c.getChildAt(0);
+//                int children = l.getChildCount();
+//                for (int i = 0; i < children; i++) {
+//                    TextView t = (TextView) l.getChildAt(i);
+//                    t.setTextColor(Color.WHITE);
+//                }
+//            }
+//        });
+
+
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
 
@@ -213,6 +232,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
         double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
         if (distanceBetweenPoints < 5) {
+            if (removeCardFlag) {
+                confirmLandmarkBtn.setEnabled(false);
+                instructionList.removeViewAt(0);
+            }
             currPathCounter++;
             PathPoint currPathPoint = pathPoints.get(currPathCounter);
             double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(currPathPoint, currLocation);
@@ -229,19 +252,34 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
 
             // For simplicity I'm going to assume they can only set 1 instruction or 1 landmark per point for now
-            if (!currPathPoint.instruction.equals("") && !currPathPoint.landmark.equals("")) {
-                throw new AssertionError("Can't have an instruction and a landmark (for now)");
-            }
+//            if (!currPathPoint.instruction.equals("") && !currPathPoint.landmark.equals("")) {
+//                throw new AssertionError("Can't have an instruction and a landmark (for now)");
+//            }
 
-            String customizedInstruction = currPathPoint.instruction;
+            String customizedInstruction = currPathPoint.instruction != null ? currPathPoint.instruction : "";
             if (!customizedInstruction.equals("")) {
                 ttobj.speak(customizedInstruction, TextToSpeech.QUEUE_ADD, null);
             }
 
-            String landmarkStr = currPathPoint.landmark;
+            String landmarkStr = currPathPoint.landmark != null ? currPathPoint.landmark : "";
             if (!customizedInstruction.equals("")) {
                 ttobj.speak(landmarkStr, TextToSpeech.QUEUE_ADD, null);
             }
+
+            if (pointCards.containsKey(currPathPoint)) {
+                CardView c = pointCards.get(currPathPoint);
+                c.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                int children = c.getChildCount();
+                for (int i = 0; i < children; i++) {
+                    TextView t = (TextView) c.getChildAt(i);
+                    t.setTextColor(Color.WHITE);
+                }
+                removeCardFlag = true;
+                if (currPathPoint.landmark != null) {
+                    confirmLandmarkBtn.setEnabled(true);
+                }
+            }
+
             printDebugInformation(motionDna, str);
         } else {
             // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case

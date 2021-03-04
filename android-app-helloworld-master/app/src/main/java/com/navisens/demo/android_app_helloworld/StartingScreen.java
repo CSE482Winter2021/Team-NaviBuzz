@@ -32,7 +32,7 @@ public class StartingScreen extends AppCompatActivity {
             {}
     };
     private static final String[][] TEST_LANDMARKS = {
-            {null, null, "Card Scanner", null, null, "Elevator", null, null, "Platform"},
+            {"Landmark 1", "Landmark 2", "Card Scanner", null, null, "Elevator", null, null, "Platform"},
             {}
     };
     private static final String[][] TEST_INSTRUCTIONS = {
