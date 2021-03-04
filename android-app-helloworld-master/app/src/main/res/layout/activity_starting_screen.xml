@@ -7,52 +7,73 @@
     android:layout_margin="0dp"
     android:layout_marginStart="0dp"
     android:layout_marginLeft="0dp"
-    android:layout_marginTop="0dp"
     android:layout_marginEnd="0dp"
     android:layout_marginRight="0dp"
     android:layout_marginBottom="0dp"
+    android:background="@color/antiqueWhite"
     android:padding="0dp"
     tools:context=".RecordPathActivity">
-
-    <TextView
-        android:id="@+id/reportStatusTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="0dp"
-        android:background="#FFFFFF"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="182dp"
-        tools:layout_editor_absoluteY="659dp">
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/record_path_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="5dp"
             android:background="#ABC3FF"
+            android:backgroundTint="@color/colorPrimary"
             android:fontFamily="sans-serif-black"
             android:text="Record Path"
             android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-            android:textColor="#000000"
-            android:textStyle="bold" />
+            android:textColor="@color/flatBlack"
+            android:textStyle="bold"
+            app:cornerRadius="15dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/replay_path_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="#FFD7D7"
+            android:layout_height="200dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/colorPrimary"
+            android:backgroundTint="@color/colorPrimaryDark"
             android:fontFamily="sans-serif-black"
             android:text="Replay Path"
             android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-            android:textColor="#000000"
-            android:textStyle="bold" />
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:cornerRadius="15dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/edit_path_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="0dp"
+            android:background="#FFD7D7"
+            android:backgroundTint="@color/colorAccent"
+            android:fontFamily="sans-serif-black"
+            android:text="Edit Path"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:cornerRadius="15dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

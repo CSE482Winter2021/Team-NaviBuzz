@@ -80,7 +80,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         db = Utils.setupDatabase(getApplicationContext());
         currLocation = new PathPoint(0, 0);
         lastLocation = new PathPoint(0, 0);
-        Bundle bundle = getIntent().getExtras();
         pid = getIntent().getLongExtra("currentPath", 0);
         currPathCounter = 0;
 
@@ -189,7 +188,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                     t.setLayoutParams(textParams);
                     t.setTextSize(20);
                     t.setTypeface(null, Typeface.BOLD);
-                    t.setTextColor(Color.BLACK);
+                    t.setTextColor(getResources().getColor(R.color.flatBlack));
                     l.addView(t);
                 }
                 if (p.instruction != null) {
@@ -200,7 +199,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                     t.setLayoutParams(textParams);
                     t.setTextSize(20);
 //                    t.setTypeface(null, Typeface.BOLD);
-                    t.setTextColor(Color.BLACK);
+                    t.setTextColor(getResources().getColor(R.color.flatBlack));
                     l.addView(t);
                 }
                 c.addView(l);

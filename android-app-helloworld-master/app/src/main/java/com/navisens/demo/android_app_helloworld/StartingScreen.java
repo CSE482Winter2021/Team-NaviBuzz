@@ -41,6 +41,7 @@ public class StartingScreen extends AppCompatActivity {
 
     Button recordPathOpt;
     Button selectPathOpt;
+    Button editPathOpt;
     PathDatabase db;
 
     @Override
@@ -53,6 +54,7 @@ public class StartingScreen extends AppCompatActivity {
         setContentView(R.layout.activity_starting_screen);
         recordPathOpt = findViewById(R.id.record_path_btn);
         selectPathOpt = findViewById(R.id.replay_path_btn);
+        editPathOpt = findViewById(R.id.edit_path_btn);
 
         recordPathOpt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -63,6 +65,12 @@ public class StartingScreen extends AppCompatActivity {
         selectPathOpt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startNewActivity(SelectPathActivity.class);
+            }
+        });
+
+        editPathOpt.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startNewActivity(SelectEditablePath.class);
             }
         });
 

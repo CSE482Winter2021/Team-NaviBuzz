@@ -4,18 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/antiqueWhite"
     tools:context=".RecordPathActivity">
-
-    <fragment
-        android:id="@+id/map"
-        class="com.google.android.gms.maps.MapFragment"
-        android:layout_width="500dp"
-        android:layout_height="201dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/see_debug_text"
@@ -27,6 +17,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/map"
         app:layout_constraintVertical_bias="0.2" />
+
+    <EditText
+        android:id="@+id/landmark_name"
+        android:layout_width="180dp"
+        android:layout_height="70dp"
+        android:backgroundTint="#FFFFFF"
+        android:ems="10"
+        android:hint="Landmark"
+        android:inputType="textPersonName"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/record_landmark"
+        app:layout_constraintEnd_toStartOf="@id/record_landmark"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/instruction_text"
+        android:layout_width="180dp"
+        android:layout_height="70dp"
+        android:ems="10"
+        android:hint="Instruction"
+        android:inputType="textPersonName"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/record_instruction"
+        app:layout_constraintEnd_toStartOf="@id/record_instruction"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.05" />
 
     <TextView
         android:id="@+id/receiveMotionDnaTextView"
@@ -43,7 +59,7 @@
         android:id="@+id/reportStatusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scrollbars = "vertical"
+        android:scrollbars="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/receiveMotionDnaTextView" />
@@ -51,9 +67,9 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/record_landmark"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:backgroundTint="@color/colorPrimaryDark"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimaryDark"
         android:text="Record Landmark"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -65,9 +81,9 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/record_instruction"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:backgroundTint="@color/colorPrimaryDark"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimaryDark"
         android:text="Record Instruction"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -76,32 +92,6 @@
         app:layout_constraintStart_toEndOf="@id/instruction_text"
         app:layout_constraintTop_toBottomOf="@id/record_landmark"
         app:layout_constraintVertical_bias="0.01" />
-
-    <EditText
-        android:id="@+id/landmark_name"
-        android:layout_width="180dp"
-        android:layout_height="70dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Landmark"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@id/record_landmark"
-        app:layout_constraintEnd_toStartOf="@id/record_landmark"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.05" />
-
-    <EditText
-        android:id="@+id/instruction_text"
-        android:layout_width="180dp"
-        android:layout_height="70dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Instruction"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@id/record_instruction"
-        app:layout_constraintEnd_toStartOf="@id/record_instruction"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.05" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/start_record_btn"
@@ -138,5 +128,16 @@
         app:rippleColor="#33AAAAAA"
         app:strokeColor="@color/colorPrimaryDark"
         app:strokeWidth="5dp" />
+
+    <fragment
+        android:id="@+id/map"
+        class="com.google.android.gms.maps.MapFragment"
+        android:layout_width="500dp"
+        android:layout_height="201dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
