@@ -29,4 +29,7 @@ public interface PathDao {
     @Query("DELETE FROM paths")
     public void deleteAll();
 
+    @Query("UPDATE paths SET name = :new_name WHERE path_id = :pid")
+    public void updateName(long pid, String new_name);
+
 }
