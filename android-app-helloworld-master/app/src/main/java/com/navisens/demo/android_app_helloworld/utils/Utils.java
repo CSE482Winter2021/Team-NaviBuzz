@@ -1,6 +1,8 @@
 package com.navisens.demo.android_app_helloworld.utils;
 
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 
 import com.navisens.demo.android_app_helloworld.database_obj.Path;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
@@ -23,13 +25,13 @@ public class Utils {
         db.getPathPointDao().addPathPoints(points);
     }
 
-    public static List<PathPoint> getPointsByPathIdFromDatabase(PathDatabase db, int pathId) {
-        return db.getPathPointDao().getByPathId(pathId);
-    }
+    //public static List<PathPoint> getPointsByPathIdFromDatabase(PathDatabase db, int pathId) {
+        //return db.getPathPointDao().getByPathId(pathId);
+    //}
 
-    public static List<Path> getUserPaths(PathDatabase db) {
-        return db.getPathDao().getAll();
-    }
+    //public static List<Path> getUserPaths(PathDatabase db) {
+        //return db.getPathDao().getAll();
+    //}
 
     /**
      * Given two points calculate the heading between them

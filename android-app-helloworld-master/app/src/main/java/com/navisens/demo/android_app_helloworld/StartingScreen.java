@@ -25,7 +25,7 @@ public class StartingScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Utils.setupDatabase(getApplicationContext());
-        this.getSupportActionBar().hide();
+         this.getSupportActionBar().hide();
 
         setContentView(R.layout.activity_starting_screen);
         recordPathOpt = findViewById(R.id.record_path_btn);

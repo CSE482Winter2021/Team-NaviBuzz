@@ -2,9 +2,11 @@ package com.navisens.demo.android_app_helloworld;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 import com.navisens.demo.android_app_helloworld.database_obj.Path;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
@@ -66,7 +70,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     LocationManager manager;
     PathPoint lastLocation;
     PathPoint currLocation;
-    Location gps;
+    boolean startMap = true;
+    Location initialGPSLocation;
+    MapFragment mapFragment;
     Context context;
     boolean isDebugToggled = false;
 
@@ -86,8 +92,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordLandmarkBtn = findViewById(R.id.record_landmark);
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
-        // Generate a new entry to the path table
-        pathId = db.getPathDao().insertPath(new Path());
+        //pathId = db.getPathDao().insertPath(new Path());
         // TODO: Make sure to delete the is path if there is a failure but we need to path id
         lastLocation = new PathPoint(0, 0, pathId);
         currLocation = new PathPoint(0, 0, pathId);
@@ -135,13 +140,29 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         // Requests app
         ActivityCompat.requestPermissions(this, MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
         manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                initialGPSLocation = location;
+                if (startMap) {
+                    startMap();
+                    startMap = false;
+                }
+            }
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onProviderEnabled(String provider) {}
+            public void onProviderDisabled(String provider) {}
+        };
+        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
+    private void startMap() {
+        mapFragment.getMapAsync(this);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -156,14 +177,16 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     public void startRecordingPath() {
+        //mapFragment.getMapAsync(this);
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
             HashMap<String, Object> config = new HashMap<String, Object>();
             config.put("gps", false);
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
-            motionDnaSDK.setGlobalPosition(gps.getLatitude(), gps.getLongitude());
-            motionDnaSDK.setGlobalHeading(gps.getBearing());
+            motionDnaSDK.setGlobalPosition(initialGPSLocation.getLatitude(), initialGPSLocation.getLongitude());
+            //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
+            motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
             stopPathBtn.setEnabled(true);
             startPathBtn.setEnabled(false);
         } else {
@@ -173,7 +196,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     public void stopRecordingPath() {
         motionDnaSDK.stop();
-        AsyncTask.execute(new Runnable() {
+        /*AsyncTask.execute(new Runnable() {
                               @Override
                               public void run() {
                                   //db.clearAllTables();
@@ -182,7 +205,19 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                                   System.out.println("paths are " + paths.size());
                                   currPath.clear();
                               }
-                          });
+                          });*/
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor prefsEditor = sp.edit();
+        int pid = sp.getInt("pid", 0) + 1;
+        prefsEditor.putInt("pid", 1);
+
+        Gson gson = new Gson();
+        List<PathPoint> textList = new ArrayList<PathPoint>(currPath);
+        String jsonText = gson.toJson(textList);
+        System.out.println("putting in pid " + pid);
+        prefsEditor.putString("path " + 1, jsonText);
+        prefsEditor.apply();
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -203,7 +238,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
         // Update location history if necessary
-        if (diffBetween > 2 || lastLocation.longitude == 0) {
+        if (diffBetween > 3  || lastLocation.longitude == 0) {
             runOnUiThread(new Runnable() {
 
                 @Override
@@ -238,9 +273,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                             .fillColor(Color.BLUE));
                 }
             });
-            // Todo: Fix 234
-            // TODO: Dylan curious about this... remind me to ask
-            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
+            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude));
             lastLocation = new PathPoint(currLocation);
 
             runOnUiThread(new Runnable() {
@@ -357,20 +390,14 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         super.onDestroy();
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we
-     * just add a marker near Africa.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            gps = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(gps.getLatitude(), gps.getLongitude()), 20f, 0, 0)));
+                    map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(initialGPSLocation.getLatitude(), initialGPSLocation.getLongitude()), 20f, 0, 0)));
                 }
             });
         }
