@@ -10,12 +10,14 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPointDao;
@@ -55,7 +57,7 @@ public class EditPathActivity extends AppCompatActivity {
                             LinearLayout l = (LinearLayout) pointCards.get(p).getChildAt(0);
                             int i = 0;
                             if (p.landmark != null) {
-                                EditText t = (EditText) l.getChildAt(0);
+                                EditText t = ((TextInputLayout) l.getChildAt(0)).getEditText();
                                 final String landmark = t.getText().toString();
                                 i = 1;
                                 if (!p.landmark.equals(landmark)) {
@@ -68,7 +70,7 @@ public class EditPathActivity extends AppCompatActivity {
                                 }
                             }
                             if (p.instruction != null) {
-                                EditText t = (EditText) l.getChildAt(i);
+                                EditText t = ((TextInputLayout) l.getChildAt(i)).getEditText();
                                 final String instruction = t.getText().toString();
                                 if (!p.instruction.equals(instruction)) {
                                     AsyncTask.execute(new Runnable() {
@@ -108,57 +110,64 @@ public class EditPathActivity extends AppCompatActivity {
     }
 
     private void initCardList() {
+        LayoutInflater inflater = getLayoutInflater();
         pointCards = new HashMap<PathPoint, CardView>();
         instructionList = findViewById(R.id.instruction_list);
-        final Context context = instructionList.getContext();
 
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         cardParams.setMargins(30, 15, 30, 15);
 
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-
         for (final PathPoint p : pathPoints) {
-            if (p.instruction != null || p.landmark != null) {
-                final CardView c = new CardView(context);
+             if (p.instruction != null && p.landmark != null) {
+                final CardView c = (CardView) inflater.inflate(R.layout.path_point_double_card_editable, null);
                 c.setLayoutParams(cardParams);
-                c.setMinimumHeight(200);
-                c.setBackgroundColor(Color.WHITE);
-                c.setContentPadding(50, 50, 50, 50);
                 c.setId((int) p.pid);
-                LinearLayout l = new LinearLayout(context);
-                l.setOrientation(LinearLayout.VERTICAL);
-                if (p.landmark != null) {
-                    System.out.println(p.landmark);
 
-                    EditText t = new EditText(context);
-                    t.setText(p.landmark);
-                    t.setId((int) p.pid);
-                    t.setLayoutParams(textParams);
-                    t.setTextSize(20);
-//                    t.setTypeface(null, Typeface.BOLD);
-                    t.setTextColor(getResources().getColor(R.color.flatBlack));
-                    l.addView(t);
-                }
-                if (p.instruction != null) {
-                    System.out.println(p.instruction);
-                    EditText t = new EditText(context);
-                    t.setText(p.instruction);
-                    t.setId((int) p.pid + 1);
-                    t.setLayoutParams(textParams);
-                    t.setTextSize(20);
-//                    t.setTypeface(null, Typeface.BOLD);
-                    t.setTextColor(Color.BLACK);
-                    l.addView(t);
-                }
-                c.addView(l);
+                TextInputLayout landmark = c.findViewById(R.id.landmark);
+                final EditText l = landmark.getEditText();
+
+                TextInputLayout instruction = c.findViewById(R.id.instruction);
+                final EditText i = instruction.getEditText();
+
                 pointCards.put(p, c);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        l.setText(p.landmark);
+                        i.setText(p.instruction);
+                        instructionList.addView(c);
+                    }
+                });
+
+            } else if (p.landmark != null || p.instruction != null) {
+                String temp = "";
+                String tempType = "";
+                if (p.landmark != null) {
+                    temp = p.landmark;
+                    tempType = "Landmark";
+                } else {
+                    temp = p.instruction;
+                    tempType = "Instruction";
+                }
+
+                final String waypoint = temp;
+                final String waypointType = tempType;
+
+                final CardView c = (CardView) inflater.inflate(R.layout.path_point_single_card_editable, null);
+                c.setLayoutParams(cardParams);
+                c.setId((int) p.pid);
+
+                final TextInputLayout info = c.findViewById(R.id.path_point_info);
+                final EditText w = info.getEditText();
+
+                pointCards.put(p, c);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        w.setText(waypoint);
+                        info.setHint(waypointType);
                         instructionList.addView(c);
                     }
                 });

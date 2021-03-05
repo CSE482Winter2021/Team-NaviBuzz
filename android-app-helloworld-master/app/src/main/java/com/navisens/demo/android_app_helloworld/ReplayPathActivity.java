@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View;
@@ -163,6 +164,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     private void initCardList() {
+        LayoutInflater inflater = getLayoutInflater();
         pointCards = new HashMap<PathPoint, CardView>();
         instructionList = findViewById(R.id.instruction_list);
         final Context context = instructionList.getContext();
@@ -178,38 +180,38 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         // textParams.gravity = Gravity.CENTER_VERTICAL;
 
         for (final PathPoint p : pathPoints) {
-            if (p.instruction != null || p.landmark != null) {
-                final CardView c = new CardView(context);
+            if (p.instruction != null && p.landmark != null) {
+                final CardView c = (CardView) inflater.inflate(R.layout.path_point_double_card, null);
                 c.setLayoutParams(cardParams);
-                c.setMinimumHeight(200);
-                c.setContentPadding(50, 50, 50, 50);
-                c.setBackgroundColor(Color.WHITE);
                 c.setId((int) p.pid);
-                LinearLayout l = new LinearLayout(context);
-                l.setOrientation(LinearLayout.VERTICAL);
-                if (p.landmark != null) {
-                    System.out.println(p.landmark);
-                    TextView t = new TextView(context);
-                    t.setText(p.landmark);
-                    t.setId((int) p.pid);
-                    t.setLayoutParams(textParams);
-                    t.setTextSize(20);
-                    t.setTypeface(null, Typeface.BOLD);
-                    t.setTextColor(getResources().getColor(R.color.flatBlack));
-                    l.addView(t);
-                }
-                if (p.instruction != null) {
-                    System.out.println(p.instruction);
-                    TextView t = new TextView(context);
-                    t.setText(p.instruction);
-                    t.setId((int) p.pid);
-                    t.setLayoutParams(textParams);
-                    t.setTextSize(20);
-//                    t.setTypeface(null, Typeface.BOLD);
-                    t.setTextColor(getResources().getColor(R.color.flatBlack));
-                    l.addView(t);
-                }
-                c.addView(l);
+
+                TextView landmark = c.findViewById(R.id.landmark);
+                landmark.setText(p.landmark);
+
+                TextView instruction = c.findViewById(R.id.instruction);
+                instruction.setText(p.instruction);
+
+                pointCards.put(p, c);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        instructionList.addView(c);
+                    }
+                });
+
+            } else if (p.landmark != null || p.instruction != null) {
+                String waypoint = "";
+                if (p.landmark != null) waypoint = p.landmark;
+                else waypoint = p.instruction;
+
+                final CardView c = (CardView) inflater.inflate(R.layout.path_point_single_card, null);
+                c.setLayoutParams(cardParams);
+                c.setId((int) p.pid);
+
+                TextView w = c.findViewById(R.id.waypoint);
+                w.setText(waypoint);
+                if (p.landmark != null) w.setTypeface(null, Typeface.BOLD);
+
                 pointCards.put(p, c);
                 runOnUiThread(new Runnable() {
                     @Override
