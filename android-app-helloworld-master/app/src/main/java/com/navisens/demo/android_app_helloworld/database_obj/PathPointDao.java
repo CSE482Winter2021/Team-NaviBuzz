@@ -15,7 +15,7 @@ public interface PathPointDao {
     @Query ("SELECT * FROM points WHERE path_id = :p ORDER BY path_point_id ASC")
     public List<PathPoint> getByPathId(long p);
 
-    @Query("SELECT min(path_point_id) FROM points WHERE path_id = :p")
+    @Query("SELECT  * FROM points WHERE path_id = :p GROUP BY path_point_id HAVING min(path_point_id)")
     public PathPoint getFirstPointByPathId(long p);
 
     @Insert
