@@ -22,6 +22,7 @@
 - Waypoint list is static
 - "Stop Path" currently only capable of fully stoping path, would be useful to be able to pause
 - using a duplicate path name for a new path fully crashes the app, should be an error message
+- path name gets saved even if user never records path
 
 ## Conclusion
 
