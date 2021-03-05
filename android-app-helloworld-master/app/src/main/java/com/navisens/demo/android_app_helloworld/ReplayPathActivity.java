@@ -81,7 +81,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         currLocation = new PathPoint(0, 0);
         lastLocation = new PathPoint(0, 0);
         pid = getIntent().getLongExtra("currentPath", 0);
-        currPathCounter = 0;
+        currPathCounter = 1;
 
         this.getSupportActionBar().hide();
         startReplayBtn = findViewById(R.id.start_path_btn);
@@ -149,7 +149,11 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             public void onProviderEnabled(String provider) {}
             public void onProviderDisabled(String provider) {}
         };
-        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } else {
+            // Todo: Handle this error condition
+        }
     }
 
     private void startMap() {
@@ -319,11 +323,22 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                   confirmLandmarkBtn.setEnabled(false);
                   instructionList.removeViewAt(0);
                 }
-              
-                currPathCounter++;
+
                 PathPoint currPathPoint = pathPoints.get(currPathCounter);
-                double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(currPathPoint, currLocation);
-                double headingBetweenPoints = Math.abs(Utils.getHeadingBetweenGPSPoints(currPathPoint, currLocation) - 180);
+                String customizedInstruction = currPathPoint.instruction;
+                if (customizedInstruction != null && !customizedInstruction.equals("")) {
+                    ttobj.speak("An instruction has been set here " + customizedInstruction, TextToSpeech.QUEUE_ADD, null);
+                }
+
+                String landmarkStr = currPathPoint.landmark;
+                if (landmarkStr != null && !landmarkStr.equals("")) {
+                    ttobj.speak("There is a recorded landmark here called " + landmarkStr + " please confirm", TextToSpeech.QUEUE_ADD, null);
+                }
+
+                currPathCounter++;
+                PathPoint nextPathPoint = pathPoints.get(currPathCounter);
+                double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(nextPathPoint, currLocation);
+                double headingBetweenPoints = Math.abs(Utils.getHeadingBetweenGPSPoints(nextPathPoint, currLocation) - 180);
 
                 // Todo: Add unit customization
                 final String instructionStr = "walk straight " + Math.round(distanceToNextPoint) + " meters";
@@ -339,17 +354,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 /*if (!currPathPoint.instruction.equals("") && !currPathPoint.landmark.equals("")) {
                     throw new AssertionError("Can't have an instruction and a landmark (for now)");
                 }*/
-                
-                // TODO: These are instructions for the *next* point, giving them here feels wrong
-                String customizedInstruction = currPathPoint.instruction;
-                if (customizedInstruction != null && !customizedInstruction.equals("")) {
-                    ttobj.speak("An instruction has been set here " + customizedInstruction, TextToSpeech.QUEUE_ADD, null);
-                }
-
-                String landmarkStr = currPathPoint.landmark;
-                if (landmarkStr != null && !landmarkStr.equals("")) {
-                    ttobj.speak("There is a recorded landmark here called " + landmarkStr + " please confirm", TextToSpeech.QUEUE_ADD, null);
-                }
               
                 // TODO: check that this is happeneing at the correct time
                 if (pointCards.containsKey(currPathPoint)) {
@@ -463,11 +467,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 //        });
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we
-     * just add a marker near Africa.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
