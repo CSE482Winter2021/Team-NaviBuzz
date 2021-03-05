@@ -80,15 +80,6 @@ public class EditPathActivity extends AppCompatActivity {
                                 }
                             }
                         }
-
-//                        AsyncTask.execute(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                // TODO: change this if Allyson creates a better way to update points
-//                                db.getPathPointDao().deleteByPathId(pid);
-//                                db.getPathPointDao().addPathPoints(pathPoints);
-//                            }
-//                        });
                         SelectEditablePath.curr.finish();
                         finish();
                     }

@@ -3,13 +3,15 @@ package com.navisens.demo.android_app_helloworld;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,26 +22,24 @@ import com.navisens.demo.android_app_helloworld.utils.Utils;
 
 import java.util.List;
 
-public class SelectEditablePath extends AppCompatActivity {
+public class DeletePathActivity extends AppCompatActivity {
     List<Path> paths;
     PathDatabase db;
-    Button deletePathsBtn;
-    public static SelectEditablePath curr;
-    public static boolean deleteMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_edit_path);
+        setContentView(R.layout.activity_delete_path);
         db = Utils.setupDatabase(getApplicationContext());
-        curr = this;
-        deleteMode = false;
-        deletePathsBtn = findViewById(R.id.delete_paths);
-
         initPathsList();
-        deletePathsBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                toggleDeleteMode();
+    }
+
+    private void initPathsList() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                paths = db.getPathDao().getAll();
+                addCardView();
             }
         });
     }
@@ -57,7 +57,10 @@ public class SelectEditablePath extends AppCompatActivity {
             c.setLayoutParams(cardParams);
             c.setId((int) p.pid);
 
-            final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(SelectEditablePath.this);
+            TextView name = c.findViewById(R.id.pathName);
+            name.setText(p.name);
+
+            final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(DeletePathActivity.this);
             builder.setTitle("Confirm Path Deletion")
                     .setMessage("Are you sure you want to delete path " + p.name + "?")
                     .setPositiveButton("Delete Path", new DialogInterface.OnClickListener() {
@@ -81,16 +84,9 @@ public class SelectEditablePath extends AppCompatActivity {
 
             c.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if (deleteMode) {
-                        builder.show();
-                    } else {
-                        startNewActivity(EditPathActivity.class, p.pid);
-                    }
+                    builder.show();
                 }
             });
-
-            TextView name = c.findViewById(R.id.pathName);
-            name.setText(p.name);
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -98,36 +94,7 @@ public class SelectEditablePath extends AppCompatActivity {
                     pathList.addView(c);
                 }
             });
-        }
-    }
 
-    private void initPathsList() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                paths = db.getPathDao().getAll();
-                addCardView();
-            }
-        });
-    }
-
-    private void startNewActivity(Class activity, long pid) {
-        Intent intent = new Intent(this, activity);
-        intent.putExtra("currentPath", pid);
-        startActivity(intent);
-    }
-
-    private void startNewActivity(Class activity) {
-        Intent intent = new Intent(this, activity);
-        startActivity(intent);
-    }
-
-    private void toggleDeleteMode() {
-        deleteMode = !deleteMode;
-        if (deleteMode) {
-            deletePathsBtn.setText("Exit Delete Mode");
-        } else {
-            deletePathsBtn.setText("Delete Paths");
         }
     }
 }

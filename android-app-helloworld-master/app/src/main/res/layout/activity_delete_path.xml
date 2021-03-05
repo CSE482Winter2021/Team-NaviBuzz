@@ -5,11 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/antiqueWhite">
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
+        app:layout_constraintTop_toBottomOf="@+id/deletePathsTitle">
 
         <LinearLayout
             android:id="@+id/path_list"
@@ -19,13 +18,13 @@
     </ScrollView>
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/deletePathsTitle"
         android:layout_width="match_parent"
         android:layout_height="94dp"
         android:background="@color/flatBlack"
         android:gravity="center_vertical"
         android:paddingLeft="20dp"
-        android:text="Select Path"
+        android:text="Delete Paths"
         android:textAlignment="inherit"
         android:textColor="#FFFFFF"
         android:textSize="36sp"

@@ -61,6 +61,8 @@ import java.util.UUID;
  * https://github.com/navisens/NaviDocs/blob/master/API.Android.md
  */
 public class RecordPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
+    private static final boolean DEBUG = false;
+
     MotionDnaSDK motionDnaSDK;
     TextView receiveMotionDnaTextView;
     TextView reportStatusTextView;
@@ -181,32 +183,37 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 recordInstruction();
             }
         });
-      
-        seeDebugText.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                isDebugToggled = !isDebugToggled;
-                if (isDebugToggled) {
-                    receiveMotionDnaTextView.setVisibility(View.VISIBLE);
-                    recordInstructionBtn.setVisibility(View.INVISIBLE);
-                    instructionString.setVisibility(View.INVISIBLE);
-                    landmarkName.setVisibility(View.INVISIBLE);
-                    startPathBtn.setVisibility(View.INVISIBLE);
-                    stopPathBtn.setVisibility(View.INVISIBLE);
-                    recordInstructionBtn.setVisibility(View.INVISIBLE);
-                    recordLandmarkBtn.setVisibility(View.INVISIBLE);
-                } else {
-                    receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
-                    recordInstructionBtn.setVisibility(View.VISIBLE);
-                    instructionString.setVisibility(View.VISIBLE);
-                    landmarkName.setVisibility(View.VISIBLE);
-                    startPathBtn.setVisibility(View.VISIBLE);
-                    stopPathBtn.setVisibility(View.VISIBLE);
-                    recordInstructionBtn.setVisibility(View.VISIBLE);
-                    recordLandmarkBtn.setVisibility(View.VISIBLE);
+
+        if (DEBUG) {
+            seeDebugText.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View v) {
+                    isDebugToggled = !isDebugToggled;
+                    if (isDebugToggled) {
+                        receiveMotionDnaTextView.setVisibility(View.VISIBLE);
+                        recordInstructionBtn.setVisibility(View.INVISIBLE);
+                        instructionString.setVisibility(View.INVISIBLE);
+                        landmarkName.setVisibility(View.INVISIBLE);
+                        startPathBtn.setVisibility(View.INVISIBLE);
+                        stopPathBtn.setVisibility(View.INVISIBLE);
+                        recordInstructionBtn.setVisibility(View.INVISIBLE);
+                        recordLandmarkBtn.setVisibility(View.INVISIBLE);
+                    } else {
+                        receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
+                        recordInstructionBtn.setVisibility(View.VISIBLE);
+                        instructionString.setVisibility(View.VISIBLE);
+                        landmarkName.setVisibility(View.VISIBLE);
+                        startPathBtn.setVisibility(View.VISIBLE);
+                        stopPathBtn.setVisibility(View.VISIBLE);
+                        recordInstructionBtn.setVisibility(View.VISIBLE);
+                        recordLandmarkBtn.setVisibility(View.VISIBLE);
+                    }
                 }
-            }
-        });
-      
+            });
+        } else {
+            seeDebugText.setVisibility(View.INVISIBLE);
+            reportStatusTextView.setVisibility(View.INVISIBLE);
+        }
+
         stopPathBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 stopRecordingPath();
@@ -512,7 +519,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         System.out.println(currPath);
         System.out.println(pathId);
         System.out.println(path);
-        if (currPath.isEmpty()) {
+        if (currPath.isEmpty() && pathName != null) {
             AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -535,11 +542,5 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             });
         }
-    }
-
-    private void startNewActivity(Class activity, long pid) {
-        Intent intent = new Intent(this, activity);
-        intent.putExtra("currentPath", pid);
-        startActivity(intent);
     }
 }

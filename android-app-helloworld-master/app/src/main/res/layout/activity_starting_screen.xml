@@ -65,7 +65,7 @@
             android:layout_marginBottom="0dp"
             android:backgroundTint="@color/colorAccent"
             android:fontFamily="sans-serif-black"
-            android:text="Edit Path"
+            android:text="Edit Paths"
             android:textAppearance="@style/TextAppearance.AppCompat.Display3"
             android:textColor="#FFFFFF"
             android:textSize="45sp"
