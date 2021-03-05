@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.widget.LinearLayout;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.gson.Gson;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +52,9 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
+    private static final boolean TEST = true;
+    private static final boolean DEBUG = false;
+
     long pid;
     LinearLayout instructionList;
     List<PathPoint> pathPoints;
@@ -62,6 +67,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     TextView receiveMotionDnaTextView;
     Button startReplayBtn;
     Button pauseReplayBtn;
+    MaterialButtonToggleGroup toggleGroup;
     Button confirmLandmarkBtn;
     LocationManager manager;
     Location initialGPSLocation;
@@ -84,28 +90,30 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         pid = getIntent().getLongExtra("currentPath", 0);
         currPathCounter = 1;
 
-        this.getSupportActionBar().hide();
+//        this.getSupportActionBar().hide();
+        toggleGroup = findViewById(R.id.btn_container);
+        toggleGroup.uncheck(R.id.start_path_btn);
+        toggleGroup.check(R.id.start_path_btn);
         startReplayBtn = findViewById(R.id.start_path_btn);
+        reportStatusTextView = findViewById(R.id.reportStatusTextView);
         receiveMotionDnaTextView = findViewById(R.id.receiveMotionDnaTextView);
         pauseReplayBtn = findViewById(R.id.pause_path_btn);
-        pauseReplayBtn.setEnabled(false);
         confirmLandmarkBtn = findViewById(R.id.confirm_landmark);
+
+        startReplayBtn.setEnabled(false);
+        pauseReplayBtn.setEnabled(false);
         confirmLandmarkBtn.setEnabled(false);
+
+        if (!DEBUG) {
+            reportStatusTextView.setVisibility(View.INVISIBLE);
+            receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
+        }
         // testing code
-//        confirmLandmarkBtn.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                instructionList.removeViewAt(0);
-//                CardView c = (CardView) instructionList.getChildAt(0);
-//                c.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-//
-//                LinearLayout l = (LinearLayout) c.getChildAt(0);
-//                int children = l.getChildCount();
-//                for (int i = 0; i < children; i++) {
-//                    TextView t = (TextView) l.getChildAt(i);
-//                    t.setTextColor(Color.WHITE);
-//                }
-//            }
-//        });
+        confirmLandmarkBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // TODO: add landmark confirmation code
+            }
+        });
 
 
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
@@ -115,13 +123,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-//                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//                 Gson gson = new Gson();
-//                 System.out.println("taking out pid " + pid);
-//                 String jsonText = sp.getString("path " + pid, null);
-//                 List<PathPoint> path = new ArrayList<PathPoint>(Arrays.asList(gson.fromJson(jsonText, PathPoint[].class)));
-//                 pathPoints = path;
-              
                 pathPoints = db.getPathPointDao().getByPathId(pid);
                 System.out.println("path points are: " + pathPoints.size());
                 initCardList();
@@ -182,6 +183,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 c.setLayoutParams(cardParams);
                 c.setMinimumHeight(200);
                 c.setContentPadding(50, 50, 50, 50);
+                c.setBackgroundColor(Color.WHITE);
                 c.setId((int) p.pid);
                 LinearLayout l = new LinearLayout(context);
                 l.setOrientation(LinearLayout.VERTICAL);
@@ -223,6 +225,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (MotionDnaSDK.checkMotionDnaPermissions(this)) // permissions already requested
         {
+            startReplayBtn.setEnabled(true);
             startReplayBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     startReplayPath();
@@ -231,6 +234,30 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             pauseReplayBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     pauseReplayPath();
+                }
+            });
+            toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
+                @Override
+                public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+                    if (checkedId == R.id.start_path_btn) {
+                        startReplayBtn.setEnabled(false);
+                        startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.antiqueWhite)));
+                        startReplayBtn.setTextColor(getResources().getColor(R.color.flatBlack));
+                        pauseReplayBtn.setEnabled(true);
+                        pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+                        pauseReplayBtn.setTextColor(Color.WHITE);
+                        confirmLandmarkBtn.setEnabled(true);
+                        System.out.println("click on start button, checked = " + isChecked);
+                    } else {
+                        startReplayBtn.setEnabled(true);
+                        startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+                        startReplayBtn.setTextColor(Color.WHITE);
+                        pauseReplayBtn.setEnabled(false);
+                        pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.antiqueWhite)));
+                        pauseReplayBtn.setTextColor(getResources().getColor(R.color.flatBlack));
+                        confirmLandmarkBtn.setEnabled(false);
+                        System.out.println("click on stop button, checked = " + isChecked);
+                    }
                 }
             });
         }
@@ -243,27 +270,26 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
             //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             //motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
-            startReplayBtn.setEnabled(false);
-//            startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
-//            startReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            pauseReplayBtn.setEnabled(true);
-            confirmLandmarkBtn.setEnabled(true);
-//            pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
-//            pauseReplayBtn.setTextColor(Color.WHITE);
+
+
         } else {
             // service error, GPS is not on
         }
     }
 
     public void pauseReplayPath() {
-        startReplayBtn.setEnabled(true);
-//        startReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
-//        startReplayBtn.setTextColor(Color.WHITE);
-//
-        pauseReplayBtn.setEnabled(false);
-        confirmLandmarkBtn.setEnabled(false);
-//        pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
-//        pauseReplayBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        if (TEST || currPathCounter == pathPoints.size() - 1) {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    SelectPathActivity.curr.finish();
+                    finish();
+                }
+            }, 500);
+        } else {
+            // TODO: add code for pausing the path
+        }
     }
 
     @Override

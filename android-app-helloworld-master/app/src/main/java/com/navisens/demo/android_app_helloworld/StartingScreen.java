@@ -26,17 +26,16 @@ import androidx.appcompat.app.AppCompatActivity;
  * Optionally a login once user accounts are added
  */
 public class StartingScreen extends AppCompatActivity {
-    private static final boolean TEST = true;
+    private static final boolean TEST = false;
+    private static final boolean CLEAN = false;
     private static final int[][][] TEST_PATHS = {
             {{0,0}, {0,5}, {0,10}, {0,11}, {5,11}, {7,11}, {7,11},{5,9},{5,6}}
     };
     private static final String[][] TEST_LANDMARKS = {
-            {"Landmark 1", "Landmark 2", "Card Scanner", null, null, "Elevator", null, null, "Platform"},
-            {}
+            {"Landmark 1", "Landmark 2", "Card Scanner", null, null, "Elevator", null, null, "Platform"}
     };
     private static final String[][] TEST_INSTRUCTIONS = {
-            {null, null, null, "Turn 90 degrees to the left", null, "take elevator to floor P", "exit the elevator", null, null},
-            {}
+            {null, null, null, "Turn 90 degrees to the left", null, "take elevator to floor P", "exit the elevator", null, null}
     };
 
     Button recordPathOpt;
@@ -49,7 +48,7 @@ public class StartingScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         db = Utils.setupDatabase(getApplicationContext());
 
-        this.getSupportActionBar().hide();
+//        this.getSupportActionBar().hide();
 
         setContentView(R.layout.activity_starting_screen);
         recordPathOpt = findViewById(R.id.record_path_btn);
@@ -75,6 +74,14 @@ public class StartingScreen extends AppCompatActivity {
         });
 
         Speech.init(this, getPackageName());
+        if (CLEAN) {
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    db.cleanUp();
+                }
+            });
+        }
         if (TEST) {
             final List<Path> testPaths = new ArrayList<Path>();
             for (int i = 0; i < TEST_PATHS.length; i++) {

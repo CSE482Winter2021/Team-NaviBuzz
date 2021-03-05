@@ -33,7 +33,7 @@ public class SelectEditablePath extends AppCompatActivity {
         db = Utils.setupDatabase(getApplicationContext());
         curr = this;
 
-        this.getSupportActionBar().hide();
+//        this.getSupportActionBar().hide();
 
         initPathsList();
     }
@@ -54,6 +54,7 @@ public class SelectEditablePath extends AppCompatActivity {
             final CardView c = new CardView(context);
             c.setLayoutParams(cardParams);
             c.setMinimumHeight(200);
+            c.setBackgroundColor(Color.WHITE);
             c.setContentPadding(50, 50, 50, 50);
             c.setId((int) p.pid);
 

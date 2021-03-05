@@ -14,7 +14,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".SelectEditablePath" />
-        <activity android:name=".SavePathActivity" />
         <activity android:name=".SelectPathActivity" />
         <activity
             android:name=".RecordPathActivity"

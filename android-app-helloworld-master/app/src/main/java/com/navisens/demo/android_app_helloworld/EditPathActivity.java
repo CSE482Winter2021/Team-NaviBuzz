@@ -38,7 +38,7 @@ public class EditPathActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_path);
-        this.getSupportActionBar().hide();
+//        this.getSupportActionBar().hide();
 
         db = Utils.setupDatabase(getApplicationContext());
         pid = getIntent().getLongExtra("currentPath", 0);
@@ -135,12 +135,14 @@ public class EditPathActivity extends AppCompatActivity {
                 final CardView c = new CardView(context);
                 c.setLayoutParams(cardParams);
                 c.setMinimumHeight(200);
+                c.setBackgroundColor(Color.WHITE);
                 c.setContentPadding(50, 50, 50, 50);
                 c.setId((int) p.pid);
                 LinearLayout l = new LinearLayout(context);
                 l.setOrientation(LinearLayout.VERTICAL);
                 if (p.landmark != null) {
                     System.out.println(p.landmark);
+
                     EditText t = new EditText(context);
                     t.setText(p.landmark);
                     t.setId((int) p.pid);

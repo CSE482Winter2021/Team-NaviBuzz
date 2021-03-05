@@ -27,6 +27,8 @@
         android:hint="Landmark"
         android:inputType="textPersonName"
         android:textSize="24sp"
+        android:textColor="#000000"
+        android:textColorHint="#000000"
         app:layout_constraintBottom_toBottomOf="@id/record_landmark"
         app:layout_constraintEnd_toStartOf="@id/record_landmark"
         app:layout_constraintStart_toStartOf="parent" />
@@ -39,6 +41,8 @@
         android:hint="Instruction"
         android:inputType="textPersonName"
         android:textSize="24sp"
+        android:textColor="#000000"
+        android:textColorHint="#000000"
         app:layout_constraintBottom_toBottomOf="@id/record_instruction"
         app:layout_constraintEnd_toStartOf="@id/record_instruction"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,12 +70,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/record_landmark"
-        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorPrimaryDark"
         android:text="Record Landmark"
-        android:textSize="22sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/landmark_name"
@@ -80,14 +83,12 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/record_instruction"
-        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorPrimaryDark"
         android:text="Record Instruction"
-        android:textSize="22sp"
+        android:textSize="18sp"
         android:textStyle="bold"
-        app:cornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/instruction_text"
         app:layout_constraintTop_toBottomOf="@id/record_landmark"
@@ -95,12 +96,12 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/start_record_btn"
-        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="350dp"
         android:layout_height="80dp"
         android:backgroundTint="@color/colorPrimaryDark"
         android:text="Start Recording Path"
-        android:textSize="24sp"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -111,13 +112,13 @@
         app:strokeWidth="5dp" />
 
     <com.google.android.material.button.MaterialButton
+        style="?attr/materialButtonOutlinedStyle"
         android:id="@+id/stop_record_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="350dp"
         android:layout_height="80dp"
         android:text="Stop Recording Path"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:backgroundTint="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -127,7 +128,7 @@
         app:layout_constraintVertical_bias="0.1"
         app:rippleColor="#33AAAAAA"
         app:strokeColor="@color/colorPrimaryDark"
-        app:strokeWidth="5dp" />
+        app:strokeWidth="3dp" />
 
     <fragment
         android:id="@+id/map"

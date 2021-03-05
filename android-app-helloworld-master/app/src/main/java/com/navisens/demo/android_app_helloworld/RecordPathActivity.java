@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.icu.text.AlphabeticIndex;
 import android.location.Location;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.navisens.demo.android_app_helloworld.database_obj.Path;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
@@ -102,16 +104,23 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
         LayoutInflater inflater = getLayoutInflater();
         final View v = inflater.inflate(R.layout.path_name_dialog, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(RecordPathActivity.this);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(RecordPathActivity.this);
         builder.setTitle("Input Path Title")
             .setView(v)
             .setPositiveButton("Set Name", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {}
+            })
+            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    finish();
+                }
             });
 
         final AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
+//        dialog.setCancelable(false);
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +140,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
         
-        this.getSupportActionBar().hide();
+//        this.getSupportActionBar().hide();
         
         recordInstructionBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -249,6 +258,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             recordInstructionBtn.setEnabled(true);
             recordLandmarkBtn.setEnabled(true);
             startPathBtn.setEnabled(false);
+            stopPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+            stopPathBtn.setTextColor(Color.WHITE);
+            startPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.antiqueWhite)));
+            startPathBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
         } else {
             // service error, GPS is not on
         }
@@ -290,6 +303,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordInstructionBtn.setEnabled(false);
         recordLandmarkBtn.setEnabled(false);
         startPathBtn.setEnabled(true);
+        startPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
+        startPathBtn.setTextColor(Color.WHITE);
+        stopPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.antiqueWhite)));
+        stopPathBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
         finish();
 //         startNewActivity(SavePathActivity.class, pathId);
     }

@@ -34,22 +34,29 @@ import com.navisens.demo.android_app_helloworld.utils.Utils;
 import net.gotev.speech.Speech;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class SelectPathActivity extends AppCompatActivity {
+    private static Map<Long, Integer> cachedDistances;
     List<Path> paths;
     PathDatabase db;
     boolean startList = true;
     Location currLocation;
+    public static SelectPathActivity curr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_path);
+        curr = this;
         db = Utils.setupDatabase(getApplicationContext());
         paths = new ArrayList<Path>();
-
+        if (cachedDistances == null) {
+            cachedDistances = new HashMap<Long, Integer>();
+        }
 
         LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
@@ -76,7 +83,7 @@ public class SelectPathActivity extends AppCompatActivity {
             // Todo: Handle this error condition
         }
 
-        this.getSupportActionBar().hide();
+//        this.getSupportActionBar().hide();
     }
 
     private void addCardView() {
@@ -95,10 +102,17 @@ public class SelectPathActivity extends AppCompatActivity {
             final CardView c = new CardView(context);
             c.setLayoutParams(cardParams);
             c.setMinimumHeight(200);
+            c.setBackgroundColor(Color.WHITE);
             c.setContentPadding(50, 50, 50, 50);
             c.setId((int) p.pid);
+            c.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    startNewActivity(ReplayPathActivity.class, p.pid);
+                }
+            });
 
             LinearLayout l = new LinearLayout(context);
+            c.addView(l);
             l.setOrientation(LinearLayout.VERTICAL);
             TextView t = new TextView(context);
             t.setId((int) p.pid);
@@ -108,35 +122,14 @@ public class SelectPathActivity extends AppCompatActivity {
             t.setTypeface(null, Typeface.BOLD);
             t.setTextColor(getResources().getColor(R.color.flatBlack));
             l.addView(t);
-          
-//             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//             Gson gson = new Gson();
-//             System.out.println("taking out pid " + i);
-//             String jsonText = sp.getString("path " + (i + 1), null);
-//             List<PathPoint> path = new ArrayList<PathPoint>(Arrays.asList(gson.fromJson(jsonText, PathPoint[].class)));
-//             t.append(paths.get(i).name+ "    ~ " + Math.round(Utils.estimateDistanceBetweenTwoPoints(new PathPoint(currLocation.getLatitude(), currLocation.getLongitude()), path.get(0))) + " meters away");
-            PathPoint start = db.getPathPointDao().getFirstPointByPathId(p.pid);
 
-            // for testing
-            if (start != null) {
-                TextView dist = new TextView(context);
-                dist.setLayoutParams(textParams);
-
-                dist.setText("~ " +
-                        Math.round(Utils.estimateDistanceBetweenTwoPoints(new PathPoint(currLocation.getLatitude(), currLocation.getLongitude()), start)) +
-                        " meters away");
-                dist.setTextColor(Color.BLACK);
-                l.addView(dist);
+            final TextView dist = new TextView(context);
+            dist.setLayoutParams(textParams);
+            dist.setTextColor(Color.BLACK);
+            if (cachedDistances.containsKey(p.pid)) {
+                dist.setText("~ " + cachedDistances.get(p.pid) + " meters away");
             }
-
-            c.addView(l);
-
-            c.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    startNewActivity(ReplayPathActivity.class, p.pid);
-                }
-            });
-
+            l.addView(dist);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -144,6 +137,19 @@ public class SelectPathActivity extends AppCompatActivity {
                 }
             });
 
+            PathPoint start = db.getPathPointDao().getFirstPointByPathId(p.pid);
+            if (start != null) {
+                final int d = (int) Math.round(Utils.estimateDistanceBetweenTwoPoints(new PathPoint(currLocation.getLatitude(), currLocation.getLongitude()), start));
+                if (!cachedDistances.containsKey(p.pid) || cachedDistances.get(p.pid) != d) {
+                    cachedDistances.put(p.pid, d);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dist.setText("~ " + d + " meters away");
+                        }
+                    });
+                }
+            }
         }
     }
 
