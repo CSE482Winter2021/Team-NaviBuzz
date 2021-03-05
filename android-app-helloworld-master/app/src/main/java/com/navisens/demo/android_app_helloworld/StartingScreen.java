@@ -27,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
  */
 public class StartingScreen extends AppCompatActivity {
     private static final boolean TEST = false;
-    private static final boolean CLEAN = false;
+    private static boolean CLEAN = true;
     private static final int[][][] TEST_PATHS = {
             {{0,0}, {0,5}, {0,10}, {0,11}, {5,11}, {7,11}, {7,11},{5,9},{5,6}}
     };
@@ -81,6 +81,7 @@ public class StartingScreen extends AppCompatActivity {
                     db.cleanUp();
                 }
             });
+            CLEAN = false;
         }
         if (TEST) {
             final List<Path> testPaths = new ArrayList<Path>();

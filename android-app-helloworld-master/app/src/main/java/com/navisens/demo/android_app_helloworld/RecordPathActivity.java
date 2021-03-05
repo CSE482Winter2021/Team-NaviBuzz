@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.navisens.demo.android_app_helloworld.database_obj.Path;
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
@@ -74,7 +75,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     Button recordLandmarkBtn;
     long pathId;
     String pathName;
-    List<PathPoint> currPath = new ArrayList<PathPoint>();
+    Path path;
+    List<PathPoint> currPath;
     LocationManager manager;
     PathPoint lastLocation;
     PathPoint currLocation;
@@ -101,9 +103,14 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         recordLandmarkBtn = findViewById(R.id.record_landmark);
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
+        currPath = new ArrayList<PathPoint>();
+
 
         LayoutInflater inflater = getLayoutInflater();
         final View v = inflater.inflate(R.layout.path_name_dialog, null);
+        final TextInputLayout layout = v.findViewById(R.id.path_name);
+        layout.setErrorEnabled(true);
+        final EditText t = layout.getEditText();
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(RecordPathActivity.this);
         builder.setTitle("Input Path Title")
             .setView(v)
@@ -125,11 +132,38 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pathName = ((EditText) v.findViewById(R.id.path_name)).getText().toString();
+                pathName = t.getText().toString();
                 System.out.println(pathName);
                 if (pathName.length() > 0) {
-                    dialog.dismiss();
-                    initPath(pathName);
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (db.getPathDao().findByName(pathName) != null) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layout.setError("Path name must not already be used");
+                                    }
+                                });
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        layout.setError(null);
+                                        dialog.dismiss();
+                                    }
+                                });
+                                initPath(pathName);
+                            }
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            layout.setError("Path name must not be empty");
+                        }
+                    });
                 }
             }
         });
@@ -219,6 +253,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             @Override
             public void run() {
                 pathId = db.getPathDao().insertPath(p);
+                path = p;
                 lastLocation = new PathPoint(0, 0, pathId);
                 currLocation = new PathPoint(0, 0, pathId);
             }
@@ -274,22 +309,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
               public void run() {
                   db.getPathPointDao().addPathPoints(currPath);
                   System.out.println(currPath);
-//                   List<Path> paths = db.getPathDao().getAll();
-//                   System.out.println("paths are " + paths.size());
-                  currPath.clear();
+//                  currPath.clear();
               }
           });
-//         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//         SharedPreferences.Editor prefsEditor = sp.edit();
-//         int pid = sp.getInt("pid", 0) + 1;
-//         prefsEditor.putInt("pid", 1);
-
-//         Gson gson = new Gson();
-//         List<PathPoint> textList = new ArrayList<PathPoint>(currPath);
-//         String jsonText = gson.toJson(textList);
-//         System.out.println("putting in pid " + pid);
-//         prefsEditor.putString("path " + 1, jsonText);
-//         prefsEditor.apply();
 
         runOnUiThread(new Runnable() {
             @Override
@@ -308,7 +330,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         stopPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.antiqueWhite)));
         stopPathBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
         finish();
-//         startNewActivity(SavePathActivity.class, pathId);
     }
 
     @Override
@@ -487,6 +508,18 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         // Shuts downs the MotionDna Core
         if (motionDnaSDK != null) {
             motionDnaSDK.stop();
+        }
+        System.out.println(currPath);
+        System.out.println(pathId);
+        System.out.println(path);
+        if (currPath.isEmpty()) {
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("deleting path id: " + pathId);
+                    db.getPathDao().deletePath(path);
+                }
+            });
         }
         super.onDestroy();
     }
