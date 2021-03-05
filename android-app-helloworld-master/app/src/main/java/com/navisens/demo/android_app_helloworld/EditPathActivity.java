@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.navisens.demo.android_app_helloworld.database_obj.PathDatabase;
 import com.navisens.demo.android_app_helloworld.database_obj.PathPoint;
+import com.navisens.demo.android_app_helloworld.database_obj.PathPointDao;
 import com.navisens.demo.android_app_helloworld.utils.Utils;
 
 import java.util.HashMap;
@@ -48,29 +49,46 @@ public class EditPathActivity extends AppCompatActivity {
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        final PathPointDao dao = db.getPathPointDao();
                         // TODO: on positive response, loop through cards and change points, then finish
-                        for (PathPoint p : pointCards.keySet()) {
+                        for (final PathPoint p : pointCards.keySet()) {
                             LinearLayout l = (LinearLayout) pointCards.get(p).getChildAt(0);
                             int i = 0;
                             if (p.landmark != null) {
                                 EditText t = (EditText) l.getChildAt(0);
-                                p.landmark = t.getText().toString();
+                                final String landmark = t.getText().toString();
                                 i = 1;
+                                if (!p.landmark.equals(landmark)) {
+                                    AsyncTask.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            dao.updateLandmark(p.ppid, landmark);
+                                        }
+                                    });
+                                }
                             }
                             if (p.instruction != null) {
                                 EditText t = (EditText) l.getChildAt(i);
-                                p.instruction = t.getText().toString();
+                                final String instruction = t.getText().toString();
+                                if (!p.instruction.equals(instruction)) {
+                                    AsyncTask.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            dao.updateInstruction(p.ppid, instruction);
+                                        }
+                                    });
+                                }
                             }
                         }
 
-                        AsyncTask.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                // TODO: change this if Allyson creates a better way to update points
-                                db.getPathPointDao().deleteByPathId(pid);
-                                db.getPathPointDao().addPathPoints(pathPoints);
-                            }
-                        });
+//                        AsyncTask.execute(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                // TODO: change this if Allyson creates a better way to update points
+//                                db.getPathPointDao().deleteByPathId(pid);
+//                                db.getPathPointDao().addPathPoints(pathPoints);
+//                            }
+//                        });
                         SelectEditablePath.curr.finish();
                         finish();
                     }
