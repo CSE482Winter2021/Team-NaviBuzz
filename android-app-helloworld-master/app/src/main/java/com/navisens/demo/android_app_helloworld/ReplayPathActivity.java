@@ -339,7 +339,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
             if (diffBetween > 3 || lastLocation.longitude == 0) {
                 double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
-                System.out.println("in this block");
 
                 lastLocation = new PathPoint(currLocation);
                 if (distanceBetweenPoints < 4) {
@@ -364,7 +363,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                     currPathCounter++;
                     PathPoint nextPathPoint = pathPoints.get(currPathCounter);
                     double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(nextPathPoint, currLocation);
-                    double headingBetweenPoints = Math.abs(Utils.getHeadingBetweenGPSPoints(nextPathPoint, currLocation) - 180);
+                    double headingBetweenPoints = Math.abs(Utils.getHeadingBetweenGPSPoints(currLocation, nextPathPoint));
 
                     // Todo: Add unit customization
                     final String instructionStr = "walk straight " + Math.round(distanceToNextPoint) + " meters";

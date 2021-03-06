@@ -40,6 +40,10 @@ public class Utils {
      * @return
      */
     public static double getHeadingBetweenGPSPoints(PathPoint x, PathPoint y) {
+        if (x == null || y == null) {
+            throw new IllegalArgumentException();
+        }
+
         double Phi1 = Math.toRadians(x.latitude);
         double Phi2 = Math.toRadians(y.latitude);
         double DeltaLambda = Math.toRadians(y.longitude - x.longitude);
