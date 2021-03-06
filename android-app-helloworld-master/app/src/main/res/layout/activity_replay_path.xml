@@ -71,9 +71,9 @@
         android:layout_marginTop="44dp"
         android:scrollbars="vertical"
         android:text="DebugText"
-        app:layout_constraintTop_toBottomOf="@id/wrapper_layout"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wrapper_layout" />
 
     <TextView
         android:id="@+id/reportStatusTextView"
@@ -114,5 +114,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/reportStatusTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/wrapper_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

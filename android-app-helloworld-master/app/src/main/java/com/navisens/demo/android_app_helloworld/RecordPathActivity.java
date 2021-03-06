@@ -361,7 +361,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         // 5) It seems super redundant, but it's the only way I can think of to get 'true direction' without building that component ourselves (which is surprisingly challenging)
         if (!hasInitNavisensLocation) {
             hasInitNavisensLocation = true;
-            motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+            //motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
         }
 
         double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);

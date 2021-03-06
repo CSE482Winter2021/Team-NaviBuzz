@@ -41,46 +41,26 @@ public class Utils {
      */
     public static double getHeadingBetweenGPSPoints(PathPoint x, PathPoint y) {
         if (x == null || y == null) {
-            return 0;
-        }
-
-        // Reference for this formula here https://www.igismap.com/formula-to-find-bearing-or-heading-angle-between-two-points-latitude-longitude/
-        double delta = y.longitude - x.longitude;
-        double x1 = Math.cos(y.latitude)*Math.sin(Math.abs(delta));
-        double y1 = Math.cos(x.latitude) * Math.sin(y.latitude) - Math.sin(x.latitude) * Math.cos(y.latitude) * Math.cos(delta);
-        double heading = Math.toDegrees(Math.atan2(x1, y1));
-
-        return heading;
-    }
-
-    /**
-     * Estimate a new lat/lon given a lastLocation, distance traveled and heading
-     *
-     * Precondition is that the distance traveled was the same heading throughout
-     *
-     * @param lastLocation
-     * @param lastCumulativeDistanceTraveled
-     * @param heading
-     * @return
-     */
-    public static PathPoint estimateLongitudeLatitude(PathPoint lastLocation, double lastCumulativeDistanceTraveled, double heading) {
-        /*
-         * Reference https://stackoverflow.com/questions/7222382/get-lat-long-given-current-point-distance-and-bearing
-         */
-        if (lastLocation == null || lastCumulativeDistanceTraveled == 0) {
             throw new IllegalArgumentException();
         }
 
-        double hInRadians = Math.toRadians(heading);
-        double dInkm = lastCumulativeDistanceTraveled / 1000;
+        double Phi1 = Math.toRadians(x.latitude);
+        double Phi2 = Math.toRadians(y.latitude);
+        double DeltaLambda = Math.toRadians(y.longitude - x.longitude);
 
-        double longitudeInRadians = Math.toRadians(lastLocation.longitude);
-        double latitudeInRadians = Math.toRadians(lastLocation.latitude);
+        double Theta = Math.atan2((Math.sin(DeltaLambda)*Math.cos(Phi2)) , (Math.cos(Phi1)*Math.sin(Phi2) - Math.sin(Phi1)*Math.cos(Phi2)*Math.cos(DeltaLambda)));
+        return (float)Math.toDegrees(Theta);
+    }
 
-        double newLat = Math.asin(Math.sin(latitudeInRadians) * Math.cos(dInkm / Constants.EARTH_RADIUS_KM) + Math.cos(latitudeInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(hInRadians));
-        double newLong = longitudeInRadians + Math.atan2(Math.sin(hInRadians) * Math.sin(dInkm / Constants.EARTH_RADIUS_KM) * Math.cos(latitudeInRadians), Math.cos(dInkm / Constants.EARTH_RADIUS_KM) - Math.sin(latitudeInRadians) * Math.sin(newLat));
-
-        return new PathPoint(Math.toDegrees(newLat) + Constants.BIAS, Math.toDegrees(newLong) + Constants.BIAS);
+    /**
+     * This function, given a heading between two GPS points and a device orientation, returns
+     * how many degrees the user needs to turn
+     *
+     * If a negative number, this means turn left. If positive turn right
+     */
+    public static double getHeadingTurnDegrees(double deviceHeading, double targetHeading) {
+        // Reference https://math.stackexchange.com/questions/110080/shortest-way-to-achieve-target-angle
+        return (targetHeading - deviceHeading + 540) % 360 - 180;
     }
 
     /**
