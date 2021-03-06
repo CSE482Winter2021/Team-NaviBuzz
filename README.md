@@ -3,7 +3,7 @@
 * **Developer**: Omar Ibrahim - _UW CSE_
 * **Developer**: Dylan Burton - _UW CSE_
 * **Developer**: Allyson Ely - _UW CSE_
-* **Needs Expert**: 
+* **Needs Expert**: David Miller - _Seattle Transit_
 
 ## Abstract
 
