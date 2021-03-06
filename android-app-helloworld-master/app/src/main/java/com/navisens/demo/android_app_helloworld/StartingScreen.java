@@ -26,7 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * Optionally a login once user accounts are added
  */
 public class StartingScreen extends AppCompatActivity {
-    private static final boolean TEST = true;
+    private static final boolean TEST = false;
     private static boolean CLEAN = false;
     private static final int[][][] TEST_PATHS = {
             {{0,0}, {0,5}, {0,10}, {0,11}, {5,11}, {7,11}, {7,11},{5,9},{5,6}}

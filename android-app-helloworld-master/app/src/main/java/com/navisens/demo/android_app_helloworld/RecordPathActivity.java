@@ -500,6 +500,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         System.out.println(landmark);
         landmarkName.setText("");
         landmarkName.clearFocus();
+
+        // TODO: change this to create a new pathpoint if within some distance from last pathpoint
         currPath.get(currPath.size() - 1).landmark = landmark;
         return new ErrorState("Success", true);
     }
@@ -513,6 +515,8 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         System.out.println(instruction);
         instructionString.setText("");
         instructionString.clearFocus();
+
+        // TODO: change this to create a new pathpoint if within some distance from last pathpoint
         currPath.get(currPath.size() - 1).instruction = instruction;
         return new ErrorState("Success", true);
     }
