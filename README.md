@@ -24,6 +24,7 @@
 - ~using a duplicate path name for a new path fully crashes the app, should be an error message~
 - path name gets saved even if user never records path
 - deleting a single path from the database does not work
+- setting landmark/instruction should create a point at that location, not assign them to the next/last point, gets innacurate with non-straight path lines
 
 ## Conclusion
 
