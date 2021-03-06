@@ -14,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -88,6 +89,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     MapFragment mapFragment;
     Context context;
     boolean isDebugToggled = false;
+    TextToSpeech ttobj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,9 +177,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 recordLandmark();
             }
         });
-        
-//        this.getSupportActionBar().hide();
-        
+
         recordInstructionBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordInstruction();
@@ -244,6 +244,13 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             public void onProviderEnabled(String provider) {}
             public void onProviderDisabled(String provider) {}
         };
+
+        ttobj=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+            }
+        });
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         } else {
@@ -310,6 +317,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     public void stopRecordingPath() {
+        ttobj.speak("Path recording completed. Returning to home screen.", TextToSpeech.QUEUE_ADD, null);
         motionDnaSDK.stop();
         AsyncTask.execute(new Runnable() {
               @Override
@@ -319,7 +327,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 //                  currPath.clear();
               }
           });
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
