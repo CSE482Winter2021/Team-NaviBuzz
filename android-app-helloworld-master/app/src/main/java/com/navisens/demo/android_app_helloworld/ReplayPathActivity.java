@@ -337,11 +337,11 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
             double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
-            if (diffBetween > 3 || lastLocation.longitude == 0) {
+            if (diffBetween > 2 || lastLocation.longitude == 0) {
                 double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
 
                 lastLocation = new PathPoint(currLocation);
-                if (distanceBetweenPoints < 7) {
+                if (distanceBetweenPoints < 5) {
                     if (removeCardFlag) {
                         confirmLandmarkBtn.setEnabled(false);
                         instructionList.removeViewAt(0);
@@ -390,10 +390,11 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
                 double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
                 double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
+                double distanceToTurn = Utils.getHeadingTurnDegrees(motionDna.getLocation().global.heading, headingBetweenPoints);
 
                 // Todo: Add unit customization
-                String orientationInstr = headingBetweenPoints < 0 ? "Turn counterclockwise " : "Turn clockwise ";
-                final String instructionStr = orientationInstr + Math.round(Math.abs(headingBetweenPoints)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
+                String orientationInstr = headingBetweenPoints < 0 ? "Turn clockwise " : "Turn counterclockwise ";
+                final String instructionStr = orientationInstr + Math.round(Math.abs(distanceToTurn)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
 
                 runOnUiThread(new Runnable() {
                     @Override
