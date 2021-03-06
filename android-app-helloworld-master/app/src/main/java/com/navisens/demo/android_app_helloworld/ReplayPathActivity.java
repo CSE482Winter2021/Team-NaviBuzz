@@ -366,20 +366,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                         return;
                     }
 
-                    double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
-                    double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
-
-                    // Todo: Add unit customization
-                    String orientationInstr = headingBetweenPoints < 0 ? "Turn counterclockwise " : "Turn clockwise ";
-                    final String instructionStr = orientationInstr + Math.round(Math.abs(headingBetweenPoints)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
-                        }
-                    });
-
                     // For simplicity I'm going to assume they can only set 1 instruction or 1 landmark per point for now
                 /*if (!currPathPoint.instruction.equals("") && !currPathPoint.landmark.equals("")) {
                     throw new AssertionError("Can't have an instruction and a landmark (for now)");
@@ -401,21 +387,20 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                         }
                     }
 
-                } else {
-                    double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
-                    double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
-
-                    // Todo: Add unit customization
-                    String orientationInstr = headingBetweenPoints < 0 ? "Turn counterclockwise " : "Turn clockwise ";
-                    final String instructionStr = orientationInstr + Math.round(Math.abs(headingBetweenPoints)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
-                        }
-                    });
                 }
+                double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
+                double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
+
+                // Todo: Add unit customization
+                String orientationInstr = headingBetweenPoints < 0 ? "Turn counterclockwise " : "Turn clockwise ";
+                final String instructionStr = orientationInstr + Math.round(Math.abs(headingBetweenPoints)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
+                    }
+                });
                 printDebugInformation(motionDna, str);
                 // Todo: Add landmark confirmation
             } else {
