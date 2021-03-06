@@ -91,7 +91,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         currLocation = new PathPoint(0, 0);
         lastLocation = new PathPoint(0, 0);
         pid = getIntent().getLongExtra("currentPath", 0);
-        currPathCounter = 1;
+        currPathCounter = 0;
         pointCards = new HashMap<Long, CardView>();
 
 //        this.getSupportActionBar().hide();
@@ -332,7 +332,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             // 5) It seems super redundant, but it's the only way I can think of to get 'true direction' without building that component ourselves (which is surprisingly challenging)
             if (!hasInitNavisensLocation) {
                 hasInitNavisensLocation = true;
-                motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+                //motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
             }
 
             double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
@@ -341,7 +341,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
 
                 lastLocation = new PathPoint(currLocation);
-                if (distanceBetweenPoints < 4) {
+                if (distanceBetweenPoints < 7) {
                     if (removeCardFlag) {
                         confirmLandmarkBtn.setEnabled(false);
                         instructionList.removeViewAt(0);
@@ -361,12 +361,17 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                     }
 
                     currPathCounter++;
-                    PathPoint nextPathPoint = pathPoints.get(currPathCounter);
-                    double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(nextPathPoint, currLocation);
-                    double headingBetweenPoints = Math.abs(Utils.getHeadingBetweenGPSPoints(currLocation, nextPathPoint));
+                    if (currPathCounter >= pathPoints.size() - 1) {
+                        completeNavigationPath();
+                        return;
+                    }
+
+                    double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
+                    double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
 
                     // Todo: Add unit customization
-                    final String instructionStr = "walk straight " + Math.round(distanceToNextPoint) + " meters";
+                    String orientationInstr = headingBetweenPoints < 0 ? "Turn counterclockwise " : "Turn clockwise ";
+                    final String instructionStr = orientationInstr + Math.round(Math.abs(headingBetweenPoints)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -396,22 +401,39 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                         }
                     }
 
+                } else {
+                    double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
+                    double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
+
+                    // Todo: Add unit customization
+                    String orientationInstr = headingBetweenPoints < 0 ? "Turn counterclockwise " : "Turn clockwise ";
+                    final String instructionStr = orientationInstr + Math.round(Math.abs(headingBetweenPoints)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
+                        }
+                    });
                 }
                 printDebugInformation(motionDna, str);
                 // Todo: Add landmark confirmation
-            } else if (currPathCounter >= pathPoints.size()) { // you're at the destination
-                ttobj.speak("You are at your destination", TextToSpeech.QUEUE_ADD, null);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        map.clear();
-                    }
-                });
-                //motionDnaSDK.stop();
             } else {
                 // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case
             }
         }
+    }
+
+    private void completeNavigationPath() {
+        ttobj.speak("You are at your destination, returning to home screen", TextToSpeech.QUEUE_ADD, null);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SelectPathActivity.curr.finish();
+                finish();
+            }
+        }, 500);
     }
 
     @Override
