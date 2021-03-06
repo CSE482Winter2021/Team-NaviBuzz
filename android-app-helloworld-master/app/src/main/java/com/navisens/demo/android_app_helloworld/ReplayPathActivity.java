@@ -393,7 +393,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 double distanceToTurn = Utils.getHeadingTurnDegrees(motionDna.getLocation().global.heading, headingBetweenPoints);
 
                 // Todo: Add unit customization
-                String orientationInstr = headingBetweenPoints < 0 ? "Turn clockwise " : "Turn counterclockwise ";
+                String orientationInstr = distanceToTurn < 0 ? "Turn counterclockwise " : "Turn clockwise ";
                 final String instructionStr = orientationInstr + Math.round(Math.abs(distanceToTurn)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
 
                 runOnUiThread(new Runnable() {
