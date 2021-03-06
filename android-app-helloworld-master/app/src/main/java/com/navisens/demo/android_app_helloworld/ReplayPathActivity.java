@@ -53,14 +53,14 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
-    private static final boolean TEST = true;
+    private static final boolean TEST = false;
     private static final boolean DEBUG = false;
 
     long pid;
     LinearLayout instructionList;
     List<PathPoint> pathPoints;
     PathDatabase db;
-    Map<PathPoint, CardView> pointCards;
+    Map<Long, CardView> pointCards;
     boolean removeCardFlag;
 
     MotionDnaSDK motionDnaSDK;
@@ -77,6 +77,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     boolean hasInitNavisensLocation = false;
     GoogleMap map;
     boolean startMap = false;
+    boolean inNavigation = false;
+    boolean navigationPaused = false;
     PathPoint currLocation;
     PathPoint lastLocation;
     MapFragment mapFragment;
@@ -90,6 +92,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         lastLocation = new PathPoint(0, 0);
         pid = getIntent().getLongExtra("currentPath", 0);
         currPathCounter = 1;
+        pointCards = new HashMap<Long, CardView>();
 
 //        this.getSupportActionBar().hide();
         toggleGroup = findViewById(R.id.btn_container);
@@ -109,13 +112,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             reportStatusTextView.setVisibility(View.INVISIBLE);
             receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
         }
-        // testing code
-        confirmLandmarkBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // TODO: add landmark confirmation code
-            }
-        });
-
 
         ActivityCompat.requestPermissions(this,MotionDnaSDK.getRequiredPermissions()
                 , Constants.REQUEST_MDNA_PERMISSIONS);
@@ -137,15 +133,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
   
-        // mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 initialGPSLocation = location;
-//                 if (startMap) {
-//                     startMap();
-//                     startMap = false;
-//                 }
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -165,21 +156,15 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
     private void initCardList() {
         LayoutInflater inflater = getLayoutInflater();
-        pointCards = new HashMap<PathPoint, CardView>();
         instructionList = findViewById(R.id.instruction_list);
-        final Context context = instructionList.getContext();
 
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         cardParams.setMargins(30, 15, 30, 15);
 
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        // textParams.gravity = Gravity.CENTER_VERTICAL;
-
-        for (final PathPoint p : pathPoints) {
+        for (int i = 0; i < pathPoints.size(); i++) {
+            final PathPoint p = pathPoints.get(i);
             if (p.instruction != null && p.landmark != null) {
                 final CardView c = (CardView) inflater.inflate(R.layout.path_point_double_card, null);
                 c.setLayoutParams(cardParams);
@@ -191,7 +176,14 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 TextView instruction = c.findViewById(R.id.instruction);
                 instruction.setText(p.instruction);
 
-                pointCards.put(p, c);
+                if (i == 0) {
+                    c.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                    landmark.setTextColor(Color.WHITE);
+                    instruction.setTextColor(Color.WHITE);
+                    removeCardFlag = true;
+                }
+
+                pointCards.put(p.ppid, c);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -212,7 +204,13 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 w.setText(waypoint);
                 if (p.landmark != null) w.setTypeface(null, Typeface.BOLD);
 
-                pointCards.put(p, c);
+                if (i == 0) {
+                    c.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                    w.setTextColor(Color.WHITE);
+                    removeCardFlag = true;
+                }
+
+                pointCards.put(p.ppid, c);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -230,12 +228,26 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             startReplayBtn.setEnabled(true);
             startReplayBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    startReplayPath();
+                    if (!inNavigation) {
+                        inNavigation = true;
+                        startReplayPath();
+                    } else {
+                        navigationPaused = false;
+                    }
+
                 }
             });
             pauseReplayBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     pauseReplayPath();
+                }
+            });
+            confirmLandmarkBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // TODO: add landmark confirmation code
+                    confirmLandmarkBtn.setEnabled(false);
+                    instructionList.removeViewAt(0);
+                    removeCardFlag = false;
                 }
             });
             toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
@@ -248,7 +260,13 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                         pauseReplayBtn.setEnabled(true);
                         pauseReplayBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
                         pauseReplayBtn.setTextColor(Color.WHITE);
-                        confirmLandmarkBtn.setEnabled(true);
+                        if (removeCardFlag) {
+                            confirmLandmarkBtn.setEnabled(true);
+                            String landmarkStr = pathPoints.get(0).landmark;
+                            if (landmarkStr != null && !landmarkStr.equals("")) {
+                                ttobj.speak("There is a recorded landmark here called " + landmarkStr + " please confirm", TextToSpeech.QUEUE_ADD, null);
+                            }
+                        }
                         System.out.println("click on start button, checked = " + isChecked);
                     } else {
                         startReplayBtn.setEnabled(true);
@@ -281,6 +299,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
     public void pauseReplayPath() {
         if (TEST || currPathCounter == pathPoints.size() - 1) {
+            inNavigation = false;
+            ttobj.speak("Path navigation completed. Returning to home screen.", TextToSpeech.QUEUE_ADD, null);
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -291,135 +311,107 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             }, 500);
         } else {
             // TODO: add code for pausing the path
+            navigationPaused = true;
         }
     }
 
     @Override
     public void receiveMotionDna(MotionDna motionDna) {
-        String str = "Navisens MotionDnaSDK Estimation:\n";
+        if (!navigationPaused) {
 
-        currLocation.latitude = motionDna.getLocation().global.latitude;
-        currLocation.longitude = motionDna.getLocation().global.longitude;
+            String str = "Navisens MotionDnaSDK Estimation:\n";
 
-        // So this is weird
-        // 1) Navisens won't update latitude/longitude when GPS is turned off unless we set global position explicitly, so we need to set it somewhere
-        // 2) If we set it before this receiveMotionDna function, then the heading is 0 and won't use Navisens's 'true direction'
-        // 3) If we want to use the heading 'true direction' that Navisens provides, we need to wait till motionDna starts to get it
-        // 4) So we're setting the global position in this function so it will provide estimations when GPS is turned off + use motionDna's heading
-        // 5) It seems super redundant, but it's the only way I can think of to get 'true direction' without building that component ourselves (which is surprisingly challenging)
-        if (!hasInitNavisensLocation) {
-            hasInitNavisensLocation = true;
-            motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
-        }
+            currLocation.latitude = motionDna.getLocation().global.latitude;
+            currLocation.longitude = motionDna.getLocation().global.longitude;
 
-        double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
+            // So this is weird
+            // 1) Navisens won't update latitude/longitude when GPS is turned off unless we set global position explicitly, so we need to set it somewhere
+            // 2) If we set it before this receiveMotionDna function, then the heading is 0 and won't use Navisens's 'true direction'
+            // 3) If we want to use the heading 'true direction' that Navisens provides, we need to wait till motionDna starts to get it
+            // 4) So we're setting the global position in this function so it will provide estimations when GPS is turned off + use motionDna's heading
+            // 5) It seems super redundant, but it's the only way I can think of to get 'true direction' without building that component ourselves (which is surprisingly challenging)
+            if (!hasInitNavisensLocation) {
+                hasInitNavisensLocation = true;
+                motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+            }
 
-        if (diffBetween > 3  || lastLocation.longitude == 0) {
-            double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
-            System.out.println("in this block");
-//             runOnUiThread(new Runnable() {
-//                 @Override
-//                 public void run() {
-//                     map.clear();
-//                     for (int i = 0; i < pathPoints.size(); i++) {
-//                         PathPoint p = pathPoints.get(i);
-//                         int color = i < currPathCounter ? Color.MAGENTA : Color.BLACK;
-//                         map.addCircle(new CircleOptions()
-//                                 .center(new LatLng(p.latitude, p.longitude))
-//                                 .radius(0.5)
-//                                 .strokeColor(color)
-//                                 .fillColor(color));
-//                         if (p.landmark != null && !p.landmark.equals("")) {
-//                             map.addCircle(new CircleOptions()
-//                                     .center(new LatLng(p.latitude, p.longitude))
-//                                     .radius(0.2)
-//                                     .strokeColor(Color.BLUE)
-//                                     .fillColor(Color.BLUE));
-//                         }
+            double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
-//                         if (p.instruction != null && !p.instruction.equals("")) {
-//                             map.addCircle(new CircleOptions()
-//                                     .center(new LatLng(p.latitude, p.longitude))
-//                                     .radius(0.2)
-//                                     .strokeColor(Color.GREEN)
-//                                     .fillColor(Color.GREEN));
-//                         }
-//                     }
-//                     map.addCircle(new CircleOptions()
-//                             .center(new LatLng(currLocation.latitude, currLocation.longitude))
-//                             .radius(1)
-//                             .strokeColor(Color.BLUE)
-//                             .fillColor(Color.BLUE));
-//                 }
-//             });
+            if (diffBetween > 3 || lastLocation.longitude == 0) {
+                double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
+                System.out.println("in this block");
 
-            lastLocation = new PathPoint(currLocation);
-            if (distanceBetweenPoints < 4) {
-                if (removeCardFlag) {
-                  confirmLandmarkBtn.setEnabled(false);
-                  instructionList.removeViewAt(0);
-                }
-
-                PathPoint currPathPoint = pathPoints.get(currPathCounter);
-                String customizedInstruction = currPathPoint.instruction;
-                if (customizedInstruction != null && !customizedInstruction.equals("")) {
-                    ttobj.speak("An instruction has been set here " + customizedInstruction, TextToSpeech.QUEUE_ADD, null);
-                }
-
-                String landmarkStr = currPathPoint.landmark;
-                if (landmarkStr != null && !landmarkStr.equals("")) {
-                    ttobj.speak("There is a recorded landmark here called " + landmarkStr + " please confirm", TextToSpeech.QUEUE_ADD, null);
-                }
-
-                currPathCounter++;
-                PathPoint nextPathPoint = pathPoints.get(currPathCounter);
-                double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(nextPathPoint, currLocation);
-                double headingBetweenPoints = Math.abs(Utils.getHeadingBetweenGPSPoints(nextPathPoint, currLocation) - 180);
-
-                // Todo: Add unit customization
-                final String instructionStr = "walk straight " + Math.round(distanceToNextPoint) + " meters";
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                       ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
+                lastLocation = new PathPoint(currLocation);
+                if (distanceBetweenPoints < 4) {
+                    if (removeCardFlag) {
+                        confirmLandmarkBtn.setEnabled(false);
+                        instructionList.removeViewAt(0);
+                        removeCardFlag = false;
                     }
-                });
 
-                // For simplicity I'm going to assume they can only set 1 instruction or 1 landmark per point for now
+                    PathPoint currPathPoint = pathPoints.get(currPathCounter);
+
+                    String customizedInstruction = currPathPoint.instruction;
+                    if (customizedInstruction != null && !customizedInstruction.equals("")) {
+                        ttobj.speak("An instruction has been set here " + customizedInstruction, TextToSpeech.QUEUE_ADD, null);
+                    }
+
+                    String landmarkStr = currPathPoint.landmark;
+                    if (landmarkStr != null && !landmarkStr.equals("")) {
+                        ttobj.speak("There is a recorded landmark here called " + landmarkStr + " please confirm", TextToSpeech.QUEUE_ADD, null);
+                    }
+
+                    currPathCounter++;
+                    PathPoint nextPathPoint = pathPoints.get(currPathCounter);
+                    double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(nextPathPoint, currLocation);
+                    double headingBetweenPoints = Math.abs(Utils.getHeadingBetweenGPSPoints(nextPathPoint, currLocation) - 180);
+
+                    // Todo: Add unit customization
+                    final String instructionStr = "walk straight " + Math.round(distanceToNextPoint) + " meters";
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
+                        }
+                    });
+
+                    // For simplicity I'm going to assume they can only set 1 instruction or 1 landmark per point for now
                 /*if (!currPathPoint.instruction.equals("") && !currPathPoint.landmark.equals("")) {
                     throw new AssertionError("Can't have an instruction and a landmark (for now)");
                 }*/
-              
-                // TODO: check that this is happeneing at the correct time
-                if (pointCards.containsKey(currPathPoint)) {
-                    CardView c = pointCards.get(currPathPoint);
-                    c.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-                    int children = c.getChildCount();
-                    for (int i = 0; i < children; i++) {
-                        TextView t = (TextView) c.getChildAt(i);
-                        t.setTextColor(Color.WHITE);
-                    }
-                    removeCardFlag = true;
-                    if (currPathPoint.landmark != null) {
-                        confirmLandmarkBtn.setEnabled(true);
-                    }
-                }
 
-            }
-            printDebugInformation(motionDna, str);
-            // Todo: Add landmark confirmation
-        } else if (currPathCounter >= pathPoints.size()) { // you're at the destination
-            ttobj.speak("You are at your destination", TextToSpeech.QUEUE_ADD, null);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    map.clear();
+                    // TODO: check that this is happeneing at the correct time
+                    if (pointCards.containsKey(currPathPoint)) {
+                        System.out.println("current path point has card");
+                        CardView c = pointCards.get(currPathPoint);
+                        c.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                        int children = c.getChildCount();
+                        for (int i = 0; i < children; i++) {
+                            TextView t = (TextView) c.getChildAt(i);
+                            t.setTextColor(Color.WHITE);
+                        }
+                        removeCardFlag = true;
+                        if (currPathPoint.landmark != null) {
+                            confirmLandmarkBtn.setEnabled(true);
+                        }
+                    }
+
                 }
-            });
-            //motionDnaSDK.stop();
-        } else {
-            // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case
+                printDebugInformation(motionDna, str);
+                // Todo: Add landmark confirmation
+            } else if (currPathCounter >= pathPoints.size()) { // you're at the destination
+                ttobj.speak("You are at your destination", TextToSpeech.QUEUE_ADD, null);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        map.clear();
+                    }
+                });
+                //motionDnaSDK.stop();
+            } else {
+                // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case
+            }
         }
     }
 
