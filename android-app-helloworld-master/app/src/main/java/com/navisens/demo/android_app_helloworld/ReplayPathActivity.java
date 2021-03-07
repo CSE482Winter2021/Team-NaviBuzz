@@ -338,7 +338,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
 
                 lastLocation = new PathPoint(currLocation);
-                if (distanceBetweenPoints < 5) {
+                if (distanceBetweenPoints < 7) {
                     if (removeCardFlag) {
                         confirmLandmarkBtn.setEnabled(false);
                         instructionList.removeViewAt(0);
