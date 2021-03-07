@@ -287,7 +287,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
-            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
+            HashMap<String, Object> config = new HashMap<String, Object>();
+            config.put("callback", 750.0);
+            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
             //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             //motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
 
