@@ -52,7 +52,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
-public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
+public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener {
     private static final boolean TEST = false;
     private static final boolean DEBUG = false;
 
@@ -72,6 +72,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     Button confirmLandmarkBtn;
     LocationManager manager;
     Location initialGPSLocation;
+    boolean isGpsUnderThreshold = true;
     TextToSpeech ttobj;
     int currPathCounter;
     boolean hasInitNavisensLocation = false;
@@ -136,7 +137,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                initialGPSLocation = location;
+                if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
+                    isGpsUnderThreshold = false;
+                }
+                //initialGPSLocation = location;
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -148,10 +152,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         } else {
             // Todo: Handle this error condition
         }
-    }
-
-    private void startMap() {
-        mapFragment.getMapAsync(this);
     }
 
     private void initCardList() {
@@ -324,15 +324,12 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             currLocation.latitude = motionDna.getLocation().global.latitude;
             currLocation.longitude = motionDna.getLocation().global.longitude;
 
-            // So this is weird
-            // 1) Navisens won't update latitude/longitude when GPS is turned off unless we set global position explicitly, so we need to set it somewhere
-            // 2) If we set it before this receiveMotionDna function, then the heading is 0 and won't use Navisens's 'true direction'
-            // 3) If we want to use the heading 'true direction' that Navisens provides, we need to wait till motionDna starts to get it
-            // 4) So we're setting the global position in this function so it will provide estimations when GPS is turned off + use motionDna's heading
-            // 5) It seems super redundant, but it's the only way I can think of to get 'true direction' without building that component ourselves (which is surprisingly challenging)
-            if (!hasInitNavisensLocation) {
+            boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
+
+            // Begin Navisens estimation if GPS is off/inaccurate
+            if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
                 hasInitNavisensLocation = true;
-                //motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+                motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
             }
 
             double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
@@ -502,6 +499,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 //        });
     }
 
+    /*
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
@@ -514,5 +512,5 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             });
         }
-    }
+    }*/
 }
