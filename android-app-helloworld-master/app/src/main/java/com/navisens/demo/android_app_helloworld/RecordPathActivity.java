@@ -83,6 +83,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     LocationManager manager;
     PathPoint lastLocation;
     PathPoint currLocation;
+    boolean isGpsUnderThreshold = true;
     boolean startMap = true;
     boolean hasInitNavisensLocation = false;
     Location initialGPSLocation;
@@ -233,8 +234,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                initialGPSLocation = location;
+                if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
+                    isGpsUnderThreshold = false;
+                }
                 if (startMap) {
+                    initialGPSLocation = location;
                     startMap();
                     startMap = false;
                 }
@@ -298,7 +302,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
-            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
+            HashMap<String, Object> config = new HashMap<String, Object>();
+            config.put("callback", 750.0);
+            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
             //motionDnaSDK.setGlobalPosition(initialGPSLocation.getLatitude(), initialGPSLocation.getLongitude());
             //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             stopPathBtn.setEnabled(true);
@@ -353,23 +359,19 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         currLocation.latitude = motionDna.getLocation().global.latitude;
         currLocation.longitude = motionDna.getLocation().global.longitude;
 
-        // So this is weird
-        // 1) Navisens won't update latitude/longitude when GPS is turned off unless we set global position explicitly, so we need to set it somewhere
-        // 2) If we set it before this receiveMotionDna function, then the heading is 0 and won't use Navisens's 'true direction'
-        // 3) If we want to use the heading 'true direction' that Navisens provides, we need to wait till motionDna starts to get it
-        // 4) So we're setting the global position in this function so it will provide estimations when GPS is turned off + use motionDna's heading
-        // 5) It seems super redundant, but it's the only way I can think of to get 'true direction' without building that component ourselves (which is surprisingly challenging)
-        if (!hasInitNavisensLocation) {
+        boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
+
+        // Begin Navisens estimation if GPS is off/inaccurate
+        if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
             hasInitNavisensLocation = true;
-            //motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+            motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
         }
 
         double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
         // Update location history if necessary
-        if (diffBetween > 3  || lastLocation.longitude == 0) {
+        if (diffBetween > 2  || lastLocation.longitude == 0) {
             runOnUiThread(new Runnable() {
-
                 @Override
                 public void run() {
                     map.clear();

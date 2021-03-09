@@ -52,7 +52,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
-public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
+public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener {
     private static final boolean TEST = false;
     private static final boolean DEBUG = false;
 
@@ -72,6 +72,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     Button confirmLandmarkBtn;
     LocationManager manager;
     Location initialGPSLocation;
+    boolean isGpsUnderThreshold = true;
     TextToSpeech ttobj;
     int currPathCounter;
     boolean hasInitNavisensLocation = false;
@@ -136,7 +137,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                initialGPSLocation = location;
+                if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
+                    isGpsUnderThreshold = false;
+                }
+                //initialGPSLocation = location;
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -148,10 +152,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         } else {
             // Todo: Handle this error condition
         }
-    }
-
-    private void startMap() {
-        mapFragment.getMapAsync(this);
     }
 
     private void initCardList() {
@@ -287,7 +287,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
-            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
+            HashMap<String, Object> config = new HashMap<String, Object>();
+            config.put("callback", 750.0);
+            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
             //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             //motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
 
@@ -324,15 +326,12 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             currLocation.latitude = motionDna.getLocation().global.latitude;
             currLocation.longitude = motionDna.getLocation().global.longitude;
 
-            // So this is weird
-            // 1) Navisens won't update latitude/longitude when GPS is turned off unless we set global position explicitly, so we need to set it somewhere
-            // 2) If we set it before this receiveMotionDna function, then the heading is 0 and won't use Navisens's 'true direction'
-            // 3) If we want to use the heading 'true direction' that Navisens provides, we need to wait till motionDna starts to get it
-            // 4) So we're setting the global position in this function so it will provide estimations when GPS is turned off + use motionDna's heading
-            // 5) It seems super redundant, but it's the only way I can think of to get 'true direction' without building that component ourselves (which is surprisingly challenging)
-            if (!hasInitNavisensLocation) {
+            boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
+
+            // Begin Navisens estimation if GPS is off/inaccurate
+            if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
                 hasInitNavisensLocation = true;
-                //motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+                motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
             }
 
             double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
@@ -341,7 +340,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
 
                 lastLocation = new PathPoint(currLocation);
-                if (distanceBetweenPoints < 5) {
+                if (distanceBetweenPoints < 7) {
                     if (removeCardFlag) {
                         confirmLandmarkBtn.setEnabled(false);
                         instructionList.removeViewAt(0);
@@ -393,7 +392,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 double distanceToTurn = Utils.getHeadingTurnDegrees(motionDna.getLocation().global.heading, headingBetweenPoints);
 
                 // Todo: Add unit customization
-                String orientationInstr = distanceToTurn < 0 ? "Turn counterclockwise " : "Turn clockwise ";
+                String orientationInstr = distanceToTurn < 0 ? "Turn left " : "Turn right ";
                 final String instructionStr = orientationInstr + Math.round(Math.abs(distanceToTurn)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
 
                 runOnUiThread(new Runnable() {
@@ -502,6 +501,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 //        });
     }
 
+    /*
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
@@ -514,5 +514,5 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             });
         }
-    }
+    }*/
 }
