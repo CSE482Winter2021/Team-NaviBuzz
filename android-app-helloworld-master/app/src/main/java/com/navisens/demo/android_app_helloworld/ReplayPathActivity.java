@@ -345,6 +345,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             if (!hasInitNavisensLocation) {
                 hasInitNavisensLocation = true;
                 double heading = motionDna.getLocation().global.heading;
+                // My idea here is to reduce error in path, if they are within 3 meters of starting point (to do), we stabilize the point to
+                // the starting location
                 motionDnaSDK.setGlobalPositionAndHeading(pathPoints.get(0).latitude, pathPoints.get(0).longitude, heading);
             }
 
