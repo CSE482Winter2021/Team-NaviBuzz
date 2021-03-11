@@ -125,6 +125,12 @@ public class SelectEditablePath extends AppCompatActivity {
     private void toggleDeleteMode() {
         deleteMode = !deleteMode;
         if (deleteMode) {
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    db.clearAllTables();
+                }
+            });
             deletePathsBtn.setText("Exit Delete Mode");
         } else {
             deletePathsBtn.setText("Delete Paths");

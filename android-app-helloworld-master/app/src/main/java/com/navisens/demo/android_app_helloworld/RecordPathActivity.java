@@ -234,9 +234,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
+                /*if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
                     isGpsUnderThreshold = false;
-                }
+                }*/
                 if (startMap) {
                     initialGPSLocation = location;
                     startMap();
@@ -302,9 +302,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
-            HashMap<String, Object> config = new HashMap<String, Object>();
-            config.put("callback", 750.0);
-            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
+            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
             //motionDnaSDK.setGlobalPosition(initialGPSLocation.getLatitude(), initialGPSLocation.getLongitude());
             //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             stopPathBtn.setEnabled(true);
@@ -356,15 +354,16 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     public void receiveMotionDna(MotionDna motionDna) {
         String str = "Navisens MotionDnaSDK Estimation:\n";
 
-        currLocation.latitude = motionDna.getLocation().global.latitude;
+        currLocati  on.latitude = motionDna.getLocation().global.latitude;
         currLocation.longitude = motionDna.getLocation().global.longitude;
 
-        boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
+        /*boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;*/
 
         // Begin Navisens estimation if GPS is off/inaccurate
-        if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
+        if (!hasInitNavisensLocation) {
             hasInitNavisensLocation = true;
-            motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+            double heading = motionDna.getLocation().global.heading;
+            motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, heading);
         }
 
         double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
@@ -404,8 +403,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                             .fillColor(Color.BLUE));
                 }
             });
-            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
-            lastLocation = new PathPoint(currLocation);
+            if (diffBetween > 5) {
+                currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
+                lastLocation = new PathPoint(currLocation);
+            }
 
             runOnUiThread(new Runnable() {
 
@@ -416,7 +417,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             });
         }
 
-        printDebugInformation(motionDna, str);
+        //printDebugInformation(motionDna, str);
     }
 
 

@@ -52,7 +52,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
-public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener {
+public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSDKListener, OnMapReadyCallback {
     private static final boolean TEST = false;
     private static final boolean DEBUG = false;
 
@@ -77,12 +77,14 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     int currPathCounter;
     boolean hasInitNavisensLocation = false;
     GoogleMap map;
-    boolean startMap = false;
+    boolean startMap = true;
     boolean inNavigation = false;
     boolean navigationPaused = false;
     PathPoint currLocation;
     PathPoint lastLocation;
     MapFragment mapFragment;
+    long frtime;
+    long elapsedTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,14 +135,19 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             public void onInit(int status) {
             }
         });
-  
+
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
+                /*if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
                     isGpsUnderThreshold = false;
+                }*/
+                initialGPSLocation = location;
+                if (startMap) {
+                    startMap();
+                    startMap = false;
                 }
-                //initialGPSLocation = location;
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -152,6 +159,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         } else {
             // Todo: Handle this error condition
         }
+    }
+
+    private void startMap() {
+        mapFragment.getMapAsync(this);
     }
 
     private void initCardList() {
@@ -287,9 +298,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
-            HashMap<String, Object> config = new HashMap<String, Object>();
-            config.put("callback", 750.0);
-            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
+            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
             //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             //motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
 
@@ -320,18 +329,23 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
     @Override
     public void receiveMotionDna(MotionDna motionDna) {
         if (!navigationPaused) {
+            frtime = System.nanoTime();
+            if (elapsedTime == 0) {
+                elapsedTime = frtime;
+            }
 
             String str = "Navisens MotionDnaSDK Estimation:\n";
 
             currLocation.latitude = motionDna.getLocation().global.latitude;
             currLocation.longitude = motionDna.getLocation().global.longitude;
 
-            boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
+            /*boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;*/
 
             // Begin Navisens estimation if GPS is off/inaccurate
-            if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
+            if (!hasInitNavisensLocation) {
                 hasInitNavisensLocation = true;
-                motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+                double heading = motionDna.getLocation().global.heading;
+                motionDnaSDK.setGlobalPositionAndHeading(pathPoints.get(0).latitude, pathPoints.get(0).longitude, heading);
             }
 
             double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
@@ -339,8 +353,44 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             if (diffBetween > 2 || lastLocation.longitude == 0) {
                 double distanceBetweenPoints = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
 
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        map.clear();
+                        for (int i = 0; i < pathPoints.size(); i++) {
+                            PathPoint p = pathPoints.get(i);
+                            int color = i < currPathCounter ? Color.MAGENTA : Color.BLACK;
+                            map.addCircle(new CircleOptions()
+                                    .center(new LatLng(p.latitude, p.longitude))
+                                    .radius(0.5)
+                                    .strokeColor(color)
+                                    .fillColor(color));
+                            if (p.landmark != null && !p.landmark.equals("")) {
+                                map.addCircle(new CircleOptions()
+                                        .center(new LatLng(p.latitude, p.longitude))
+                                        .radius(0.2)
+                                        .strokeColor(Color.BLUE)
+                                        .fillColor(Color.BLUE));
+                            }
+
+                            if (p.instruction != null && !p.instruction.equals("")) {
+                                map.addCircle(new CircleOptions()
+                                        .center(new LatLng(p.latitude, p.longitude))
+                                        .radius(0.2)
+                                        .strokeColor(Color.GREEN)
+                                        .fillColor(Color.GREEN));
+                            }
+                        }
+                        map.addCircle(new CircleOptions()
+                                .center(new LatLng(currLocation.latitude, currLocation.longitude))
+                                .radius(1)
+                                .strokeColor(Color.BLUE)
+                                .fillColor(Color.BLUE));
+                    }
+                });
+
                 lastLocation = new PathPoint(currLocation);
-                if (distanceBetweenPoints < 7) {
+                if (distanceBetweenPoints < 3) {
                     if (removeCardFlag) {
                         confirmLandmarkBtn.setEnabled(false);
                         instructionList.removeViewAt(0);
@@ -360,7 +410,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                     }
 
                     currPathCounter++;
-                    if (currPathCounter >= pathPoints.size() - 1) {
+                    if (currPathCounter >= pathPoints.size()) {
                         completeNavigationPath();
                         return;
                     }
@@ -387,6 +437,14 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                     }
 
                 }
+                printDebugInformation(motionDna, str);
+                // Todo: Add landmark confirmation
+            } else {
+                // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case
+            }
+
+            if (elapsedTime == 0 || (frtime - elapsedTime) > (8*Constants.ONESEC_NANOS)) {
+                elapsedTime = frtime;
                 double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
                 double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
                 double distanceToTurn = Utils.getHeadingTurnDegrees(motionDna.getLocation().global.heading, headingBetweenPoints);
@@ -401,10 +459,6 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                         ttobj.speak(instructionStr, TextToSpeech.QUEUE_ADD, null);
                     }
                 });
-                printDebugInformation(motionDna, str);
-                // Todo: Add landmark confirmation
-            } else {
-                // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case
             }
         }
     }
@@ -501,12 +555,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 //        });
     }
 
-    /*
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            //gps = Utils.getLastKnownLocation(manager);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -514,5 +566,5 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 }
             });
         }
-    }*/
+    }
 }
