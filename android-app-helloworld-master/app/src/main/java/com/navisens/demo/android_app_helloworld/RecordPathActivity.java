@@ -354,7 +354,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     public void receiveMotionDna(MotionDna motionDna) {
         String str = "Navisens MotionDnaSDK Estimation:\n";
 
-        currLocati  on.latitude = motionDna.getLocation().global.latitude;
+        currLocation.latitude = motionDna.getLocation().global.latitude;
         currLocation.longitude = motionDna.getLocation().global.longitude;
 
         /*boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;*/
