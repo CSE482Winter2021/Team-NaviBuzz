@@ -63,9 +63,14 @@ public class SelectEditablePath extends AppCompatActivity {
                     .setPositiveButton("Delete Path", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
-                            //TODO: delete path
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    System.out.println("deleting path id: " + p.pid);
+                                    db.deletePathId(p.pid);
+                                }
+                            });
 
-                            //TODO: remove card
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
