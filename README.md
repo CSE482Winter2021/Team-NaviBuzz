@@ -27,6 +27,7 @@
 - setting landmark/instruction should create a point at that location, not assign them to the next/last point, gets innacurate with non-straight path lines
 - Audio navigation involving orientation will give odd degree directions when walking at a moderate pace (I think voice instructions get added to the queue and it takes a while to catch up)
 - Audio navigation can give odd directions, unsure if it's related to the previous point. Needs more testing/refining
+- Occasionally when I start recording a path my heading is inaccurate. I'm unsure whether this is a hardware/Navisens/or code issue.
 
 ## Conclusion
 
