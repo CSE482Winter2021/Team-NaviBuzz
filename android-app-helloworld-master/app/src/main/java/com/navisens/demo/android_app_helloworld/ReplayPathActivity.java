@@ -339,10 +339,10 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             currLocation.latitude = motionDna.getLocation().global.latitude;
             currLocation.longitude = motionDna.getLocation().global.longitude;
 
-            /*boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;*/
+            boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
 
             // Begin Navisens estimation if GPS is off/inaccurate
-            if (!hasInitNavisensLocation) {
+            if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
                 hasInitNavisensLocation = true;
                 double heading = motionDna.getLocation().global.heading;
                 // My idea here is to reduce error in path, if they are within 3 meters of starting point (to do), we stabilize the point to

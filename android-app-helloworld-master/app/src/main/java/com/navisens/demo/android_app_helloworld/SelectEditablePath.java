@@ -64,6 +64,13 @@ public class SelectEditablePath extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
                             //TODO: delete path
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    System.out.println("deleting path id: " + p.pid);
+                                    db.deletePathId(p.pid);
+                                }
+                            });
 
                             //TODO: remove card
                             runOnUiThread(new Runnable() {
@@ -125,12 +132,6 @@ public class SelectEditablePath extends AppCompatActivity {
     private void toggleDeleteMode() {
         deleteMode = !deleteMode;
         if (deleteMode) {
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    db.clearAllTables();
-                }
-            });
             deletePathsBtn.setText("Exit Delete Mode");
         } else {
             deletePathsBtn.setText("Delete Paths");

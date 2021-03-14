@@ -357,10 +357,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         currLocation.latitude = motionDna.getLocation().global.latitude;
         currLocation.longitude = motionDna.getLocation().global.longitude;
 
-        /*boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;*/
+        boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
 
         // Begin Navisens estimation if GPS is off/inaccurate
-        if (!hasInitNavisensLocation) {
+        if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
             hasInitNavisensLocation = true;
             double heading = motionDna.getLocation().global.heading;
             motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, heading);
@@ -409,7 +409,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             }
 
             runOnUiThread(new Runnable() {
-
                 @Override
                 public void run() {
                     map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(currLocation.latitude, currLocation.longitude), 20f, 0, 0)));
@@ -538,7 +537,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 @Override
                 public void run() {
                     System.out.println("deleting path id: " + pathId);
-                    db.getPathDao().deletePath(path);
+                    db.deletePathId(pathId);
                 }
             });
         }
