@@ -2,6 +2,7 @@ package com.navisens.demo.android_app_helloworld;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -13,6 +14,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,6 +47,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.zip.ZipException;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -140,9 +145,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                /*if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
+                if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
                     isGpsUnderThreshold = false;
-                }*/
+                }
                 initialGPSLocation = location;
                 if (startMap) {
                     startMap();
@@ -298,32 +303,15 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
+            // Todo: A zip exception occasionally gets thrown and crashes the app on starting motionDna
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
-            //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
-            //motionDnaSDK.setGlobalHeading(initialGPSLocation.getBearing());
-
-
         } else {
             // service error, GPS is not on
         }
     }
 
     public void pauseReplayPath() {
-        if (TEST || currPathCounter == pathPoints.size() - 1) {
-            inNavigation = false;
-            ttobj.speak("Path navigation completed. Returning to home screen.", TextToSpeech.QUEUE_ADD, null);
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    SelectPathActivity.curr.finish();
-                    finish();
-                }
-            }, 500);
-        } else {
-            // TODO: add code for pausing the path
-            navigationPaused = true;
-        }
+        navigationPaused = true;
     }
 
     @Override
@@ -339,14 +327,9 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
             currLocation.latitude = motionDna.getLocation().global.latitude;
             currLocation.longitude = motionDna.getLocation().global.longitude;
 
-            boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
-
-            // Begin Navisens estimation if GPS is off/inaccurate
-            if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
+            if (!hasInitNavisensLocation) {
                 hasInitNavisensLocation = true;
                 double heading = motionDna.getLocation().global.heading;
-                // My idea here is to reduce error in path, if they are within 3 meters of starting point (to do), we stabilize the point to
-                // the starting location
                 motionDnaSDK.setGlobalPositionAndHeading(pathPoints.get(0).latitude, pathPoints.get(0).longitude, heading);
             }
 
@@ -467,14 +450,15 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
     private void completeNavigationPath() {
         ttobj.speak("You are at your destination, returning to home screen", TextToSpeech.QUEUE_ADD, null);
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+
+        new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                SelectPathActivity.curr.finish();
-                finish();
+                motionDnaSDK.stop();
+                Intent intent = new Intent(getApplicationContext(), StartingScreen.class);
+                startActivity(intent);
             }
-        }, 500);
+        }, 1000);
     }
 
     @Override

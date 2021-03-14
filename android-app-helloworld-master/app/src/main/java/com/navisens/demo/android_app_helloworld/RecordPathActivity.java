@@ -234,9 +234,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                /*if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
+                if (location.getAccuracy() > Constants.MAX_ALLOWABLE_DISTANCE) {
                     isGpsUnderThreshold = false;
-                }*/
+                }
                 if (startMap) {
                     initialGPSLocation = location;
                     startMap();
@@ -298,13 +298,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     public void startRecordingPath() {
-        //mapFragment.getMapAsync(this);
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
+            // Todo: A zip exception occasionally gets thrown and crashes the app on starting motionDna
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
-            //motionDnaSDK.setGlobalPosition(initialGPSLocation.getLatitude(), initialGPSLocation.getLongitude());
-            //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
             stopPathBtn.setEnabled(true);
             landmarkName.setEnabled(true);
             instructionString.setEnabled(true);
@@ -316,7 +314,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             startPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.antiqueWhite)));
             startPathBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
         } else {
-            // service error, GPS is not on
+            // service error, GPS is not on or is too inaccurate
         }
     }
 
@@ -352,15 +350,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     @Override
     public void receiveMotionDna(MotionDna motionDna) {
-        String str = "Navisens MotionDnaSDK Estimation:\n";
-
         currLocation.latitude = motionDna.getLocation().global.latitude;
         currLocation.longitude = motionDna.getLocation().global.longitude;
 
-        boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
-
-        // Begin Navisens estimation if GPS is off/inaccurate
-        if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
+        if (!hasInitNavisensLocation) {
             hasInitNavisensLocation = true;
             double heading = motionDna.getLocation().global.heading;
             motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, heading);
@@ -524,7 +517,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     protected void onDestroy() {
-        //TODO: delete path by id if it exists and there is an error
         // Shuts downs the MotionDna Core
         if (motionDnaSDK != null) {
             motionDnaSDK.stop();

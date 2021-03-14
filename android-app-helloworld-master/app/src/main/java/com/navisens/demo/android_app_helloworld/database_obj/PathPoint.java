@@ -7,11 +7,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity (tableName = "points", foreignKeys = {@ForeignKey(onDelete = ForeignKey.CASCADE, entity = Path.class, parentColumns = "path_id",
-childColumns = "path_id")},
-        indices = {
-        @Index("path_id")
-})
+@Entity (tableName = "points", foreignKeys = {@ForeignKey(entity = Path.class, parentColumns = "path_id",
+        childColumns = "path_id")})
 public class PathPoint {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "path_point_id")
