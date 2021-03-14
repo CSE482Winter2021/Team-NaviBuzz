@@ -314,7 +314,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             startPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.antiqueWhite)));
             startPathBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
         } else {
-            // service error, GPS is not on or is too inaccurate
+            // service error, GPS is not on
         }
     }
 
