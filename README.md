@@ -10,8 +10,8 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 
 ### Project Goals
 1. Paths are very specific to the person, so the tool should allow very customizable paths
-  - Have different landmarks or locations in a station to verify location per user. 
-  - They have different preferences for metrics ( feet/ meters/steps)  
+    - Have different landmarks or locations in a station to verify location per user. 
+    - They have different preferences for metrics ( feet/ meters/steps)  
 2. Allow users to have easy access to path training from O&M guides without having to have O&M guides present
 3. Able to navigate through indoor/underground environments
 4. Have accessible features to aid with different levels of visual impairment challenges
