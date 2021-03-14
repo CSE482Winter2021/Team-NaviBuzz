@@ -319,7 +319,8 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         if (!navigationPaused) {
             frtime = System.nanoTime();
             if (elapsedTime == 0) {
-                elapsedTime = frtime;
+                // First instruction will play in 8-5 seconds
+                elapsedTime = frtime - (6 * Constants.ONESEC_NANOS);
             }
 
             String str = "Navisens MotionDnaSDK Estimation:\n";
@@ -428,15 +429,21 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
                 // User is not near starting point, we should probably handle this error condition in SelectPathActivity, so this else block shouldn't be possible in that case
             }
 
-            if (elapsedTime == 0 || (frtime - elapsedTime) > (8*Constants.ONESEC_NANOS)) {
+            if ((frtime - elapsedTime) > (8*Constants.ONESEC_NANOS)) {
                 elapsedTime = frtime;
                 double distanceToNextPoint = Utils.estimateDistanceBetweenTwoPoints(pathPoints.get(currPathCounter), currLocation);
                 double headingBetweenPoints = Utils.getHeadingBetweenGPSPoints(currLocation, pathPoints.get(currPathCounter));
                 double distanceToTurn = Utils.getHeadingTurnDegrees(motionDna.getLocation().global.heading, headingBetweenPoints);
 
                 // Todo: Add unit customization
-                String orientationInstr = distanceToTurn < 0 ? "Turn left " : "Turn right ";
-                final String instructionStr = orientationInstr + Math.round(Math.abs(distanceToTurn)) + " degrees and walk " + Math.round(distanceToNextPoint) + " meters";
+                String orientationInstr = "";
+                if (Math.abs(distanceToTurn) < 10) {
+                    orientationInstr += "Walk straight ";
+                } else {
+                    orientationInstr += distanceToTurn < 0 ? "Turn left " : "Turn right ";
+                    orientationInstr += Math.round(Math.abs(distanceToTurn)) + " degrees and walk ";
+                }
+                final String instructionStr = orientationInstr + Math.round(distanceToNextPoint) + " meters";
 
                 runOnUiThread(new Runnable() {
                     @Override
