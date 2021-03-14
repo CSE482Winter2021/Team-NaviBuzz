@@ -319,20 +319,20 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
         if (!navigationPaused) {
             frtime = System.nanoTime();
             if (elapsedTime == 0) {
-                // First instruction will play in 8-5 seconds
+                // First instruction will play in 8-6 seconds
                 elapsedTime = frtime - (6 * Constants.ONESEC_NANOS);
             }
 
             String str = "Navisens MotionDnaSDK Estimation:\n";
-
-            currLocation.latitude = motionDna.getLocation().global.latitude;
-            currLocation.longitude = motionDna.getLocation().global.longitude;
 
             if (!hasInitNavisensLocation) {
                 hasInitNavisensLocation = true;
                 double heading = motionDna.getLocation().global.heading;
                 motionDnaSDK.setGlobalPositionAndHeading(pathPoints.get(0).latitude, pathPoints.get(0).longitude, heading);
             }
+
+            currLocation.latitude = motionDna.getLocation().global.latitude;
+            currLocation.longitude = motionDna.getLocation().global.longitude;
 
             double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
