@@ -16,9 +16,7 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 3. Able to navigate through indoor/underground environments
 4. Have accessible features to aid with different levels of visual impairment challenges
 
-## Project Development
-
-### Use Cases
+## Development Plan
 
 ### Constrains/Limitations
 
@@ -26,9 +24,9 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 
 ### Bug List
 - App seems to time out during RecordPathActivity if it runs too long
-- After RecordPathActivity crashes, upon openeing it again hitting "Start Path" btn will crash (propbably because it shouldn't be enabled yet)
-- ~"Confirm Landmark" button on replay path screen does nothing~
-- Waypoint list on ReplayPathActivity does not respond to replaying path (should delete cards once user has passed their points)
+- After RecordPathActivity crashes, upon openeing it again hitting "Start Path" button will crash (probably because it shouldn't be enabled yet)
+- ~"Confirm Landmark" button on replay path screen does nothing~ 
+- Waypoint list on ReplayPathActivity should delete cards once user has passed their points)
 - ~"Stop Path" currently only capable of fully stoping path, would be useful to be able to pause~
 - ~using a duplicate path name for a new path fully crashes the app, should be an error message~
 - path name gets saved even if user never records path
@@ -40,5 +38,13 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 - Crashing ZipException issue happens occasionally upon starting Navisens. Unsure the cause
 
 ## Conclusion
+This is a protoype that we completed over 10 weeks. with more time and resources we would like to expand on this project. 
+- Customizable color schemes
+- Customizable metrics, ie. number of steps based on step length, feet, frequency of path points
+- Customizable feature to confirm a landmark
+- Smoothing of path data when walking straight so that there are fewer instructions
+- Work with Navisens to record data for multiple levels 
+- Lidar sensor integration
+- Save path data to a cloud rather than just locally
 
 ## User Manual
