@@ -325,14 +325,14 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
             String str = "Navisens MotionDnaSDK Estimation:\n";
 
+            currLocation.latitude = motionDna.getLocation().global.latitude;
+            currLocation.longitude = motionDna.getLocation().global.longitude;
+
             if (!hasInitNavisensLocation) {
                 hasInitNavisensLocation = true;
                 double heading = motionDna.getLocation().global.heading;
-                motionDnaSDK.setGlobalPositionAndHeading(pathPoints.get(0).latitude, pathPoints.get(0).longitude, heading);
+                motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, heading);
             }
-
-            currLocation.latitude = motionDna.getLocation().global.latitude;
-            currLocation.longitude = motionDna.getLocation().global.longitude;
 
             double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
 
@@ -392,7 +392,7 @@ public class ReplayPathActivity extends AppCompatActivity implements MotionDnaSD
 
                     String landmarkStr = currPathPoint.landmark;
                     if (landmarkStr != null && !landmarkStr.equals("")) {
-                        ttobj.speak("There is a recorded landmark here called " + landmarkStr + " please confirm", TextToSpeech.QUEUE_ADD, null);
+                        ttobj.speak("There is a recorded point of interest here called " + landmarkStr + " please confirm", TextToSpeech.QUEUE_ADD, null);
                     }
 
                     currPathCounter++;

@@ -71,11 +71,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     Button stopPathBtn;
     Button recordInstructionBtn;
     Button seeDebugText;
-    EditText landmarkName;
+    EditText pointOfInterestName;
     EditText instructionString;
     GoogleMap map;
     PathDatabase db;
-    Button recordLandmarkBtn;
+    Button recordPointOfInterest;
     long pathId;
     String pathName;
     Path path;
@@ -101,11 +101,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
         reportStatusTextView = findViewById(R.id.reportStatusTextView);
         startPathBtn = findViewById(R.id.start_record_btn);
-        landmarkName = findViewById(R.id.landmark_name);
+        pointOfInterestName = findViewById(R.id.landmark_name);
         instructionString = findViewById(R.id.instruction_text);
         recordInstructionBtn = findViewById(R.id.record_instruction);
         stopPathBtn = findViewById(R.id.stop_record_btn);
-        recordLandmarkBtn = findViewById(R.id.record_landmark);
+        recordPointOfInterest = findViewById(R.id.record_landmark);
         seeDebugText = findViewById(R.id.see_debug_text);
         context = getApplicationContext();
         currPath = new ArrayList<PathPoint>();
@@ -173,7 +173,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
 
-        recordLandmarkBtn.setOnClickListener(new View.OnClickListener() {
+        recordPointOfInterest.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 recordLandmark();
             }
@@ -193,20 +193,20 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                         receiveMotionDnaTextView.setVisibility(View.VISIBLE);
                         recordInstructionBtn.setVisibility(View.INVISIBLE);
                         instructionString.setVisibility(View.INVISIBLE);
-                        landmarkName.setVisibility(View.INVISIBLE);
+                        pointOfInterestName.setVisibility(View.INVISIBLE);
                         startPathBtn.setVisibility(View.INVISIBLE);
                         stopPathBtn.setVisibility(View.INVISIBLE);
                         recordInstructionBtn.setVisibility(View.INVISIBLE);
-                        recordLandmarkBtn.setVisibility(View.INVISIBLE);
+                        recordPointOfInterest.setVisibility(View.INVISIBLE);
                     } else {
                         receiveMotionDnaTextView.setVisibility(View.INVISIBLE);
                         recordInstructionBtn.setVisibility(View.VISIBLE);
                         instructionString.setVisibility(View.VISIBLE);
-                        landmarkName.setVisibility(View.VISIBLE);
+                        pointOfInterestName.setVisibility(View.VISIBLE);
                         startPathBtn.setVisibility(View.VISIBLE);
                         stopPathBtn.setVisibility(View.VISIBLE);
                         recordInstructionBtn.setVisibility(View.VISIBLE);
-                        recordLandmarkBtn.setVisibility(View.VISIBLE);
+                        recordPointOfInterest.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -221,9 +221,9 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
         stopPathBtn.setEnabled(false);
-        landmarkName.setEnabled(false);
+        pointOfInterestName.setEnabled(false);
         instructionString.setEnabled(false);
-        recordLandmarkBtn.setEnabled(false);
+        recordPointOfInterest.setEnabled(false);
         recordInstructionBtn.setEnabled(false);
         // Requests app
         ActivityCompat.requestPermissions(this, MotionDnaSDK.getRequiredPermissions()
@@ -304,10 +304,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             // Todo: A zip exception occasionally gets thrown and crashes the app on starting motionDna
             motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
             stopPathBtn.setEnabled(true);
-            landmarkName.setEnabled(true);
+            pointOfInterestName.setEnabled(true);
             instructionString.setEnabled(true);
             recordInstructionBtn.setEnabled(true);
-            recordLandmarkBtn.setEnabled(true);
+            recordPointOfInterest.setEnabled(true);
             startPathBtn.setEnabled(false);
             stopPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
             stopPathBtn.setTextColor(Color.WHITE);
@@ -336,10 +336,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             }
         });
         stopPathBtn.setEnabled(false);
-        landmarkName.setEnabled(false);
+        pointOfInterestName.setEnabled(false);
         instructionString.setEnabled(false);
         recordInstructionBtn.setEnabled(false);
-        recordLandmarkBtn.setEnabled(false);
+        recordPointOfInterest.setEnabled(false);
         startPathBtn.setEnabled(true);
         startPathBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
         startPathBtn.setTextColor(Color.WHITE);
@@ -491,13 +491,15 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             return new ErrorState("An unknown error occurred, please try again", false);
         }
 
-        String landmark = landmarkName.getText().toString();
+        String landmark = pointOfInterestName.getText().toString();
         System.out.println(landmark);
-        landmarkName.setText("");
-        landmarkName.clearFocus();
+        pointOfInterestName.setText("");
+        pointOfInterestName.clearFocus();
 
-        // TODO: change this to create a new pathpoint if within some distance from last pathpoint
-        currPath.get(currPath.size() - 1).landmark = landmark;
+        PathPoint p = new PathPoint(currLocation.latitude, currLocation.longitude);
+        p.landmark = landmark;
+        currPath.add(p);
+        lastLocation = p;
         return new ErrorState("Success", true);
     }
 
@@ -511,8 +513,10 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         instructionString.setText("");
         instructionString.clearFocus();
 
-        // TODO: change this to create a new pathpoint if within some distance from last pathpoint
-        currPath.get(currPath.size() - 1).instruction = instruction;
+        PathPoint p = new PathPoint(currLocation.latitude, currLocation.longitude);
+        p.instruction = instruction;
+        currPath.add(p);
+        lastLocation = p;
         return new ErrorState("Success", true);
     }
 

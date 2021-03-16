@@ -64,7 +64,7 @@
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="180dp"
             android:layout_height="match_parent"
-            android:text="Stop Path"
+            android:text="Pause Path"
             android:textColor="@color/flatBlack"
             android:textSize="18sp"
             android:textStyle="bold"
