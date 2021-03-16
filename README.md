@@ -9,22 +9,21 @@
 Our overall goal this quarter was to create an audio based navigation tool for visually-impaired transit users that could extend to places with poor internet connectivity. This project is in collaboration with Seattle Sound Transit and individuals with visual impairment disabilities in the surrounding community. Navigating a new environment can be a challenge with a disability, and currently Seattle Transit employs O&M guides to aid disabled transit users in learning a path through transit stations. After learning about the current processes for supporting visually-impaired transit users with O&M guides in Seattle Transit, we decided to build NaviBuzz to be a tool for recording and renavigating personalized paths through indoor environments. NaviBuzz is a navigation system with audio assistance which allows users to work with O&M Guides to record a path through a transit station in the time that the O&M Guide would be training them on that path. Users then have the ability to use the navigation system to retrace that path. This enables users to safely and repeatedly navigate throughout indoor transit environments, as well as reinforcing independent navigation skills for the user. We’d eventually like to be able to use recorded path data to augment GTFS path data within these stations.
 
 ### Project Goals
-1. Paths are very specific to the person, so the tool should allow very customizable paths
-    - Have different landmarks or locations in a station to verify location per user. 
+1. Paths travleed are very specific to the person so the tool should provide customizable paths
+    - Allow different landmarks or locations in a station for a user to verify.  
     - They have different preferences for metrics ( feet/ meters/steps)  
 2. Allow users to have easy access to path training from O&M guides without having to have O&M guides present
-3. Able to navigate through indoor/underground environments
-4. Have accessible features to aid with different levels of visual impairment challenges
+3. Navigation assitance for indoor/underground environments
+4. Have accessible features to aid with different levels of visual impairment and for use with TalkBack
 
 ## Development Plan
-We chose to build this tool as an Android application, as that was the option that felt best suited to both our needs for this tool and our software development skills. We divided the development work into three independent areas that we could each work on individually; the UI, database model, and backend navigation system. We then worked collaboratively to integrate these parts into one complete application. For the navigation system, we chose to use the [NaviSens API](https://www.navisens.com/) to enable navigation (mostly) without the use of GPS. We chose this API as one of our project goals was to create a navigation system that could work well in indoor and underground transit environments, places where GPS connection may be inaccurate or nonexistent. We also used the Android [Speech API](https://developer.android.com/reference/android/speech/package-summary) for communicating auditory information to our users.
 
-### Constrains/Limitations
-- GPS is only so accurate
-- Didn’t have the ability to actually do O&M training
-- We weren’t able to test within an actual transit station
+### Constraints/Limitations
+- GPS retrieval has a margin of error
+- Didn’t have the ability to gor through the O&M training process
+- We weren’t able to test within an transit station
 - We weren’t able to test with our target user-group (visually impaired transit users)
-- One of the constraints is the accuracy of Navisens
+- Navisens has margins of error
 
 
 ## Experimental Results
@@ -60,6 +59,7 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 - Customizable metrics, ie. number of steps based on step length, feet, frequency of path points
 - Customizable feature to confirm a landmark
 - Smoothing of path data when walking straight so that there are fewer instructions
+- Allow path to replay properly if a phone is in someone's pocket
 - Work with Navisens to record data for multiple levels 
 - Lidar sensor integration
 - Save path data to a cloud rather than just locally
