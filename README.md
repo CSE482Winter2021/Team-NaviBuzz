@@ -16,7 +16,9 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 3. Able to navigate through indoor/underground environments
 4. Have accessible features to aid with different levels of visual impairment challenges
 
-## Development Plan
+## Project Development
+
+### Use Cases
 
 ### Constrains/Limitations
 
