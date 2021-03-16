@@ -298,15 +298,11 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     public void startRecordingPath() {
-        //mapFragment.getMapAsync(this);
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             motionDnaSDK = new MotionDnaSDK(this.getApplicationContext(), this);
             motionDnaSDK.startForegroundService();
-            HashMap<String, Object> config = new HashMap<String, Object>();
-            config.put("callback", 750.0);
-            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY, config);
-            //motionDnaSDK.setGlobalPosition(initialGPSLocation.getLatitude(), initialGPSLocation.getLongitude());
-            //double heading = initialGPSLocation.getBearing() < 180 ? initialGPSLocation.getBearing() + 180 : initialGPSLocation.getBearing() - 180;
+            // Todo: A zip exception occasionally gets thrown and crashes the app on starting motionDna
+            motionDnaSDK.start(Constants.NAVISENS_DEV_KEY);
             stopPathBtn.setEnabled(true);
             landmarkName.setEnabled(true);
             instructionString.setEnabled(true);
@@ -354,17 +350,13 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
 
     @Override
     public void receiveMotionDna(MotionDna motionDna) {
-        String str = "Navisens MotionDnaSDK Estimation:\n";
-
         currLocation.latitude = motionDna.getLocation().global.latitude;
         currLocation.longitude = motionDna.getLocation().global.longitude;
 
-        boolean isGPSOnAndAccurate = manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && isGpsUnderThreshold;
-
-        // Begin Navisens estimation if GPS is off/inaccurate
-        if (!hasInitNavisensLocation && !isGPSOnAndAccurate) {
+        if (!hasInitNavisensLocation) {
             hasInitNavisensLocation = true;
-            motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, motionDna.getLocation().global.heading);
+            double heading = motionDna.getLocation().global.heading;
+            motionDnaSDK.setGlobalPositionAndHeading(currLocation.latitude, currLocation.longitude, heading);
         }
 
         double diffBetween = Utils.estimateDistanceBetweenTwoPoints(currLocation, lastLocation);
@@ -404,11 +396,12 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                             .fillColor(Color.BLUE));
                 }
             });
-            currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
-            lastLocation = new PathPoint(currLocation);
+            if (diffBetween > 5) {
+                currPath.add(new PathPoint(currLocation.latitude, currLocation.longitude, pathId));
+                lastLocation = new PathPoint(currLocation);
+            }
 
             runOnUiThread(new Runnable() {
-
                 @Override
                 public void run() {
                     map.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(currLocation.latitude, currLocation.longitude), 20f, 0, 0)));
@@ -416,7 +409,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
             });
         }
 
-        printDebugInformation(motionDna, str);
+        //printDebugInformation(motionDna, str);
     }
 
 
@@ -524,7 +517,6 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
     }
 
     protected void onDestroy() {
-        //TODO: delete path by id if it exists and there is an error
         // Shuts downs the MotionDna Core
         if (motionDnaSDK != null) {
             motionDnaSDK.stop();
@@ -537,7 +529,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
                 @Override
                 public void run() {
                     System.out.println("deleting path id: " + pathId);
-                    db.getPathDao().deletePath(path);
+                    db.deletePathId(pathId);
                 }
             });
         }
