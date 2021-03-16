@@ -10,13 +10,13 @@
 ## Screenshots
 
 <p align="center">
-  <img src="resources/images/Screenshot_20210315-213402.png" width="220" height="500" />
+  <img src="resources/images/Screenshot_20210315-213402.png" width="200" height="400" />
     
-  <img src="resources/images/Screenshot_20210315-213420.png" width="220" height="500"/>
+  <img src="resources/images/Screenshot_20210315-213420.png" width="200" height="400"/>
 
-  <img src="resources/images/Screenshot_20210315-213437.png" width="220" height="500"/>
+  <img src="resources/images/Screenshot_20210315-213437.png" width="200" height="400"/>
 
-  <img src="resources/images/Screenshot_20210315-213505.png" width="220" height="500"/>
+  <img src="resources/images/Screenshot_20210315-213505.png" width="200" height="400"/>
 </p>
 
 ## Abstract
