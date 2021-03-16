@@ -1,9 +1,13 @@
 # NaviBuzz
+| [:sparkles: User Manual](#user-manual) | [:rocket: Download](#download) | [:camera: Screenshots](#screenshots) |
+| --------------- | -------- | ----------- |
 ### Participants
 * **Developer**: Omar Ibrahim - _UW CSE_
 * **Developer**: Dylan Burton - _UW CSE_
 * **Developer**: Allyson Ely - _UW CSE_
 * **Needs Expert**: David Miller - _Seattle Transit_
+
+## Screenshots
 
 ## Abstract
 Our overall goal this quarter was to create an audio based navigation tool for visually-impaired transit users that could extend to places with poor internet connectivity. This project is in collaboration with Seattle Sound Transit and individuals with visual impairment disabilities in the surrounding community. Navigating a new environment can be a challenge with a disability, and currently Seattle Transit employs O&M guides to aid disabled transit users in learning a path through transit stations. After learning about the current processes for supporting visually-impaired transit users with O&M guides in Seattle Transit, we decided to build NaviBuzz to be a tool for recording and renavigating personalized paths through indoor environments. NaviBuzz is a navigation system with audio assistance which allows users to work with O&M Guides to record a path through a transit station in the time that the O&M Guide would be training them on that path. Users then have the ability to use the navigation system to retrace that path. This enables users to safely and repeatedly navigate throughout indoor transit environments, as well as reinforcing independent navigation skills for the user. We’d eventually like to be able to use recorded path data to augment GTFS path data within these stations.
@@ -17,20 +21,6 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 4. Have accessible features to aid with different levels of visual impairment and for use with TalkBack
 
 ## Development Plan
-We chose to build this tool as an Android application, as that was the option that felt best suited to both our needs for this tool and our software development skills. We divided the development work into three independent areas that we could each work on individually; the UI, database model, and backend navigation system. We then worked collaboratively to integrate these parts into one complete application. For the navigation system, we chose to use the [NaviSens API](https://www.navisens.com/) to enable navigation (mostly) without the use of GPS. We chose this API as one of our project goals was to create a navigation system that could work well in indoor and underground transit environments, places where GPS connection may be inaccurate or nonexistent. We also used the [Android Speech API](https://developer.android.com/reference/android/speech/package-summary) for communicating auditory information to our users.
-
-We researched existing solutions, but most existing tools either: 
-- only work outdoors
-- are only available on certain platforms/with certain physical devices/are very expensive
-- do not support independent navigation
-- are deprecated or gone altogether
-
-With this in maind, we determined the high level tasks for our tool to be:
-- Get the current location
-- Training a Station path for a user (with an OM guide, for example)
-- Follow a pre trained personal path 
-
-We also wanted to work on collecting user-saved path data to build a dataset of information that could be used in the future to construct or augment GTFS Pathway data, although this is something we were not able to accomplish within the scope of this project.
 
 ### Constraints/Limitations
 - GPS retrieval has a margin of error
@@ -77,7 +67,8 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 - Work with Navisens to record data for multiple levels 
 - Lidar sensor integration
 - Save path data to a cloud rather than just locally
-- Have clearer state changes for various screens, ie. recording, recording stopped, loading
-- Compute heading from the new points created not the phones heading
 
 ## User Manual
+
+
+## Download
