@@ -77,7 +77,28 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 
 ### Running the App
 #### Record a Path
+1. Select the “Record Path” option
+2. Enter a unique path name
+3. Move to a location where you wish to start your path each time
+4. Select “Start Recording Path”	
+5. Walk along the path you wish to follow
+6. If you reach a point of interest you would like to confirm while navigating enter a “Point of Interest”
+7. If you have a specific instruction about the physical space enter a “Instruction”
+
 #### Replay a Path
+1. Move to the location where you regularly start
+2. Select “Replay Path”
+3. Select the path you would like to follow
+4. Follow the audio instructions
+5 If there is a landmark ensure that you are at that landmark and select “Confirm Landmark”
+6. When you are done select “Stop Path”
+
 #### Edit a Path
+1. Select “Edit Path”
+2. Select the path of interest
+3. Update the text of any points of interest or instructions
+4. Select “Confirm Path” 
+5. Select “Confirm”
+
 
 ## Download
