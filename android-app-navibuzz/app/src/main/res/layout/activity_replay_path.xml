@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/antiqueWhite"
+    tools:context="com.android.app.navibuzz.RecordPathActivity">
+
+    <fragment
+        android:id="@+id/map"
+        class="com.google.android.gms.maps.MapFragment"
+        android:layout_width="417dp"
+        android:layout_height="263dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="91dp" />
+
+    <LinearLayout
+        android:id="@+id/wrapper_layout"
+        android:layout_width="415dp"
+        android:layout_height="172dp"
+        app:layout_constraintTop_toBottomOf="@+id/map"
+        tools:layout_editor_absoluteX="-3dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/instruction_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/btn_container"
+        style="?attr/materialButtonToggleGroupStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:backgroundTint="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirm_landmark"
+        app:singleSelection="true">
+        <!--        app:checked="true" >-->
+        <!--        android:MaterialButtonToggleGroup_checkedButton="@id/pause_path_btn" >-->
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/start_path_btn"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="180dp"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:text="Start Path"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:strokeColor="@color/colorPrimaryDark" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pause_path_btn"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="180dp"
+            android:layout_height="match_parent"
+            android:text="Pause Path"
+            android:textColor="@color/flatBlack"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:strokeColor="@color/colorPrimaryDark"
+            tools:layout_editor_absoluteX="179dp" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:id="@+id/receiveMotionDnaTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:scrollbars="vertical"
+        android:text="DebugText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wrapper_layout" />
+
+    <TextView
+        android:id="@+id/reportStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/receiveMotionDnaTextView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/followPathTitle"
+        android:layout_width="match_parent"
+        android:layout_height="94dp"
+        android:background="@color/flatBlack"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="Follow Path"
+        android:textAlignment="inherit"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/confirm_landmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorAccent"
+        android:gravity="center"
+        android:padding="15dp"
+        android:text="Confirm Landmark"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wrapper_layout" />
+</androidx.constraintlayout.widget.ConstraintLayout>
