@@ -63,5 +63,7 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 - Work with Navisens to record data for multiple levels 
 - Lidar sensor integration
 - Save path data to a cloud rather than just locally
+- Have clearer state changes for various screens, ie. recording, recording stopped, loading
+- Compute heading from the new points created not the phones heading
 
 ## User Manual
