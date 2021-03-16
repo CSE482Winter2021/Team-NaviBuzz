@@ -1,6 +1,6 @@
 # NaviBuzz
-| [:sparkles: User Manual](#user-manual) | [:rocket: Download](#download) | [:camera: Screenshots](#screenshots) |
-| --------------- | -------- | ----------- |
+| [Screenshots](#screenshots) | [Abstract](#abstract) | [User Manual](#user-manual) | [Download](#download)
+| --------------- | -------- | ----------- | --------- |
 ### Participants
 * **Developer**: Omar Ibrahim - _UW CSE_
 * **Developer**: Dylan Burton - _UW CSE_
