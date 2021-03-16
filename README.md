@@ -60,13 +60,14 @@ We had 3 test users run preliminary experiments with our application (note that 
 Fixes:
 - Changed “landmark” to “point of interest” and changed “stop path” to “pause path”
 - Path deletion from database
-- Fixed some crashes within path recording activity (there is still one that occasionally occurs when starting up Navisens, unsure the cause)
+- Fixed some crashes within path recording activity (there is still a ZipException that occasionally occurs when starting up Navisens, unsure the cause)
 - Fix some orientation instruction inacurracies
 
 Features:
 - Add “walk straight” instruction if degrees < 10 left/right
 - Add a new point upon creation of landmark/instruction instead of associating it with the last point. 
 - Added map on the replay screen for those with limited vision
+- Added an edit path screen to change landmark/instruction text and delete path
 
 We also included future project expansion ideas in the conclusion section below.
 
