@@ -21,15 +21,20 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 4. Have accessible features to aid with different levels of visual impairment and for use with TalkBack
 
 ## Development Plan
-We chose to build this tool as an Android application, as that was the option that felt best suited to both our needs for this tool and our software development skills. We divided the development work into three independent areas that we could each work on individually; the UI, database model, and backend navigation system. We then worked collaboratively to integrate these parts into one complete application. For the navigation system, we chose to use the NaviSens API to enable navigation (mostly) without the use of GPS. We chose this API as one of our project goals was to create a navigation system that could work well in indoor and underground transit environments, places where GPS connection may be inaccurate or nonexistent. We also used the Android Speech API for communicating auditory information to our users.
+We chose to build this tool as an Android application, as that was the option that felt best suited to both our needs for this tool and our software development skills. We divided the development work into three independent areas that we could each work on individually; the UI, database model, and backend navigation system. We then worked collaboratively to integrate these parts into one complete application. For the navigation system, we chose to use the [NaviSens API](https://www.navisens.com/) to enable navigation (mostly) without the use of GPS. We chose this API as one of our project goals was to create a navigation system that could work well in indoor and underground transit environments, places where GPS connection may be inaccurate or nonexistent. We also used the [Android Speech API](https://developer.android.com/reference/android/speech/package-summary) for communicating auditory information to our users.
 
-We researched existing solutions, but most existing tools either: only work outdoors, are only available on certain platforms/with certain physical devices/are very expensive, do not support independent navigation, or are deprecated/gone altogether. We determined the high level tasks for our tool to be:
+We researched existing solutions, but most existing tools either: 
+- only work outdoors
+- are only available on certain platforms/with certain physical devices/are very expensive
+- do not support independent navigation
+- are deprecated or gone altogether. 
+
+With this in mind, we determined the high level tasks for our tool to be:
 - Get the current location
 - Training a Station path for a user (with an OM guide, for example)
 - Follow a pre trained personal path 
 
 We also wanted to work on collecting user-saved path data to build a dataset of information that could be used in the future to construct or augment GTFS Pathway data, although this is something we were not able to accomplish within the scope of this project.
-
 
 ### Constraints/Limitations
 - GPS retrieval has a margin of error
