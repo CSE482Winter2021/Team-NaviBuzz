@@ -97,6 +97,8 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 ## User Manual
 
 ### Downloading the APK
+- If on your mobile device already, download the APK by navigating to the download section on this file to install the APK. Note: You may need to navigate into security settings and allow installation from Unknown sources, see this article for more details: [APK guide](https://www.lifewire.com/install-apk-on-android-4177185)
+- If not on your mobile device, enable USB debugging and follow the instructions on the above article [APK guide]((https://www.lifewire.com/install-apk-on-android-4177185)
 
 ### Requirements
 - At least Android 5.0 21 API SDK version (Lollipop) or greater
@@ -128,5 +130,9 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 4. Select “Confirm Path” 
 5. Select “Confirm”
 
+### Modifying the source code
+- Clone the repository
+- Open the Android project located in the Team-Navibuzz folder in Android Studio
+- Gradle should sync all the dependencies required for this project
 
 ## Download
