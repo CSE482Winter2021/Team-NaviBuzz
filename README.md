@@ -98,7 +98,7 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 
 ### Downloading the APK
 - If on your mobile device already, download the APK by navigating to the download section on this file to install the APK. Note: You may need to navigate into security settings and allow installation from Unknown sources, see this article for more details: [APK guide](https://www.lifewire.com/install-apk-on-android-4177185)
-- If not on your mobile device, enable USB debugging and follow the instructions on the above article [APK guide]((https://www.lifewire.com/install-apk-on-android-4177185)
+- If not on your mobile device, enable USB debugging and follow the instructions on the above article [APK guide](https://www.lifewire.com/install-apk-on-android-4177185)
 
 ### Requirements
 - At least Android 5.0 21 API SDK version (Lollipop) or greater
