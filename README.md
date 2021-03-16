@@ -19,6 +19,12 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 ## Development Plan
 
 ### Constrains/Limitations
+- GPS is only so accurate
+- Didn’t have the ability to actually do O&M training
+- We weren’t able to test within an actual transit station
+- We weren’t able to test with our target user-group (visually impaired transit users)
+- One of the constraints is the accuracy of Navisens
+
 
 ## Experimental Results
 
