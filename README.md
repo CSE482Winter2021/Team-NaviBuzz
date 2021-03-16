@@ -71,5 +71,13 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 
 ## User Manual
 
+###Downloading the APK
+
+###Requirements
+
+###Running the App
+####Record a Path
+####Replay a Path
+#### Edit a Path
 
 ## Download
