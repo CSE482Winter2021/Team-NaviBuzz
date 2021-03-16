@@ -87,7 +87,7 @@ We also included future project expansion ideas in the conclusion section below.
 - Add ability to edit path name
 
 ## Conclusion
-This is a protoype that we completed over 10 weeks. with more time and resources we would like to expand on this project. 
+This is a protoype that we completed in over 10 weeks. With more time and resources we would expand on this project in the following ways:
 - Customizable color schemes
 - Customizable metrics, ie. number of steps based on step length, feet, frequency of path points
 - Customizable feature to confirm a landmark
