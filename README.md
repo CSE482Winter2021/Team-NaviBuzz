@@ -74,6 +74,9 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 ### Downloading the APK
 
 ### Requirements
+- At least Android 5.0 21 API SDK version (Lollipop) or greater
+- Android Studio
+- An Android phone with GPS enabled to load the app onto
 
 ### Running the App
 #### Record a Path
