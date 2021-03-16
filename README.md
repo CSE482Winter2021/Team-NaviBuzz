@@ -68,6 +68,7 @@ Features:
 - Add a new point upon creation of landmark/instruction instead of associating it with the last point. 
 - Added map on the replay screen for those with limited vision
 
+We also included future project expansion ideas in the conclusion section below.
 
 ### Bug List
 - App seems to time out during RecordPathActivity if it runs too long
@@ -91,7 +92,7 @@ This is a protoype that we completed over 10 weeks. with more time and resources
 - Customizable metrics, ie. number of steps based on step length, feet, frequency of path points
 - Customizable feature to confirm a landmark
 - Smoothing of path data when walking straight so that there are fewer instructions
-- Allow path to replay properly if a phone is in someone's pocket
+- Allow path to replay properly if a phone is in someone's pocket (calculate orientation from change in location instead of the direction the phone is facing)
 - Work with Navisens to record data for multiple levels 
 - Lidar sensor integration
 - Save path data to a cloud rather than just locally
