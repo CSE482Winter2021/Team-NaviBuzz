@@ -28,6 +28,16 @@ Our overall goal this quarter was to create an audio based navigation tool for v
 
 ## Experimental Results
 
+Fixes:
+- Changed “landmark” to “point of interest” and changed “stop path” to “pause path”
+- Path deletion from database
+- Fixed some crashes
+
+Features:
+- Add “walk straight” instruction if degrees < 10 left/right
+- Add a new point upon creation of landmark/instruction instead of associating it with the last point. 
+
+
 ### Bug List
 - App seems to time out during RecordPathActivity if it runs too long
 - After RecordPathActivity crashes, upon openeing it again hitting "Start Path" button will crash (probably because it shouldn't be enabled yet)
