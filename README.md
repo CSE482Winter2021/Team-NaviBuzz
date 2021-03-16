@@ -45,11 +45,12 @@ We also wanted to work on collecting user-saved path data to build a dataset of 
 
 
 ## Experimental Results
+We had 3 test users run preliminary experiments with our application (note that none of our test users were visually impaired, however, our timeline and resources for testing were severely limited). We gave users the current version of the app, and asked them to perform a set of tasks; record a path using the application, then attempt to renavigate that path using the application. They could also optionally edit the path they recorded. Based on the feedback we received from this testing, we made the following changes:
 
 Fixes:
 - Changed “landmark” to “point of interest” and changed “stop path” to “pause path”
 - Path deletion from database
-- Fixed some crashes
+- Fixed crashes within path recording activity
 
 Features:
 - Add “walk straight” instruction if degrees < 10 left/right
