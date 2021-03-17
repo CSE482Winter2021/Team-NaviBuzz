@@ -488,7 +488,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         pointOfInterestName.setText("");
         pointOfInterestName.clearFocus();
 
-        PathPoint p = new PathPoint(currLocation.latitude, currLocation.longitude);
+        PathPoint p = new PathPoint(currLocation.latitude, currLocation.longitude, pathId);
         p.landmark = landmark;
         currPath.add(p);
         lastLocation = p;
@@ -505,7 +505,7 @@ public class RecordPathActivity extends AppCompatActivity implements MotionDnaSD
         instructionString.setText("");
         instructionString.clearFocus();
 
-        PathPoint p = new PathPoint(currLocation.latitude, currLocation.longitude);
+        PathPoint p = new PathPoint(currLocation.latitude, currLocation.longitude, pathId);
         p.instruction = instruction;
         currPath.add(p);
         lastLocation = p;
