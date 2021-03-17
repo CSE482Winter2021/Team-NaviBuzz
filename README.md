@@ -48,7 +48,7 @@ We also wanted to work on collecting user-saved path data to build a dataset of 
 
 ### Constraints/Limitations
 - GPS retrieval has a margin of error
-- Didn’t have the ability to gor through the O&M training process
+- Didn’t have the ability to go through the O&M training process
 - We weren’t able to test within an transit station
 - We weren’t able to test with our target user-group (visually impaired transit users)
 - Navisens has margins of error
@@ -60,13 +60,14 @@ We had 3 test users run preliminary experiments with our application (note that 
 Fixes:
 - Changed “landmark” to “point of interest” and changed “stop path” to “pause path”
 - Path deletion from database
-- Fixed some crashes within path recording activity (there is still one that occasionally occurs when starting up Navisens, unsure the cause)
+- Fixed some crashes within path recording activity (there is still a ZipException that occasionally occurs when starting up Navisens, unsure the cause)
 - Fix some orientation instruction inacurracies
 
 Features:
 - Add “walk straight” instruction if degrees < 10 left/right
 - Add a new point upon creation of landmark/instruction instead of associating it with the last point. 
 - Added map on the replay screen for those with limited vision
+- Added an edit path screen to change landmark/instruction text and delete path
 
 We also included future project expansion ideas in the conclusion section below.
 
@@ -87,7 +88,7 @@ We also included future project expansion ideas in the conclusion section below.
 - Add ability to edit path name
 
 ## Conclusion
-This is a protoype that we completed in over 10 weeks. With more time and resources we would expand on this project in the following ways:
+This is a protoype that we completed in over 10 weeks. We developed a prototype where we received feedback and incorporated some ideas into the application. With more time and resources we would expand on this project in the following ways:
 - Customizable color schemes
 - Customizable metrics, ie. number of steps based on step length, feet, frequency of path points
 - Customizable feature to confirm a landmark
@@ -139,3 +140,5 @@ This is a protoype that we completed in over 10 weeks. With more time and resour
 - Gradle should sync all the dependencies required for this project
 
 ## Download
+1. Navigate to the releases section of this repository: [NaviBuzz-Releases](https://github.com/CSE482Winter2021/Team-NaviBuzz/releases)
+2. Click assets and download the apk-debug file
