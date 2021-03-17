@@ -46,6 +46,17 @@ With this in mind, we determined the high level tasks for our tool to be:
 
 We also wanted to work on collecting user-saved path data to build a dataset of information that could be used in the future to construct or augment GTFS Pathway data, although this is something we were not able to accomplish within the scope of this project.
 
+### Storyboards
+<p align="center">
+  <img src="resources/images/storyboard%201_1.jpg" height="300" />
+    
+  <img src="resources/images/storyboard%202_1.jpg" height="300"/>
+
+  <img src="resources/images/storyboard%203_1.jpg" height="300"/>
+
+  <img src="resources/images/storyboard%204_1.jpg" height="300"/>
+</p>
+
 ### Constraints/Limitations
 - GPS retrieval has a margin of error
 - Didn’t have the ability to go through the O&M training process
